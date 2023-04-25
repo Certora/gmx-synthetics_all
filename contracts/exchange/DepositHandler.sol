@@ -117,6 +117,8 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
     // @dev simulate execution of a deposit to check for any errors
     // @param key the deposit key
     // @param params OracleUtils.SimulatePricesParams
+    // TODO SG: Removed, it's crazy
+    /*
     function simulateExecuteDeposit(
         bytes32 key,
         OracleUtils.SimulatePricesParams memory params
@@ -134,7 +136,8 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
             msg.sender
         );
     }
-
+    */
+    
     // @dev executes a deposit
     // @param oracleParams OracleUtils.SetPricesParams
     // @param keeper the keeper executing the deposit
