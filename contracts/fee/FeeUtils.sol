@@ -176,6 +176,7 @@ library FeeUtils {
         uint256 nextValue,
         bytes32 feeType
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -195,6 +196,7 @@ library FeeUtils {
             feeType,
             eventData
         );
+        */
     }
 
     function emitClaimableUiFeeAmountUpdated(
@@ -207,6 +209,7 @@ library FeeUtils {
         uint256 nextPoolValue,
         bytes32 feeType
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -227,7 +230,7 @@ library FeeUtils {
             Cast.toBytes32(market),
             feeType,
             eventData
-        );
+        );*/
     }
 
     function emitFeesClaimed(
@@ -236,6 +239,7 @@ library FeeUtils {
         address receiver,
         uint256 feeAmount
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -249,7 +253,7 @@ library FeeUtils {
             "FeesClaimed",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitUiFeesClaimed(
@@ -260,6 +264,7 @@ library FeeUtils {
         uint256 feeAmount,
         uint256 nextPoolValue
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -275,6 +280,6 @@ library FeeUtils {
             "UiFeesClaimed",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 }

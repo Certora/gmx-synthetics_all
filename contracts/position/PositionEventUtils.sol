@@ -34,7 +34,7 @@ library PositionEventUtils {
         Order.OrderType orderType;
     }
 
-    function emitPositionIncrease(PositionIncreaseParams memory params) external {
+    function emitPositionIncrease(PositionIncreaseParams memory params) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -69,7 +69,7 @@ library PositionEventUtils {
             "PositionIncrease",
             Cast.toBytes32(params.position.account()),
             eventData
-        );
+        );*/
     }
 
     function emitPositionDecrease(
@@ -81,7 +81,7 @@ library PositionEventUtils {
         uint256 collateralDeltaAmount,
         Order.OrderType orderType,
         PositionUtils.DecreasePositionCollateralValues memory values
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -118,7 +118,7 @@ library PositionEventUtils {
             "PositionDecrease",
             Cast.toBytes32(position.account()),
             eventData
-        );
+        );*/
     }
 
     function emitLiquidationInfo(
@@ -127,7 +127,7 @@ library PositionEventUtils {
         uint256 positionCollateralAmount,
         int256 positionPnlUsd,
         int256 remainingCollateralAmount
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -143,7 +143,7 @@ library PositionEventUtils {
         eventEmitter.emitEventLog(
             "LiquidationInfo",
             eventData
-        );
+        );*/
     }
 
     function emitInsufficientFundingFeePayment(
@@ -152,7 +152,7 @@ library PositionEventUtils {
         address collateralToken,
         uint256 fundingFeeAmount,
         uint256 collateralAmount
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -167,7 +167,7 @@ library PositionEventUtils {
             "InsufficientFundingFeePayment",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitPositionFeesCollected(
@@ -178,7 +178,7 @@ library PositionEventUtils {
         uint256 tradeSizeUsd,
         bool isIncrease,
         PositionPricingUtils.PositionFees memory fees
-    ) external {
+    ) external {/*
         _emitPositionFees(
             eventEmitter,
             orderKey,
@@ -188,7 +188,7 @@ library PositionEventUtils {
             isIncrease,
             fees,
             "PositionFeesCollected"
-        );
+        );*/
     }
 
     function emitPositionFeesInfo(
@@ -199,7 +199,7 @@ library PositionEventUtils {
         uint256 tradeSizeUsd,
         bool isIncrease,
         PositionPricingUtils.PositionFees memory fees
-    ) external {
+    ) external {/*
         _emitPositionFees(
             eventEmitter,
             orderKey,
@@ -209,7 +209,7 @@ library PositionEventUtils {
             isIncrease,
             fees,
             "PositionFeesInfo"
-        );
+        );*/
     }
 
     function _emitPositionFees(
@@ -221,7 +221,7 @@ library PositionEventUtils {
         bool isIncrease,
         PositionPricingUtils.PositionFees memory fees,
         string memory eventName
-    ) internal {
+    ) internal {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(2);
@@ -274,6 +274,6 @@ library PositionEventUtils {
             eventName,
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 }

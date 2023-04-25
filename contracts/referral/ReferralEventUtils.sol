@@ -23,7 +23,7 @@ library ReferralEventUtils {
         uint256 delta,
         uint256 nextValue,
         uint256 nextPoolValue
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -41,7 +41,7 @@ library ReferralEventUtils {
             Cast.toBytes32(market),
             Cast.toBytes32(affiliate),
             eventData
-        );
+        );*/
     }
 
     function emitAffiliateRewardClaimed(
@@ -52,7 +52,7 @@ library ReferralEventUtils {
         address trader,
         uint256 amount,
         uint256 nextPoolValue
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(4);
@@ -69,6 +69,6 @@ library ReferralEventUtils {
             "AffiliateRewardClaimed",
             Cast.toBytes32(affiliate),
             eventData
-        );
+        );*/
     }
 }

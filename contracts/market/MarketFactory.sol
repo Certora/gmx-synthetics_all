@@ -81,6 +81,7 @@ contract MarketFactory is RoleModule {
         address longToken,
         address shortToken
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(4);
@@ -96,6 +97,6 @@ contract MarketFactory is RoleModule {
             "MarketCreated",
             Cast.toBytes32(marketToken),
             eventData
-        );
+        );*/
     }
 }

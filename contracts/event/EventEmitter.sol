@@ -43,6 +43,7 @@ contract EventEmitter is RoleModule {
 
     constructor(RoleStore _roleStore) RoleModule(_roleStore) {}
 
+    // TODO SG: Emit crap
     // @dev emit a general event log
     // @param eventName the name of the event
     // @param eventData the event data
@@ -50,12 +51,13 @@ contract EventEmitter is RoleModule {
         string memory eventName,
         EventUtils.EventLogData memory eventData
     ) external onlyController {
+        /*
         emit EventLog(
             msg.sender,
             eventName,
             eventName,
             eventData
-        );
+        );*/
     }
 
     // @dev emit a general event log
@@ -67,13 +69,14 @@ contract EventEmitter is RoleModule {
         bytes32 topic1,
         EventUtils.EventLogData memory eventData
     ) external onlyController {
+        /*
         emit EventLog1(
             msg.sender,
             eventName,
             eventName,
             topic1,
             eventData
-        );
+        );*/
     }
 
     // @dev emit a general event log
@@ -87,6 +90,7 @@ contract EventEmitter is RoleModule {
         bytes32 topic2,
         EventUtils.EventLogData memory eventData
     ) external onlyController {
+        /*
         emit EventLog2(
             msg.sender,
             eventName,
@@ -94,16 +98,17 @@ contract EventEmitter is RoleModule {
             topic1,
             topic2,
             eventData
-        );
+        );*/
     }
     // @dev event log for general use
     // @param topic1 event topic 1
     // @param data additional data
     function emitDataLog1(bytes32 topic1, bytes memory data) external onlyController {
+        /*
         uint256 len = data.length;
         assembly {
             log1(add(data, 32), len, topic1)
-        }
+        }*/
     }
 
     // @dev event log for general use
@@ -111,10 +116,11 @@ contract EventEmitter is RoleModule {
     // @param topic2 event topic 2
     // @param data additional data
     function emitDataLog2(bytes32 topic1, bytes32 topic2, bytes memory data) external onlyController {
+        /*
         uint256 len = data.length;
         assembly {
             log2(add(data, 32), len, topic1, topic2)
-        }
+        }*/
     }
 
     // @dev event log for general use
@@ -123,10 +129,11 @@ contract EventEmitter is RoleModule {
     // @param topic3 event topic 3
     // @param data additional data
     function emitDataLog3(bytes32 topic1, bytes32 topic2, bytes32 topic3, bytes memory data) external onlyController {
+        /*
         uint256 len = data.length;
         assembly {
             log3(add(data, 32), len, topic1, topic2, topic3)
-        }
+        }*/
     }
 
     // @dev event log for general use
@@ -136,9 +143,10 @@ contract EventEmitter is RoleModule {
     // @param topic4 event topic 4
     // @param data additional data
     function emitDataLog4(bytes32 topic1, bytes32 topic2, bytes32 topic3, bytes32 topic4, bytes memory data) external onlyController {
+        /*
         uint256 len = data.length;
         assembly {
             log4(add(data, 32), len, topic1, topic2, topic3, topic4)
-        }
+        }*/
     }
 }

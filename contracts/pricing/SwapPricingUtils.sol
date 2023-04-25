@@ -271,7 +271,7 @@ library SwapPricingUtils {
         uint256 amountInAfterFees,
         uint256 amountOut,
         int256 priceImpactUsd
-    ) internal {
+    ) internal {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -298,7 +298,7 @@ library SwapPricingUtils {
             "SwapInfo",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitSwapFeesCollected(
@@ -308,7 +308,7 @@ library SwapPricingUtils {
         uint256 tokenPrice,
         string memory action,
         SwapFees memory fees
-    ) internal {
+    ) internal {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -331,6 +331,6 @@ library SwapPricingUtils {
             "SwapFeesCollected",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 }

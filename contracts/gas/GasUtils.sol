@@ -196,6 +196,7 @@ library GasUtils {
         address keeper,
         uint256 executionFeeAmount
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -209,6 +210,7 @@ library GasUtils {
             Cast.toBytes32(keeper),
             eventData
         );
+        */
     }
 
     function emitExecutionFeeRefund(
@@ -216,6 +218,7 @@ library GasUtils {
         address account,
         uint256 refundFeeAmount
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -228,6 +231,6 @@ library GasUtils {
             "ExecutionFeeRefund",
             Cast.toBytes32(account),
             eventData
-        );
+        );*/
     }
 }

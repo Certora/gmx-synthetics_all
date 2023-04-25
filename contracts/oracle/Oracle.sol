@@ -660,6 +660,7 @@ contract Oracle is RoleModule {
         }
     }
 
+    // TODO SG: Emit crap
     function emitOraclePriceUpdated(
         EventEmitter eventEmitter,
         address token,
@@ -668,6 +669,7 @@ contract Oracle is RoleModule {
         bool isPrimary,
         bool isPriceFeed
     ) internal {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -686,6 +688,6 @@ contract Oracle is RoleModule {
             Cast.toBytes32(token),
             eventData
         );
-
+        */
     }
 }

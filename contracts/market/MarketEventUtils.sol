@@ -23,6 +23,7 @@ library MarketEventUtils {
         MarketPoolValueInfo.Props memory props,
         uint256 marketTokensSupply
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -49,6 +50,7 @@ library MarketEventUtils {
             Cast.toBytes32(market),
             eventData
         );
+        */
     }
 
     function emitPoolAmountUpdated(
@@ -58,6 +60,7 @@ library MarketEventUtils {
         int256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -74,7 +77,7 @@ library MarketEventUtils {
             "PoolAmountUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitSwapImpactPoolAmountUpdated(
@@ -84,6 +87,7 @@ library MarketEventUtils {
         int256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -100,7 +104,7 @@ library MarketEventUtils {
             "SwapImpactPoolAmountUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitPositionImpactPoolAmountUpdated(
@@ -109,6 +113,7 @@ library MarketEventUtils {
         int256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -124,7 +129,7 @@ library MarketEventUtils {
             "PositionImpactPoolAmountUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitOpenInterestUpdated(
@@ -135,6 +140,7 @@ library MarketEventUtils {
         int256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -154,7 +160,7 @@ library MarketEventUtils {
             "OpenInterestUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitVirtualSwapInventoryUpdated(
@@ -165,6 +171,7 @@ library MarketEventUtils {
         int256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -185,7 +192,7 @@ library MarketEventUtils {
             Cast.toBytes32(market),
             marketId,
             eventData
-        );
+        );*/
     }
 
     function emitVirtualPositionInventoryUpdated(
@@ -195,6 +202,7 @@ library MarketEventUtils {
         int256 delta,
         int256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -212,7 +220,7 @@ library MarketEventUtils {
             Cast.toBytes32(token),
             tokenId,
             eventData
-        );
+        );*/
     }
 
     function emitOpenInterestInTokensUpdated(
@@ -223,6 +231,7 @@ library MarketEventUtils {
         int256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -242,7 +251,7 @@ library MarketEventUtils {
             "OpenInterestInTokensUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitCollateralSumUpdated(
@@ -253,6 +262,7 @@ library MarketEventUtils {
         int256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -272,7 +282,7 @@ library MarketEventUtils {
             "CollateralSumUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitBorrowingFactorUpdated(
@@ -282,6 +292,7 @@ library MarketEventUtils {
         uint256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -298,7 +309,7 @@ library MarketEventUtils {
             "CumulativeBorrowingFactorUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitFundingAmountPerSizeUpdated(
@@ -308,6 +319,7 @@ library MarketEventUtils {
         bool isLong,
         int256 value
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(2);
@@ -324,7 +336,7 @@ library MarketEventUtils {
             "FundingAmountPerSizeUpdated",
             Cast.toBytes32(market),
             eventData
-        );
+        );*/
     }
 
     function emitClaimableFundingUpdated(
@@ -336,6 +348,7 @@ library MarketEventUtils {
         uint256 nextValue,
         uint256 nextPoolValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -352,7 +365,7 @@ library MarketEventUtils {
             "ClaimableFundingUpdated",
             Cast.toBytes32(account),
             eventData
-        );
+        );*/
     }
 
     function emitFundingFeesClaimed(
@@ -364,6 +377,7 @@ library MarketEventUtils {
         uint256 amount,
         uint256 nextPoolValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(4);
@@ -380,7 +394,7 @@ library MarketEventUtils {
             "FundingFeesClaimed",
             Cast.toBytes32(account),
             eventData
-        );
+        );*/
     }
 
     function emitClaimableFundingUpdated(
@@ -392,6 +406,7 @@ library MarketEventUtils {
         uint256 delta,
         uint256 nextValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -408,7 +423,7 @@ library MarketEventUtils {
             "ClaimableFundingUpdated",
             Cast.toBytes32(account),
             eventData
-        );
+        );*/
     }
 
     function emitClaimableCollateralUpdated(
@@ -421,6 +436,7 @@ library MarketEventUtils {
         uint256 nextValue,
         uint256 nextPoolValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(3);
@@ -438,7 +454,7 @@ library MarketEventUtils {
             "ClaimableCollateralUpdated",
             Cast.toBytes32(account),
             eventData
-        );
+        );*/
     }
 
     function emitCollateralClaimed(
@@ -451,6 +467,7 @@ library MarketEventUtils {
         uint256 amount,
         uint256 nextPoolValue
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(4);
@@ -468,7 +485,7 @@ library MarketEventUtils {
             "CollateralClaimed",
             Cast.toBytes32(account),
             eventData
-        );
+        );*/
     }
 
     function emitUiFeeFactorUpdated(
@@ -476,7 +493,7 @@ library MarketEventUtils {
         address account,
         uint256 uiFeeFactor
     ) external {
-
+/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(1);
@@ -489,6 +506,6 @@ library MarketEventUtils {
             "UiFeeFactorUpdated",
             Cast.toBytes32(account),
             eventData
-        );
+        );*/
     }
 }

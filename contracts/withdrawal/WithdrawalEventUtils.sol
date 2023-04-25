@@ -23,7 +23,7 @@ library WithdrawalEventUtils {
         EventEmitter eventEmitter,
         bytes32 key,
         Withdrawal.Props memory withdrawal
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(4);
@@ -50,13 +50,13 @@ library WithdrawalEventUtils {
             "WithdrawalCreated",
             Cast.toBytes32(withdrawal.account()),
             eventData
-        );
+        );*/
     }
 
     function emitWithdrawalExecuted(
         EventEmitter eventEmitter,
         bytes32 key
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -65,7 +65,7 @@ library WithdrawalEventUtils {
         eventEmitter.emitEventLog(
             "WithdrawalExecuted",
             eventData
-        );
+        );*/
     }
 
     function emitWithdrawalCancelled(
@@ -73,7 +73,7 @@ library WithdrawalEventUtils {
         bytes32 key,
         string memory reason,
         bytes memory reasonBytes
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -88,6 +88,6 @@ library WithdrawalEventUtils {
         eventEmitter.emitEventLog(
             "WithdrawalCancelled",
             eventData
-        );
+        );*/
     }
 }

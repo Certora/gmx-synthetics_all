@@ -22,7 +22,7 @@ library OrderEventUtils {
         EventEmitter eventEmitter,
         bytes32 key,
         Order.Props memory order
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(6);
@@ -60,13 +60,13 @@ library OrderEventUtils {
             key,
             Cast.toBytes32(order.account()),
             eventData
-        );
+        );*/
     }
 
     function emitOrderExecuted(
         EventEmitter eventEmitter,
         bytes32 key
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -76,7 +76,7 @@ library OrderEventUtils {
             "OrderExecuted",
             key,
             eventData
-        );
+        );*/
     }
 
     function emitOrderUpdated(
@@ -86,7 +86,7 @@ library OrderEventUtils {
         uint256 acceptablePrice,
         uint256 triggerPrice,
         uint256 minOutputAmount
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -102,7 +102,7 @@ library OrderEventUtils {
             "OrderUpdated",
             key,
             eventData
-        );
+        );*/
     }
 
     function emitOrderSizeDeltaAutoUpdated(
@@ -110,7 +110,7 @@ library OrderEventUtils {
         bytes32 key,
         uint256 sizeDeltaUsd,
         uint256 nextSizeDeltaUsd
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -124,7 +124,7 @@ library OrderEventUtils {
             "OrderSizeDeltaAutoUpdated",
             key,
             eventData
-        );
+        );*/
     }
 
     function emitOrderCollateralDeltaAmountAutoUpdated(
@@ -132,7 +132,7 @@ library OrderEventUtils {
         bytes32 key,
         uint256 collateralDeltaAmount,
         uint256 nextCollateralDeltaAmount
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -146,7 +146,7 @@ library OrderEventUtils {
             "OrderCollateralDeltaAmountAutoUpdated",
             key,
             eventData
-        );
+        );*/
     }
 
     function emitOrderCancelled(
@@ -154,7 +154,7 @@ library OrderEventUtils {
         bytes32 key,
         string memory reason,
         bytes memory reasonBytes
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -170,7 +170,7 @@ library OrderEventUtils {
             "OrderCancelled",
             key,
             eventData
-        );
+        );*/
     }
 
     function emitOrderFrozen(
@@ -178,7 +178,7 @@ library OrderEventUtils {
         bytes32 key,
         string memory reason,
         bytes memory reasonBytes
-    ) external {
+    ) external {/*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -194,6 +194,6 @@ library OrderEventUtils {
             "OrderFrozen",
             key,
             eventData
-        );
+        );*/
     }
 }
