@@ -19,11 +19,13 @@ library DepositEventUtils {
     using EventUtils for EventUtils.BytesItems;
     using EventUtils for EventUtils.StringItems;
 
+    // TODO SG: Wow. all of this. Bye bye for now
     function emitDepositCreated(
         EventEmitter eventEmitter,
         bytes32 key,
         Deposit.Props memory deposit
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(6);
@@ -57,6 +59,7 @@ library DepositEventUtils {
             Cast.toBytes32(deposit.account()),
             eventData
         );
+        */
     }
 
     function emitDepositExecuted(
@@ -66,6 +69,7 @@ library DepositEventUtils {
         uint256 shortTokenAmount,
         uint256 receivedMarketTokens
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -80,6 +84,7 @@ library DepositEventUtils {
             "DepositExecuted",
             eventData
         );
+        */
     }
 
     function emitDepositCancelled(
@@ -88,6 +93,7 @@ library DepositEventUtils {
         string memory reason,
         bytes memory reasonBytes
     ) external {
+        /*
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -103,5 +109,6 @@ library DepositEventUtils {
             "DepositCancelled",
             eventData
         );
+        */
     }
 }
