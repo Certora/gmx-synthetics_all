@@ -136,7 +136,7 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
         );
     }
     */
-    
+
     // @dev executes a deposit
     // @param oracleParams OracleUtils.SetPricesParams
     // @param keeper the keeper executing the deposit
@@ -186,6 +186,8 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
     ) internal {
         (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
 
+        // TODO SG: Breaks PTA? Let's try and find out
+        /*
         bytes4 errorSelector = ErrorUtils.getErrorSelectorFromData(reasonBytes);
 
         if (
@@ -193,7 +195,7 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
             errorSelector == Errors.DisabledFeature.selector
         ) {
             ErrorUtils.revertWithCustomError(reasonBytes);
-        }
+        }*/
 
         DepositUtils.cancelDeposit(
             dataStore,
