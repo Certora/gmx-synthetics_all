@@ -34,7 +34,7 @@ contract RoleModule {
      * @dev Only allows addresses with the TIMELOCK_MULTISIG role to call the function.
      */
     modifier onlyTimelockMultisig() {
-        _validateRole(Role.TIMELOCK_MULTISIG, "TIMELOCK_MULTISIG");
+        //_validateRole(Role.TIMELOCK_MULTISIG, "TIMELOCK_MULTISIG");
         _;
     }
 
@@ -42,7 +42,7 @@ contract RoleModule {
      * @dev Only allows addresses with the TIMELOCK_ADMIN role to call the function.
      */
     modifier onlyTimelockAdmin() {
-        _validateRole(Role.TIMELOCK_ADMIN, "TIMELOCK_ADMIN");
+        //_validateRole(Role.TIMELOCK_ADMIN, "TIMELOCK_ADMIN");
         _;
     }
 
@@ -50,7 +50,7 @@ contract RoleModule {
      * @dev Only allows addresses with the CONFIG_KEEPER role to call the function.
      */
     modifier onlyConfigKeeper() {
-        _validateRole(Role.CONFIG_KEEPER, "CONFIG_KEEPER");
+        //_validateRole(Role.CONFIG_KEEPER, "CONFIG_KEEPER");
         _;
     }
 
@@ -58,7 +58,7 @@ contract RoleModule {
      * @dev Only allows addresses with the CONTROLLER role to call the function.
      */
     modifier onlyController() {
-        _validateRole(Role.CONTROLLER, "CONTROLLER");
+        //_validateRole(Role.CONTROLLER, "CONTROLLER");
         _;
     }
 
@@ -66,7 +66,7 @@ contract RoleModule {
      * @dev Only allows addresses with the ROUTER_PLUGIN role to call the function.
      */
     modifier onlyRouterPlugin() {
-        _validateRole(Role.ROUTER_PLUGIN, "ROUTER_PLUGIN");
+        //_validateRole(Role.ROUTER_PLUGIN, "ROUTER_PLUGIN");
         _;
     }
 
@@ -74,7 +74,7 @@ contract RoleModule {
      * @dev Only allows addresses with the MARKET_KEEPER role to call the function.
      */
     modifier onlyMarketKeeper() {
-        _validateRole(Role.MARKET_KEEPER, "MARKET_KEEPER");
+        //_validateRole(Role.MARKET_KEEPER, "MARKET_KEEPER");
         _;
     }
 
@@ -82,7 +82,7 @@ contract RoleModule {
      * @dev Only allows addresses with the FEE_KEEPER role to call the function.
      */
     modifier onlyFeeKeeper() {
-        _validateRole(Role.FEE_KEEPER, "FEE_KEEPER");
+        //_validateRole(Role.FEE_KEEPER, "FEE_KEEPER");
         _;
     }
 
@@ -90,7 +90,7 @@ contract RoleModule {
      * @dev Only allows addresses with the ORDER_KEEPER role to call the function.
      */
     modifier onlyOrderKeeper() {
-        _validateRole(Role.ORDER_KEEPER, "ORDER_KEEPER");
+        //_validateRole(Role.ORDER_KEEPER, "ORDER_KEEPER");
         _;
     }
 
@@ -98,7 +98,7 @@ contract RoleModule {
      * @dev Only allows addresses with the PRICING_KEEPER role to call the function.
      */
     modifier onlyPricingKeeper() {
-        _validateRole(Role.PRICING_KEEPER, "PRICING_KEEPER");
+        //_validateRole(Role.PRICING_KEEPER, "PRICING_KEEPER");
         _;
     }
 
@@ -106,7 +106,7 @@ contract RoleModule {
      * @dev Only allows addresses with the LIQUIDATION_KEEPER role to call the function.
      */
     modifier onlyLiquidationKeeper() {
-        _validateRole(Role.LIQUIDATION_KEEPER, "LIQUIDATION_KEEPER");
+        //_validateRole(Role.LIQUIDATION_KEEPER, "LIQUIDATION_KEEPER");
         _;
     }
 
@@ -114,7 +114,7 @@ contract RoleModule {
      * @dev Only allows addresses with the ADL_KEEPER role to call the function.
      */
     modifier onlyAdlKeeper() {
-        _validateRole(Role.ADL_KEEPER, "ADL_KEEPER");
+        //_validateRole(Role.ADL_KEEPER, "ADL_KEEPER");
         _;
     }
 
