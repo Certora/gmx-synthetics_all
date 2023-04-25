@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
 library ErrorUtils {
     // To get the revert reason, referenced from https://ethereum.stackexchange.com/a/83577
     function getRevertMessage(bytes memory result) internal pure returns (string memory, bool) {
+        // TODO SG: So much crap
+        /*
         // If the result length is less than 68, then the transaction either panicked or failed silently
         if (result.length < 68) {
             return ("", false);
@@ -22,7 +24,7 @@ library ErrorUtils {
 
             return (abi.decode(result, (string)), true);
         }
-
+        */
         // error may be a custom error, return an empty string for this case
         return ("", false);
     }
