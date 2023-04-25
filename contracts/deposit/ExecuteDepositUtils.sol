@@ -20,7 +20,7 @@ import "../callback/CallbackUtils.sol";
 
 import "../utils/Array.sol";
 import "../error/ErrorUtils.sol";
-//import "../error/Errors.sol"; //SARIT- MY FIX
+import "../error/Errors.sol"; //SARIT- MY FIX
 
 // @title DepositUtils
 // @dev Library for deposit functions, to help with the depositing of liquidity
