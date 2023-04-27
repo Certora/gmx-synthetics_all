@@ -358,9 +358,10 @@ contract DataStore is RoleModule {
     // @dev set the string array for the given key
     // @param key the key of the string array
     // @param value the value of the string array
-    function setStringArray(bytes32 key, string[] memory value) external onlyController {
+    /// @dev RP@Certora : comment function (auto-finder failure)
+    /*function setStringArray(bytes32 key, string[] memory value) external onlyController {
         stringArrayValues[key] = value;
-    }
+    }*/
 
     // @dev delete the string array for the given key
     // @param key the key of the string array

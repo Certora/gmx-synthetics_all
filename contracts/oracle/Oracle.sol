@@ -15,7 +15,7 @@ import "../price/Price.sol";
 import "../chain/Chain.sol";
 import "../data/DataStore.sol";
 import "../data/Keys.sol";
-import {EventEmitter} from "../event/EventEmitter.sol";
+import {EventEmitter} from "../event/EventEmitter.sol"; /// @dev RP@Certora: import only EventEmitter
 import "../event/EventUtils.sol";
 
 import "../utils/Bits.sol";
@@ -362,7 +362,8 @@ contract Oracle is RoleModule {
     // @param dataStore DataStore
     // @param token the token to get the price for
     // @return the stable price of the token
-    function getStablePrice(DataStore dataStore, address token) public view returns (uint256) {
+    /// @dev RP@Certora : + virtual
+    function getStablePrice(DataStore dataStore, address token) public view virtual returns (uint256) {
         return dataStore.getUint(Keys.stablePriceKey(token));
     }
 
@@ -378,7 +379,8 @@ contract Oracle is RoleModule {
     // @param dataStore DataStore
     // @param token the token to get the price feed multiplier for
     // @return the price feed multipler
-    function getPriceFeedMultiplier(DataStore dataStore, address token) public view returns (uint256) {
+    /// @dev RP@Certora: + virtual
+    function getPriceFeedMultiplier(DataStore dataStore, address token) public view virtual returns (uint256) {
         uint256 multiplier = dataStore.getUint(Keys.priceFeedMultiplierKey(token));
 
         if (multiplier == 0) {

@@ -8,6 +8,8 @@ contract OracleHarness is Oracle {
 
     DataStore public immutable myDataStore;
     EventEmitter public immutable myEventEmitter;
+    OracleUtils.ReportInfo public myReportInfo;
+
     constructor(
         RoleStore _roleStore,
         OracleStore _oracleStore,
@@ -24,5 +26,21 @@ contract OracleHarness is Oracle {
         OracleUtils.SetPricesParams memory params
     ) public override {
         super.setPrices(myDataStore, myEventEmitter, params);
+    }
+
+    function getStablePrice(DataStore, address token) public view override returns (uint256) {
+        return super.getStablePrice(myDataStore, token);
+    }
+
+    function getPriceFeedMultiplier(DataStore, address token) public view override returns (uint256) {
+        return super.getPriceFeedMultiplier(myDataStore, token);
+    }
+
+    function validateSignerHarness(
+        bytes32 SALT,
+        bytes memory signature,
+        address expectedSigner
+    ) external view {
+        OracleUtils.validateSigner(SALT, myReportInfo, signature, expectedSigner);
     }
 }
