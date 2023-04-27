@@ -14,5 +14,11 @@ cache
 artifacts
 deployments/localhost
 
-
+# certora
 .certora*
+.certora*.json
+**.last_conf*
+certora-logs
+certora_debug_log.txt
+resource_errors.json
+certora/conf*

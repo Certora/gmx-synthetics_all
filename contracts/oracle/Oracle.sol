@@ -15,7 +15,7 @@ import "../price/Price.sol";
 import "../chain/Chain.sol";
 import "../data/DataStore.sol";
 import "../data/Keys.sol";
-import "../event/EventEmitter.sol";
+import {EventEmitter} from "../event/EventEmitter.sol";
 import "../event/EventUtils.sol";
 
 import "../utils/Bits.sol";
@@ -198,7 +198,7 @@ contract Oracle is RoleModule {
         DataStore dataStore,
         EventEmitter eventEmitter,
         OracleUtils.SetPricesParams memory params
-    ) external onlyController {
+    ) public virtual onlyController { /// @dev RP@Certora : external -> public, + virtual 
         if (tokensWithPrices.length() != 0) {
             revert Errors.NonEmptyTokensWithPrices(tokensWithPrices.length());
         }
