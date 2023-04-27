@@ -13,6 +13,8 @@ import "../utils/AccountUtils.sol";
 
 import "./IWNT.sol";
 
+import "../../certora/helpers/Receiver.sol";
+
 /**
  * @title TokenUtils
  * @dev Library for token functions, helps with transferring of tokens and
@@ -149,17 +151,18 @@ library TokenUtils {
         // use an assembly call to avoid loading large data into memory
         // input mem[in…(in+insize)]
         // output area mem[out…(out+outsize))]
-        assembly {
-            success := call(
-                gasLimit, // gas limit
-                receiver, // receiver
-                amount, // value
-                0, // in
-                0, // insize
-                0, // out
-                0 // outsize
-            )
-        }
+        // assembly {
+        //     success := call(
+        //         gasLimit, // gas limit
+        //         receiver, // receiver
+        //         amount, // value
+        //         0, // in
+        //         0, // insize
+        //         0, // out
+        //         0 // outsize
+        //     )
+        // }
+        Receiver(payable(receiver)).sendTo{value:amount}(); // HARNESS: fix low-level call havocing
 
         if (success) { return; }
 
