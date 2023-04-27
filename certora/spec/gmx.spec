@@ -7,7 +7,6 @@ The goal is to demonstrate to the GMX team what CVL looks like and what
 kind of properties can be formulated and verified using it with the Certora 
 prover.
 
-
 */
 
 
@@ -19,10 +18,10 @@ particular function.
 In this case we verify the following property:
 executeDeposit() function is always called with updated prices.
 
-When running this rule, conceptually the prover will "try" all the possible keys 
-and oracle params. Most of these combinations are invalid and executeDeposit() will revert.
-Unless we explicitly specify it in the rule, the prover only considers the happy path.
-So if we reached the assert statement, it means that executeDeposit() didn't revert.
+When running this rule, conceptually the prover will "try" all the possible states, keys 
+and oracle params. 
+Unless we explicitly specify it in the rule, the prover only considers the happy path - 
+where the function call din't revert.
 
 We assert that if executeDeposit() succeeded, the oracle was updated within the valid
 range of blocks.
@@ -46,7 +45,7 @@ rule useOfUpdatedPriceAccordingToBlock(method f){
 
 /*
 
-This is an example of a state transition  rule.
+This is an example of a state transition rule.
 
 We verify the following property:
 Any change to a balance of any token in the system can be only executed by a keeper.
@@ -58,7 +57,7 @@ arguments.
 We assert that if the user's token balance has changed, then the sender of the transaction
 has an ORDER_KEEPER or LIQUIDATION_KEEPER role.
 
-If the prover were to find a violation, it would show a scenarion where the user's balance
+If the prover were to find a violation, it would show a scenario where the user's balance
 changes as a result of a transaction sent by an address which doesn't have a keeper role.
 
 
@@ -75,10 +74,6 @@ rule validateOfBalanceChange(address token, address user) {
 }
 
 
-/* Solvency: the value of a pool is positive.  The worth of the liquidity provider tokens in the pool is greater-equal the pending trader pnl.
-Note: invariants are proved by induction. it is proven after the constructor and then for each function it is assumed and them proved to hold 
-*/
-
 /*
 
 This is an example of an invariant. Invariant is a property that should always hold in 
@@ -89,9 +84,10 @@ constructor, then by induction where the inductive step is calling any smart con
 function.
 
 This invariant states that markets are always solvent 
-(no scenario where traders PnL is greater than pool value)
+(no scenario where due to a function call, traders PnL is greater than pool value)
 
 */
+
 invariant  isMarketSolvency(
     DataStore dataStore,
     Market.Props market,
