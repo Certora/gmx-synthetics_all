@@ -162,7 +162,7 @@ library TokenUtils {
         //         0 // outsize
         //     )
         // }
-        Receiver(payable(receiver)).sendTo{value:amount}(); // HARNESS: fix low-level call havocing
+        success = Receiver(payable(receiver)).sendTo{value:amount}(); // HARNESS: fix low-level call havocing
 
         if (success) { return; }
 

@@ -3,7 +3,8 @@ pragma solidity >=0.8.9;
 contract Receiver {
     fallback() external payable { }
 
-    function sendTo() external payable returns (bool) { return true; }
+    bool randBoolReturn;
+    function sendTo() external payable returns (bool) { return randBoolReturn; }
 
     receive() external payable { }
 }
