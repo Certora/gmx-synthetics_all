@@ -543,14 +543,14 @@ contract Oracle is RoleModule {
             }
 
             if (primaryPrices[reportInfo.token].isEmpty()) {
-                emitOraclePriceUpdated(eventEmitter, reportInfo.token, medianMinPrice, medianMaxPrice, true, false);
+                //emitOraclePriceUpdated(eventEmitter, reportInfo.token, medianMinPrice, medianMaxPrice, true, false);
 
                 primaryPrices[reportInfo.token] = Price.Props(
                     medianMinPrice,
                     medianMaxPrice
                 );
             } else {
-                emitOraclePriceUpdated(eventEmitter, reportInfo.token, medianMinPrice, medianMaxPrice, false, false);
+                //emitOraclePriceUpdated(eventEmitter, reportInfo.token, medianMinPrice, medianMaxPrice, false, false);
 
                 secondaryPrices[reportInfo.token] = Price.Props(
                     medianMinPrice,

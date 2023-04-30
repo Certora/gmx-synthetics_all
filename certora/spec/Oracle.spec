@@ -6,16 +6,24 @@ methods {
     /// PriceFeed
     function _.latestRoundData() external => DISPATCHER(true);
     /// Array (temporary summarization)
-    //function _.getMedian(uint256[] memory) internal library => NONDET;
-    function _.getUncompactedValue(uint256[] memory, uint256, uint256, uint256, string memory) internal library => NONDET;
+    function _.getMedian(uint256[] memory) internal library => NONDET;
     /// Chain
     function _.arbBlockNumber() external => ghostBlockNumber() expect uint256 ALL;
     function _.arbBlockHash(uint256 blockNumber) external => ghostBlockHash(blockNumber) expect bytes32 ALL;
     /// Oracle summaries
     function OracleHarness._getSalt() internal returns bytes32 => mySalt();
-    /// @notice : the following summary isn't applied (issue)
+    /// @notice : the following summaries aren't applied (issue)
+    //function OracleHarness._getPriceFeedPrice(address,address) internal returns (bool, uint256) => NONDET;
     //function OracleHarness._setPrices(address,address,address[] memory, OracleUtils.SetPricesParams memory) internal => NONDET;
+
+    /// Getters:
+    function OracleHarness.primaryPrices(address) external returns (uint256,uint256);
+    function OracleHarness.secondaryPrices(address) external returns (uint256,uint256);
+    function OracleHarness.customPrices(address) external returns (uint256,uint256);
+    function OracleHarness.getSignerByInfo(uint256, uint256) external returns (address);
 }
+
+definition isSetPrices(method f) returns bool = f.selector == 0xdf026811;
 
 ghost mySalt() returns bytes32;
 
@@ -28,8 +36,15 @@ ghost ghostBlockHash(uint256) returns bytes32 {
         num1 != num2 => ghostBlockHash(num1) != ghostBlockHash(num2);
 }
 
+function ghostMedian(uint256[] array) returns uint256 {
+    uint256 med;
+    uint256 len = array.length;
+    require med >= array[0] && med <= array[require_uint256(len-1)];
+    return med;
+}
+
 rule complexityCheck(method f)
-filtered{f-> f.selector != 0xdf026811} {
+filtered{f-> !isSetPrices(f)} {
     env e; 
     calldataarg args;
     f(e, args);
