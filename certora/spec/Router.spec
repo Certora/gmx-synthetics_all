@@ -1,3 +1,5 @@
+import "erc20.spec";
+
 methods {
     // RoleStore.sol
     function _.hasRole(address, bytes32) external => DISPATCHER(true);

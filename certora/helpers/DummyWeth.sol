@@ -8,7 +8,6 @@ import "./Receiver.sol";
  */
 contract DummyWeth {
     uint256 t;
-    
     mapping(address => uint256) b;
     mapping(address => mapping(address => uint256)) a;
 
@@ -63,7 +62,7 @@ contract DummyWeth {
         a[sender][msg.sender] = sub(a[sender][msg.sender], amount);
         return true;
     }
-    
+
     // WETH
     function deposit() external payable {
         b[msg.sender] += msg.value;
