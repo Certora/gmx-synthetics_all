@@ -176,25 +176,25 @@ library FeeUtils {
         uint256 nextValue,
         bytes32 feeType
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(2);
-        eventData.addressItems.setItem(0, "market", market);
-        eventData.addressItems.setItem(1, "token", token);
+        // eventData.addressItems.initItems(2);
+        // eventData.addressItems.setItem(0, "market", market);
+        // eventData.addressItems.setItem(1, "token", token);
 
-        eventData.uintItems.initItems(2);
-        eventData.uintItems.setItem(0, "delta", delta);
-        eventData.uintItems.setItem(1, "nextValue", nextValue);
+        // eventData.uintItems.initItems(2);
+        // eventData.uintItems.setItem(0, "delta", delta);
+        // eventData.uintItems.setItem(1, "nextValue", nextValue);
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "feeType", feeType);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "feeType", feeType);
 
-        eventEmitter.emitEventLog2(
-            "ClaimableFeeAmountUpdated",
-            Cast.toBytes32(market),
-            feeType,
-            eventData
-        );
+        // eventEmitter.emitEventLog2(
+        //     "ClaimableFeeAmountUpdated",
+        //     Cast.toBytes32(market),
+        //     feeType,
+        //     eventData
+        // );
     }
 
     function emitClaimableUiFeeAmountUpdated(
@@ -207,27 +207,27 @@ library FeeUtils {
         uint256 nextPoolValue,
         bytes32 feeType
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(3);
-        eventData.addressItems.setItem(0, "uiFeeReceiver", uiFeeReceiver);
-        eventData.addressItems.setItem(1, "market", market);
-        eventData.addressItems.setItem(2, "token", token);
+        // eventData.addressItems.initItems(3);
+        // eventData.addressItems.setItem(0, "uiFeeReceiver", uiFeeReceiver);
+        // eventData.addressItems.setItem(1, "market", market);
+        // eventData.addressItems.setItem(2, "token", token);
 
-        eventData.uintItems.initItems(3);
-        eventData.uintItems.setItem(0, "delta", delta);
-        eventData.uintItems.setItem(1, "nextValue", nextValue);
-        eventData.uintItems.setItem(2, "nextPoolValue", nextPoolValue);
+        // eventData.uintItems.initItems(3);
+        // eventData.uintItems.setItem(0, "delta", delta);
+        // eventData.uintItems.setItem(1, "nextValue", nextValue);
+        // eventData.uintItems.setItem(2, "nextPoolValue", nextPoolValue);
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "feeType", feeType);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "feeType", feeType);
 
-        eventEmitter.emitEventLog2(
-            "ClaimableUiFeeAmountUpdated",
-            Cast.toBytes32(market),
-            feeType,
-            eventData
-        );
+        // eventEmitter.emitEventLog2(
+        //     "ClaimableUiFeeAmountUpdated",
+        //     Cast.toBytes32(market),
+        //     feeType,
+        //     eventData
+        // );
     }
 
     function emitFeesClaimed(
@@ -236,20 +236,20 @@ library FeeUtils {
         address receiver,
         uint256 feeAmount
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(2);
-        eventData.addressItems.setItem(0, "market", market);
-        eventData.addressItems.setItem(1, "receiver", receiver);
+        // eventData.addressItems.initItems(2);
+        // eventData.addressItems.setItem(0, "market", market);
+        // eventData.addressItems.setItem(1, "receiver", receiver);
 
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "feeAmount", feeAmount);
+        // eventData.uintItems.initItems(1);
+        // eventData.uintItems.setItem(0, "feeAmount", feeAmount);
 
-        eventEmitter.emitEventLog1(
-            "FeesClaimed",
-            Cast.toBytes32(market),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "FeesClaimed",
+        //     Cast.toBytes32(market),
+        //     eventData
+        // );
     }
 
     function emitUiFeesClaimed(
@@ -260,21 +260,21 @@ library FeeUtils {
         uint256 feeAmount,
         uint256 nextPoolValue
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(3);
-        eventData.addressItems.setItem(0, "uiFeeReceiver", uiFeeReceiver);
-        eventData.addressItems.setItem(1, "market", market);
-        eventData.addressItems.setItem(2, "receiver", receiver);
+        // eventData.addressItems.initItems(3);
+        // eventData.addressItems.setItem(0, "uiFeeReceiver", uiFeeReceiver);
+        // eventData.addressItems.setItem(1, "market", market);
+        // eventData.addressItems.setItem(2, "receiver", receiver);
 
-        eventData.uintItems.initItems(2);
-        eventData.uintItems.setItem(0, "feeAmount", feeAmount);
-        eventData.uintItems.setItem(1, "nextPoolValue", nextPoolValue);
+        // eventData.uintItems.initItems(2);
+        // eventData.uintItems.setItem(0, "feeAmount", feeAmount);
+        // eventData.uintItems.setItem(1, "nextPoolValue", nextPoolValue);
 
-        eventEmitter.emitEventLog1(
-            "UiFeesClaimed",
-            Cast.toBytes32(market),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "UiFeesClaimed",
+        //     Cast.toBytes32(market),
+        //     eventData
+        // );
     }
 }

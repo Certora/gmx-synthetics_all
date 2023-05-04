@@ -34,15 +34,15 @@ contract OracleStore is RoleModule {
     function addSigner(address account) external onlyController {
         signers.add(account);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
 
-        eventEmitter.emitEventLog1(
-            "SignerAdded",
-            Cast.toBytes32(account),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SignerAdded",
+        //     Cast.toBytes32(account),
+        //     eventData
+        // );
     }
 
     // @dev removes a signer
@@ -50,15 +50,15 @@ contract OracleStore is RoleModule {
     function removeSigner(address account) external onlyController {
         signers.remove(account);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
 
-        eventEmitter.emitEventLog1(
-            "SignerRemoved",
-            Cast.toBytes32(account),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SignerRemoved",
+        //     Cast.toBytes32(account),
+        //     eventData
+        // );
     }
 
     // @dev get the total number of signers

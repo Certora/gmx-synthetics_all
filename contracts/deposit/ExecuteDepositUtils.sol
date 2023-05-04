@@ -210,13 +210,13 @@ library ExecuteDepositUtils {
         // external callbacks
         MarketUtils.validateMarketTokenBalance(params.dataStore, market);
 
-        DepositEventUtils.emitDepositExecuted(
-            params.eventEmitter,
-            params.key,
-            cache.longTokenAmount,
-            cache.shortTokenAmount,
-            cache.receivedMarketTokens
-        );
+        // DepositEventUtils.emitDepositExecuted(
+        //     params.eventEmitter,
+        //     params.key,
+        //     cache.longTokenAmount,
+        //     cache.shortTokenAmount,
+        //     cache.receivedMarketTokens
+        // );
 
         CallbackUtils.afterDepositExecution(params.key, deposit);
 
@@ -261,14 +261,14 @@ library ExecuteDepositUtils {
             Keys.UI_DEPOSIT_FEE
         );
 
-        SwapPricingUtils.emitSwapFeesCollected(
-            params.eventEmitter,
-             _params.market.marketToken,
-             _params.tokenIn,
-             _params.tokenInPrice.min,
-             "deposit",
-             fees
-         );
+        // SwapPricingUtils.emitSwapFeesCollected(
+        //     params.eventEmitter,
+        //      _params.market.marketToken,
+        //      _params.tokenIn,
+        //      _params.tokenInPrice.min,
+        //      "deposit",
+        //      fees
+        //  );
 
         uint256 mintAmount;
 
@@ -290,12 +290,12 @@ library ExecuteDepositUtils {
 
         uint256 marketTokensSupply = MarketUtils.getMarketTokenSupply(MarketToken(payable(_params.market.marketToken)));
 
-        MarketEventUtils.emitMarketPoolValueInfo(
-            params.eventEmitter,
-            _params.market.marketToken,
-            poolValueInfo,
-            marketTokensSupply
-        );
+        // MarketEventUtils.emitMarketPoolValueInfo(
+        //     params.eventEmitter,
+        //     _params.market.marketToken,
+        //     poolValueInfo,
+        //     marketTokensSupply
+        // );
 
         if (_params.priceImpactUsd > 0) {
             // when there is a positive price impact factor,

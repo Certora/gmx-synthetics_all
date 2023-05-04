@@ -61,11 +61,11 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
         eventData.boolItems.initItems(1);
         eventData.boolItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetBool",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetBool",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set an address value
@@ -90,11 +90,11 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
         eventData.addressItems.initItems(1);
         eventData.addressItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetAddress",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetAddress",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set a bytes32 value
@@ -117,11 +117,11 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
         eventData.bytesItems.initItems(1);
         eventData.bytesItems.setItem(0, "data", data);
 
-        eventEmitter.emitEventLog1(
-            "SetBytes32",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetBytes32",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set a uint256 value
@@ -148,11 +148,11 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
         eventData.uintItems.initItems(1);
         eventData.uintItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetUint",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetUint",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set an int256 value
@@ -177,11 +177,11 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
         eventData.intItems.initItems(1);
         eventData.intItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetInt",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetInt",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev initialize the allowed base keys

@@ -160,7 +160,7 @@ library WithdrawalUtils {
 
         WithdrawalStoreUtils.set(dataStore, key, withdrawal);
 
-        WithdrawalEventUtils.emitWithdrawalCreated(eventEmitter, key, withdrawal);
+        // WithdrawalEventUtils.emitWithdrawalCreated(eventEmitter, key, withdrawal);
 
         return key;
     }
@@ -192,7 +192,7 @@ library WithdrawalUtils {
 
         _executeWithdrawal(params, withdrawal);
 
-        WithdrawalEventUtils.emitWithdrawalExecuted(params.eventEmitter, params.key);
+        // WithdrawalEventUtils.emitWithdrawalExecuted(params.eventEmitter, params.key);
 
         CallbackUtils.afterWithdrawalExecution(params.key, withdrawal);
 
@@ -244,7 +244,7 @@ library WithdrawalUtils {
             false // shouldUnwrapNativeToken
         );
 
-        WithdrawalEventUtils.emitWithdrawalCancelled(eventEmitter, key, reason, reasonBytes);
+        // WithdrawalEventUtils.emitWithdrawalCancelled(eventEmitter, key, reason, reasonBytes);
 
         CallbackUtils.afterWithdrawalCancellation(key, withdrawal);
 
@@ -409,23 +409,23 @@ library WithdrawalUtils {
             withdrawal.shouldUnwrapNativeToken()
         );
 
-        SwapPricingUtils.emitSwapFeesCollected(
-            params.eventEmitter,
-            market.marketToken,
-            market.longToken,
-            prices.longTokenPrice.min,
-            "withdrawal",
-            cache.longTokenFees
-        );
+        // SwapPricingUtils.emitSwapFeesCollected(
+        //     params.eventEmitter,
+        //     market.marketToken,
+        //     market.longToken,
+        //     prices.longTokenPrice.min,
+        //     "withdrawal",
+        //     cache.longTokenFees
+        // );
 
-        SwapPricingUtils.emitSwapFeesCollected(
-            params.eventEmitter,
-            market.marketToken,
-            market.shortToken,
-            prices.shortTokenPrice.min,
-            "withdrawal",
-            cache.shortTokenFees
-        );
+        // SwapPricingUtils.emitSwapFeesCollected(
+        //     params.eventEmitter,
+        //     market.marketToken,
+        //     market.shortToken,
+        //     prices.shortTokenPrice.min,
+        //     "withdrawal",
+        //     cache.shortTokenFees
+        // );
 
         MarketUtils.validateMarketTokenBalance(params.dataStore, market);
     }
@@ -494,12 +494,12 @@ library WithdrawalUtils {
         uint256 marketTokensSupply = MarketUtils.getMarketTokenSupply(MarketToken(payable(market.marketToken)));
         uint256 marketTokensUsd = MarketUtils.marketTokenAmountToUsd(marketTokenAmount, poolValue, marketTokensSupply);
 
-        MarketEventUtils.emitMarketPoolValueInfo(
-            params.eventEmitter,
-            market.marketToken,
-            poolValueInfo,
-            marketTokensSupply
-        );
+        // MarketEventUtils.emitMarketPoolValueInfo(
+        //     params.eventEmitter,
+        //     market.marketToken,
+        //     poolValueInfo,
+        //     marketTokensSupply
+        // );
 
         uint256 longTokenPoolAmount = MarketUtils.getPoolAmount(params.dataStore, market, market.longToken);
         uint256 shortTokenPoolAmount = MarketUtils.getPoolAmount(params.dataStore, market, market.shortToken);

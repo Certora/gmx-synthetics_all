@@ -97,12 +97,12 @@ library DecreasePositionCollateralUtils {
                 params.order.setInitialCollateralDeltaAmount(params.order.initialCollateralDeltaAmount() - collateralCache.adjustedPriceImpactDiffAmount);
             }
 
-            OrderEventUtils.emitOrderCollateralDeltaAmountAutoUpdated(
-                params.contracts.eventEmitter,
-                params.orderKey,
-                initialCollateralDeltaAmount,
-                params.order.initialCollateralDeltaAmount()
-            );
+            // OrderEventUtils.emitOrderCollateralDeltaAmountAutoUpdated(
+            //     params.contracts.eventEmitter,
+            //     params.orderKey,
+            //     initialCollateralDeltaAmount,
+            //     params.order.initialCollateralDeltaAmount()
+            // );
         }
 
         values.remainingCollateralAmount -= params.order.initialCollateralDeltaAmount().toInt256();
@@ -200,23 +200,23 @@ library DecreasePositionCollateralUtils {
         // closing the position with zero price impact, just that if there were any collateral that could
         // partially pay for negative price impact, it would be sent to the pool instead
         if (BaseOrderUtils.isLiquidationOrder(params.order.orderType()) && values.remainingCollateralAmount < 0) {
-            PositionEventUtils.emitPositionFeesInfo(
-                params.contracts.eventEmitter,
-                params.orderKey,
-                params.market.marketToken,
-                params.position.collateralToken(),
-                params.order.sizeDeltaUsd(),
-                false,
-                fees
-            );
+            // PositionEventUtils.emitPositionFeesInfo(
+            //     params.contracts.eventEmitter,
+            //     params.orderKey,
+            //     params.market.marketToken,
+            //     params.position.collateralToken(),
+            //     params.order.sizeDeltaUsd(),
+            //     false,
+            //     fees
+            // );
 
-            PositionEventUtils.emitLiquidationInfo(
-                params.contracts.eventEmitter,
-                params.orderKey,
-                params.position.collateralAmount(),
-                values.positionPnlUsd,
-                values.remainingCollateralAmount
-            );
+            // PositionEventUtils.emitLiquidationInfo(
+            //     params.contracts.eventEmitter,
+            //     params.orderKey,
+            //     params.position.collateralAmount(),
+            //     values.positionPnlUsd,
+            //     values.remainingCollateralAmount
+            // );
 
             return getLiquidationValues(params, values, fees);
         }
@@ -355,13 +355,13 @@ library DecreasePositionCollateralUtils {
             // should be rare, and the difference should be small
             // in case it happens, the pool should be topped up with the required amount using
             // an insurance fund or similar mechanism
-            PositionEventUtils.emitInsufficientFundingFeePayment(
-                params.contracts.eventEmitter,
-                params.market.marketToken,
-                params.position.collateralToken(),
-                fees.funding.fundingFeeAmount,
-                params.position.collateralAmount()
-            );
+            // PositionEventUtils.emitInsufficientFundingFeePayment(
+            //     params.contracts.eventEmitter,
+            //     params.market.marketToken,
+            //     params.position.collateralToken(),
+            //     fees.funding.fundingFeeAmount,
+            //     params.position.collateralAmount()
+            // );
         } else {
             values.pnlTokenForPool = params.position.collateralToken();
             values.pnlAmountForPool = (params.position.collateralAmount() - fees.funding.fundingFeeAmount).toInt256();

@@ -325,29 +325,29 @@ library SwapUtils {
             cache.tokenOut == _params.market.shortToken ? Keys.MAX_PNL_FACTOR_FOR_WITHDRAWALS : Keys.MAX_PNL_FACTOR_FOR_DEPOSITS
         );
 
-        SwapPricingUtils.emitSwapInfo(
-            params.eventEmitter,
-            params.key,
-            _params.market.marketToken,
-            _params.receiver,
-            _params.tokenIn,
-            cache.tokenOut,
-            cache.tokenInPrice.min,
-            cache.tokenOutPrice.max,
-            _params.amountIn,
-            cache.amountIn,
-            cache.amountOut,
-            priceImpactUsd
-        );
+        // SwapPricingUtils.emitSwapInfo(
+        //     params.eventEmitter,
+        //     params.key,
+        //     _params.market.marketToken,
+        //     _params.receiver,
+        //     _params.tokenIn,
+        //     cache.tokenOut,
+        //     cache.tokenInPrice.min,
+        //     cache.tokenOutPrice.max,
+        //     _params.amountIn,
+        //     cache.amountIn,
+        //     cache.amountOut,
+        //     priceImpactUsd
+        // );
 
-        SwapPricingUtils.emitSwapFeesCollected(
-            params.eventEmitter,
-            _params.market.marketToken,
-            _params.tokenIn,
-            cache.tokenInPrice.min,
-            "swap",
-            fees
-        );
+        // SwapPricingUtils.emitSwapFeesCollected(
+        //     params.eventEmitter,
+        //     _params.market.marketToken,
+        //     _params.tokenIn,
+        //     cache.tokenInPrice.min,
+        //     "swap",
+        //     fees
+        // );
 
         return (cache.tokenOut, cache.amountOut);
     }
