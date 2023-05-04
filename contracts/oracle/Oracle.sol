@@ -668,24 +668,24 @@ contract Oracle is RoleModule {
         bool isPrimary,
         bool isPriceFeed
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "token", token);
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "token", token);
 
-        eventData.uintItems.initItems(2);
-        eventData.uintItems.setItem(0, "minPrice", minPrice);
-        eventData.uintItems.setItem(1, "maxPrice", maxPrice);
+        // eventData.uintItems.initItems(2);
+        // eventData.uintItems.setItem(0, "minPrice", minPrice);
+        // eventData.uintItems.setItem(1, "maxPrice", maxPrice);
 
-        eventData.boolItems.initItems(2);
-        eventData.boolItems.setItem(0, "isPrimary", isPrimary);
-        eventData.boolItems.setItem(1, "isPriceFeed", isPriceFeed);
+        // eventData.boolItems.initItems(2);
+        // eventData.boolItems.setItem(0, "isPrimary", isPrimary);
+        // eventData.boolItems.setItem(1, "isPriceFeed", isPriceFeed);
 
-        eventEmitter.emitEventLog1(
-            "OraclePriceUpdate",
-            Cast.toBytes32(token),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "OraclePriceUpdate",
+        //     Cast.toBytes32(token),
+        //     eventData
+        // );
 
     }
 }

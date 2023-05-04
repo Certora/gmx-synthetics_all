@@ -143,7 +143,7 @@ library OrderUtils {
         BaseOrderUtils.validateNonEmptyOrder(order);
         OrderStoreUtils.set(dataStore, key, order);
 
-        OrderEventUtils.emitOrderCreated(eventEmitter, key, order);
+        // OrderEventUtils.emitOrderCreated(eventEmitter, key, order);
 
         return key;
     }
@@ -170,7 +170,7 @@ library OrderUtils {
         }
         MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.swapPathMarkets);
 
-        OrderEventUtils.emitOrderExecuted(params.contracts.eventEmitter, params.key);
+        // OrderEventUtils.emitOrderExecuted(params.contracts.eventEmitter, params.key);
 
         CallbackUtils.afterOrderExecution(params.key, params.order);
 
@@ -242,7 +242,7 @@ library OrderUtils {
 
         OrderStoreUtils.remove(dataStore, key, order.account());
 
-        OrderEventUtils.emitOrderCancelled(eventEmitter, key, reason, reasonBytes);
+        // OrderEventUtils.emitOrderCancelled(eventEmitter, key, reason, reasonBytes);
 
         CallbackUtils.afterOrderCancellation(key, order);
 
@@ -288,7 +288,7 @@ library OrderUtils {
         order.setIsFrozen(true);
         OrderStoreUtils.set(dataStore, key, order);
 
-        OrderEventUtils.emitOrderFrozen(eventEmitter, key, reason, reasonBytes);
+        // OrderEventUtils.emitOrderFrozen(eventEmitter, key, reason, reasonBytes);
 
         CallbackUtils.afterOrderFrozen(key, order);
 

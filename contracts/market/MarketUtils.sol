@@ -533,16 +533,16 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitClaimableCollateralUpdated(
-            eventEmitter,
-            market,
-            token,
-            timeKey,
-            account,
-            delta,
-            nextValue,
-            nextPoolValue
-        );
+        // MarketEventUtils.emitClaimableCollateralUpdated(
+        //     eventEmitter,
+        //     market,
+        //     token,
+        //     timeKey,
+        //     account,
+        //     delta,
+        //     nextValue,
+        //     nextPoolValue
+        // );
     }
 
     // @dev increment the claimable funding amount
@@ -570,15 +570,15 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitClaimableFundingUpdated(
-            eventEmitter,
-            market,
-            token,
-            account,
-            delta,
-            nextValue,
-            nextPoolValue
-        );
+        // MarketEventUtils.emitClaimableFundingUpdated(
+        //     eventEmitter,
+        //     market,
+        //     token,
+        //     account,
+        //     delta,
+        //     nextValue,
+        //     nextPoolValue
+        // );
     }
 
     // @dev claim funding fees
@@ -614,15 +614,15 @@ library MarketUtils {
 
         validateMarketTokenBalance(dataStore, market);
 
-        MarketEventUtils.emitFundingFeesClaimed(
-            eventEmitter,
-            market,
-            token,
-            account,
-            receiver,
-            claimableAmount,
-            nextPoolValue
-        );
+        // MarketEventUtils.emitFundingFeesClaimed(
+        //     eventEmitter,
+        //     market,
+        //     token,
+        //     account,
+        //     receiver,
+        //     claimableAmount,
+        //     nextPoolValue
+        // );
     }
 
     // @dev claim collateral
@@ -675,16 +675,16 @@ library MarketUtils {
 
         validateMarketTokenBalance(dataStore, market);
 
-        MarketEventUtils.emitCollateralClaimed(
-            eventEmitter,
-            market,
-            token,
-            timeKey,
-            account,
-            receiver,
-            remainingClaimableAmount,
-            nextPoolValue
-        );
+        // MarketEventUtils.emitCollateralClaimed(
+        //     eventEmitter,
+        //     market,
+        //     token,
+        //     timeKey,
+        //     account,
+        //     receiver,
+        //     remainingClaimableAmount,
+        //     nextPoolValue
+        // );
     }
 
     // @dev apply a delta to the pool amount
@@ -716,7 +716,7 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitPoolAmountUpdated(eventEmitter, market, token, delta, nextValue);
+        // MarketEventUtils.emitPoolAmountUpdated(eventEmitter, market, token, delta, nextValue);
 
         return nextValue;
     }
@@ -829,7 +829,7 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitSwapImpactPoolAmountUpdated(eventEmitter, market, token, delta, nextValue);
+        // MarketEventUtils.emitSwapImpactPoolAmountUpdated(eventEmitter, market, token, delta, nextValue);
 
         return nextValue;
     }
@@ -850,7 +850,7 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitPositionImpactPoolAmountUpdated(eventEmitter, market, delta, nextValue);
+        // MarketEventUtils.emitPositionImpactPoolAmountUpdated(eventEmitter, market, delta, nextValue);
 
         return nextValue;
     }
@@ -903,7 +903,7 @@ library MarketUtils {
             );
         }
 
-        MarketEventUtils.emitOpenInterestUpdated(eventEmitter, market.marketToken, collateralToken, isLong, delta, nextValue);
+        // MarketEventUtils.emitOpenInterestUpdated(eventEmitter, market.marketToken, collateralToken, isLong, delta, nextValue);
 
         return nextValue;
     }
@@ -929,7 +929,7 @@ library MarketUtils {
             "Invalid state: negative open interest in tokens"
         );
 
-        MarketEventUtils.emitOpenInterestInTokensUpdated(eventEmitter, market, collateralToken, isLong, delta, nextValue);
+        // MarketEventUtils.emitOpenInterestInTokensUpdated(eventEmitter, market, collateralToken, isLong, delta, nextValue);
 
         return nextValue;
     }
@@ -955,7 +955,7 @@ library MarketUtils {
             "Invalid state: negative collateralSum"
         );
 
-        MarketEventUtils.emitCollateralSumUpdated(eventEmitter, market, collateralToken, isLong, delta, nextValue);
+        // MarketEventUtils.emitCollateralSumUpdated(eventEmitter, market, collateralToken, isLong, delta, nextValue);
 
         return nextValue;
     }
@@ -1485,7 +1485,7 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitVirtualSwapInventoryUpdated(eventEmitter, market, token, marketId, delta, nextValue);
+        // MarketEventUtils.emitVirtualSwapInventoryUpdated(eventEmitter, market, token, marketId, delta, nextValue);
 
         return (true, nextValue);
     }
@@ -1511,7 +1511,7 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitVirtualPositionInventoryUpdated(eventEmitter, token, tokenId, delta, nextValue);
+        // MarketEventUtils.emitVirtualPositionInventoryUpdated(eventEmitter, token, tokenId, delta, nextValue);
 
         return (true, nextValue);
     }
@@ -1767,13 +1767,13 @@ library MarketUtils {
         bool isLong,
         int256 value
     ) internal returns (int256) {
-        MarketEventUtils.emitFundingAmountPerSizeUpdated(
-            eventEmitter,
-            market,
-            collateralToken,
-            isLong,
-            value
-        );
+        // MarketEventUtils.emitFundingAmountPerSizeUpdated(
+        //     eventEmitter,
+        //     market,
+        //     collateralToken,
+        //     isLong,
+        //     value
+        // );
 
         return dataStore.setInt(Keys.fundingAmountPerSizeKey(market, collateralToken, isLong), value);
     }
@@ -1859,13 +1859,13 @@ library MarketUtils {
             delta
         );
 
-        MarketEventUtils.emitBorrowingFactorUpdated(
-            eventEmitter,
-            market,
-            isLong,
-            delta,
-            nextCumulativeBorrowingFactor
-        );
+        // MarketEventUtils.emitBorrowingFactorUpdated(
+        //     eventEmitter,
+        //     market,
+        //     isLong,
+        //     delta,
+        //     nextCumulativeBorrowingFactor
+        // );
     }
 
     // @dev get the timestamp of when the cumulative borrowing factor was last updated
@@ -2295,7 +2295,7 @@ library MarketUtils {
             uiFeeFactor
         );
 
-        MarketEventUtils.emitUiFeeFactorUpdated(eventEmitter, account, uiFeeFactor);
+        // MarketEventUtils.emitUiFeeFactorUpdated(eventEmitter, account, uiFeeFactor);
     }
 
     function validateMarketTokenBalance(

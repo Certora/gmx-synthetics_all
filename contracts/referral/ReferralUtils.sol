@@ -55,15 +55,15 @@ library ReferralUtils {
         uint256 nextValue = dataStore.incrementUint(Keys.affiliateRewardKey(market, token, affiliate), delta);
         uint256 nextPoolValue = dataStore.incrementUint(Keys.affiliateRewardKey(market, token), delta);
 
-        ReferralEventUtils.emitAffiliateRewardUpdated(
-            eventEmitter,
-            market,
-            token,
-            affiliate,
-            delta,
-            nextValue,
-            nextPoolValue
-        );
+        // ReferralEventUtils.emitAffiliateRewardUpdated(
+        //     eventEmitter,
+        //     market,
+        //     token,
+        //     affiliate,
+        //     delta,
+        //     nextValue,
+        //     nextPoolValue
+        // );
     }
 
     // @dev Gets the referral information for the specified trader.
@@ -128,14 +128,14 @@ library ReferralUtils {
 
         MarketUtils.validateMarketTokenBalance(dataStore, market);
 
-        ReferralEventUtils.emitAffiliateRewardClaimed(
-            eventEmitter,
-            market,
-            token,
-            account,
-            receiver,
-            rewardAmount,
-            nextPoolValue
-        );
+        // ReferralEventUtils.emitAffiliateRewardClaimed(
+        //     eventEmitter,
+        //     market,
+        //     token,
+        //     account,
+        //     receiver,
+        //     rewardAmount,
+        //     nextPoolValue
+        // );
     }
 }

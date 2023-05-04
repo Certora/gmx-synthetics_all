@@ -81,21 +81,21 @@ contract MarketFactory is RoleModule {
         address longToken,
         address shortToken
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(4);
-        eventData.addressItems.setItem(0, "marketToken", marketToken);
-        eventData.addressItems.setItem(1, "indexToken", indexToken);
-        eventData.addressItems.setItem(2, "longToken", longToken);
-        eventData.addressItems.setItem(3, "shortToken", shortToken);
+        // eventData.addressItems.initItems(4);
+        // eventData.addressItems.setItem(0, "marketToken", marketToken);
+        // eventData.addressItems.setItem(1, "indexToken", indexToken);
+        // eventData.addressItems.setItem(2, "longToken", longToken);
+        // eventData.addressItems.setItem(3, "shortToken", shortToken);
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "salt", salt);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "salt", salt);
 
-        eventEmitter.emitEventLog1(
-            "MarketCreated",
-            Cast.toBytes32(marketToken),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "MarketCreated",
+        //     Cast.toBytes32(marketToken),
+        //     eventData
+        // );
     }
 }

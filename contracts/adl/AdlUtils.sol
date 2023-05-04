@@ -181,7 +181,7 @@ library AdlUtils {
         bytes32 key = NonceUtils.getNextKey(params.dataStore);
         OrderStoreUtils.set(params.dataStore, key, order);
 
-        OrderEventUtils.emitOrderCreated(params.eventEmitter, key, order);
+        // OrderEventUtils.emitOrderCreated(params.eventEmitter, key, order);
 
         return key;
     }
@@ -271,22 +271,22 @@ library AdlUtils {
         uint256 maxPnlFactor,
         bool shouldEnableAdl
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.intItems.initItems(1);
-        eventData.intItems.setItem(0, "pnlToPoolFactor", pnlToPoolFactor);
+        // eventData.intItems.initItems(1);
+        // eventData.intItems.setItem(0, "pnlToPoolFactor", pnlToPoolFactor);
 
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "maxPnlFactor", maxPnlFactor);
+        // eventData.uintItems.initItems(1);
+        // eventData.uintItems.setItem(0, "maxPnlFactor", maxPnlFactor);
 
-        eventData.boolItems.initItems(2);
-        eventData.boolItems.setItem(0, "isLong", isLong);
-        eventData.boolItems.setItem(1, "shouldEnableAdl", shouldEnableAdl);
+        // eventData.boolItems.initItems(2);
+        // eventData.boolItems.setItem(0, "isLong", isLong);
+        // eventData.boolItems.setItem(1, "shouldEnableAdl", shouldEnableAdl);
 
-        eventEmitter.emitEventLog1(
-            "AdlStateUpdated",
-            Cast.toBytes32(market),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "AdlStateUpdated",
+        //     Cast.toBytes32(market),
+        //     eventData
+        // );
     }
 }

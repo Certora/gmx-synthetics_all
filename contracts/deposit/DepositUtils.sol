@@ -132,7 +132,7 @@ library DepositUtils {
 
         DepositStoreUtils.set(dataStore, key, deposit);
 
-        DepositEventUtils.emitDepositCreated(eventEmitter, key, deposit);
+        // DepositEventUtils.emitDepositCreated(eventEmitter, key, deposit);
 
         return key;
     }
@@ -187,7 +187,7 @@ library DepositUtils {
             );
         }
 
-        DepositEventUtils.emitDepositCancelled(eventEmitter, key, reason, reasonBytes);
+        // DepositEventUtils.emitDepositCancelled(eventEmitter, key, reason, reasonBytes);
 
         CallbackUtils.afterDepositCancellation(key, deposit);
 
