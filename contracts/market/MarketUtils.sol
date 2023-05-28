@@ -2200,29 +2200,30 @@ library MarketUtils {
         bytes32 pnlFactorTypeForLongs,
         bytes32 pnlFactorTypeForShorts
     ) internal view {
-        (bool isPnlFactorExceededForLongs, int256 pnlToPoolFactorForLongs, uint256 maxPnlFactorForLongs) = isPnlFactorExceeded(
-            dataStore,
-            market,
-            prices,
-            true,
-            pnlFactorTypeForLongs
-        );
+        // SIMPLIFY3
+        // (bool isPnlFactorExceededForLongs, int256 pnlToPoolFactorForLongs, uint256 maxPnlFactorForLongs) = isPnlFactorExceeded(
+        //     dataStore,
+        //     market,
+        //     prices,
+        //     true,
+        //     pnlFactorTypeForLongs
+        // );
 
-        if (isPnlFactorExceededForLongs) {
-            revert Errors.PnlFactorExceededForLongs(pnlToPoolFactorForLongs, maxPnlFactorForLongs);
-        }
+        // if (isPnlFactorExceededForLongs) {
+        //     revert Errors.PnlFactorExceededForLongs(pnlToPoolFactorForLongs, maxPnlFactorForLongs);
+        // }
 
-        (bool isPnlFactorExceededForShorts, int256 pnlToPoolFactorForShorts, uint256 maxPnlFactorForShorts) = isPnlFactorExceeded(
-            dataStore,
-            market,
-            prices,
-            false,
-            pnlFactorTypeForShorts
-        );
+        // (bool isPnlFactorExceededForShorts, int256 pnlToPoolFactorForShorts, uint256 maxPnlFactorForShorts) = isPnlFactorExceeded(
+        //     dataStore,
+        //     market,
+        //     prices,
+        //     false,
+        //     pnlFactorTypeForShorts
+        // );
 
-        if (isPnlFactorExceededForShorts) {
-            revert Errors.PnlFactorExceededForShorts(pnlToPoolFactorForShorts, maxPnlFactorForShorts);
-        }
+        // if (isPnlFactorExceededForShorts) {
+        //     revert Errors.PnlFactorExceededForShorts(pnlToPoolFactorForShorts, maxPnlFactorForShorts);
+        // }
     }
 
     // @dev check if the pending pnl exceeds the allowed amount

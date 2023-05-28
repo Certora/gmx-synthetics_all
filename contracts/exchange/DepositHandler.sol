@@ -93,23 +93,26 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
         bytes32 key,
         OracleUtils.SetPricesParams calldata oracleParams
     ) external
+        // SIMPLIFY1
         globalNonReentrant
         onlyOrderKeeper
         withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
     {
         uint256 startingGas = gasleft();
 
-        try this._executeDeposit(
+        try // SIMPLIFY1
+         this._executeDeposit(
             key,
             oracleParams,
             msg.sender
-        ) {
+        ) { // SIMPLIFY1
         } catch (bytes memory reasonBytes) {
-            _handleDepositError(
-                key,
-                startingGas,
-                reasonBytes
-            );
+            // SIMPLIFY1.5
+            // _handleDepositError(
+            //     key,
+            //     startingGas,
+            //     reasonBytes
+            // );
         }
     }
 
@@ -169,7 +172,7 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
             startingGas
         );
 
-        ExecuteDepositUtils.executeDeposit(params);
+        ExecuteDepositUtils.executeDeposit(params); // SIMPLIFY2
     }
 
     // @dev handle errors from deposits

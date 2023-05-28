@@ -126,25 +126,26 @@ library ExecuteDepositUtils {
             Keys.MAX_PNL_FACTOR_FOR_DEPOSITS
         );
 
-        cache.longTokenAmount = swap(
-            params,
-            deposit.longTokenSwapPath(),
-            deposit.initialLongToken(),
-            deposit.initialLongTokenAmount(),
-            market.marketToken,
-            market.longToken,
-            deposit.uiFeeReceiver()
-        );
+        // SIMPLIFY4
+        // cache.longTokenAmount = swap(
+        //     params,
+        //     deposit.longTokenSwapPath(),
+        //     deposit.initialLongToken(),
+        //     deposit.initialLongTokenAmount(),
+        //     market.marketToken,
+        //     market.longToken,
+        //     deposit.uiFeeReceiver()
+        // );
 
-        cache.shortTokenAmount = swap(
-            params,
-            deposit.shortTokenSwapPath(),
-            deposit.initialShortToken(),
-            deposit.initialShortTokenAmount(),
-            market.marketToken,
-            market.shortToken,
-            deposit.uiFeeReceiver()
-        );
+        // cache.shortTokenAmount = swap(
+        //     params,
+        //     deposit.shortTokenSwapPath(),
+        //     deposit.initialShortToken(),
+        //     deposit.initialShortTokenAmount(),
+        //     market.marketToken,
+        //     market.shortToken,
+        //     deposit.uiFeeReceiver()
+        // );
 
         if (cache.longTokenAmount == 0 && cache.shortTokenAmount == 0) {
             revert Errors.EmptyDepositAmountsAfterSwap();
@@ -153,6 +154,7 @@ library ExecuteDepositUtils {
         cache.longTokenUsd = cache.longTokenAmount * prices.longTokenPrice.midPrice();
         cache.shortTokenUsd = cache.shortTokenAmount * prices.shortTokenPrice.midPrice();
 
+        // SIMPLIFY5
         cache.priceImpactUsd = SwapPricingUtils.getPriceImpactUsd(
             SwapPricingUtils.GetPriceImpactUsdParams(
                 params.dataStore,
@@ -242,6 +244,7 @@ library ExecuteDepositUtils {
             _params.uiFeeReceiver
         );
 
+        // SIMPLIFY6
         FeeUtils.incrementClaimableFeeAmount(
             params.dataStore,
             params.eventEmitter,
@@ -334,6 +337,7 @@ library ExecuteDepositUtils {
                 positiveImpactAmount
             );
 
+            // SIMPLIFY7
             MarketUtils.validatePoolAmount(
                 params.dataStore,
                 _params.market,
@@ -370,6 +374,7 @@ library ExecuteDepositUtils {
             (fees.amountAfterFees + fees.feeAmountForPool).toInt256()
         );
 
+        // SIMPLIFY8
         MarketUtils.validatePoolAmount(
             params.dataStore,
             _params.market,
