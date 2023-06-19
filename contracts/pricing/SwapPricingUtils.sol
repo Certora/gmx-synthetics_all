@@ -104,20 +104,32 @@ library SwapPricingUtils {
         // disincentivise the balancing of pools
         if (priceImpactUsd >= 0) { return priceImpactUsd; }
 
-        (bool hasVirtualInventoryTokenA, uint256 virtualPoolAmountForTokenA) = MarketUtils.getVirtualInventoryForSwaps(
+        // note that the virtual pool for the long token / short token may be different across pools
+        // e.g. ETH/USDC, ETH/USDT would have USDC and USDT as the short tokens
+        // the short token amount is multiplied by the price of the token in the current pool, e.g. if the swap
+        // is for the ETH/USDC pool, the combined USDC and USDT short token amounts is multiplied by the price of
+        // USDC to calculate the price impact, this should be reasonable most of the time unless there is a
+        // large depeg of one of the tokens, in which case it may be necessary to remove that market from being a virtual
+        // market, removal of virtual markets may lead to incorrect virtual token accounting, the feature to correct for
+        // this can be added if needed
+        (bool hasVirtualInventory, uint256 virtualPoolAmountForLongToken, uint256 virtualPoolAmountForShortToken) = MarketUtils.getVirtualInventoryForSwaps(
             params.dataStore,
-            params.market.marketToken,
-            params.tokenA
+            params.market.marketToken
         );
 
-        (bool hasVirtualInventoryTokenB, uint256 virtualPoolAmountForTokenB) = MarketUtils.getVirtualInventoryForSwaps(
-            params.dataStore,
-            params.market.marketToken,
-            params.tokenB
-        );
-
-        if (!hasVirtualInventoryTokenA || !hasVirtualInventoryTokenB) {
+        if (!hasVirtualInventory) {
             return priceImpactUsd;
+        }
+
+        uint256 virtualPoolAmountForTokenA;
+        uint256 virtualPoolAmountForTokenB;
+
+        if (params.tokenA == params.market.longToken) {
+            virtualPoolAmountForTokenA = virtualPoolAmountForLongToken;
+            virtualPoolAmountForTokenB = virtualPoolAmountForShortToken;
+        } else {
+            virtualPoolAmountForTokenA = virtualPoolAmountForShortToken;
+            virtualPoolAmountForTokenB = virtualPoolAmountForLongToken;
         }
 
         PoolParams memory poolParamsForVirtualInventory = getNextPoolAmountsParams(
@@ -190,7 +202,7 @@ library SwapPricingUtils {
         GetPriceImpactUsdParams memory params,
         uint256 poolAmountForTokenA,
         uint256 poolAmountForTokenB
-    ) internal view returns (PoolParams memory) {
+    ) internal pure returns (PoolParams memory) {
         uint256 poolUsdForTokenA = poolAmountForTokenA * params.priceForTokenA;
         uint256 poolUsdForTokenB = poolAmountForTokenB * params.priceForTokenB;
 
@@ -204,20 +216,6 @@ library SwapPricingUtils {
 
         uint256 nextPoolUsdForTokenA = Calc.sumReturnUint256(poolUsdForTokenA, params.usdDeltaForTokenA);
         uint256 nextPoolUsdForTokenB = Calc.sumReturnUint256(poolUsdForTokenB, params.usdDeltaForTokenB);
-
-        int256 poolUsdAdjustmentForTokenA = params.dataStore.getInt(Keys.poolAmountAdjustmentKey(params.market.marketToken, params.tokenA)) * params.priceForTokenA.toInt256();
-        int256 poolUsdAdjustmentForTokenB = params.dataStore.getInt(Keys.poolAmountAdjustmentKey(params.market.marketToken, params.tokenB)) * params.priceForTokenB.toInt256();
-
-        if (poolUsdAdjustmentForTokenA < 0 && poolUsdAdjustmentForTokenA.abs() > nextPoolUsdForTokenA) {
-            revert Errors.InvalidPoolAdjustment(params.tokenA, nextPoolUsdForTokenA, poolUsdAdjustmentForTokenA);
-        }
-
-        if (poolUsdAdjustmentForTokenB < 0 && poolUsdAdjustmentForTokenB.abs() > nextPoolUsdForTokenB) {
-            revert Errors.InvalidPoolAdjustment(params.tokenB, nextPoolUsdForTokenB, poolUsdAdjustmentForTokenB);
-        }
-
-        nextPoolUsdForTokenA = Calc.sumReturnUint256(nextPoolUsdForTokenA, poolUsdAdjustmentForTokenA);
-        nextPoolUsdForTokenB = Calc.sumReturnUint256(nextPoolUsdForTokenB, poolUsdAdjustmentForTokenB);
 
         PoolParams memory poolParams = PoolParams(
             poolUsdForTokenA,

@@ -2,11 +2,19 @@
 
 pragma solidity ^0.8.0;
 
+<<<<<<< HEAD
 import "node_modules/prb-math/contracts/PRBMathUD60x18.sol"; //Sarit - my fix
+=======
+// there is a known issue with prb-math v3.x releases
+// https://github.com/PaulRBerg/prb-math/issues/178
+// due to this, either prb-math v2.x or v4.x versions should be used instead
+import "prb-math/contracts/PRBMathUD60x18.sol";
+>>>>>>> 3f17dd59b482e202b52652f8191581ca3827b18e
 
 import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "./Calc.sol";
 
@@ -34,7 +42,7 @@ library Precision {
      * @return The result of applying the factor to the value.
      */
     function applyFactor(uint256 value, uint256 factor) internal pure returns (uint256) {
-        return applyFraction(value, factor, FLOAT_PRECISION);
+        return mulDiv(value, factor, FLOAT_PRECISION);
     }
 
     /**
@@ -45,39 +53,37 @@ library Precision {
      * @return The result of applying the factor to the value.
      */
     function applyFactor(uint256 value, int256 factor) internal pure returns (int256) {
-        return applyFraction(value, factor, FLOAT_PRECISION);
+        return mulDiv(value, factor, FLOAT_PRECISION);
     }
 
-    function applyFraction(uint256 value, uint256 numerator, uint256 denominator) internal pure returns (uint256) {
-        (bool ok, uint256 adjustedNumerator) = SafeMath.tryMul(value, numerator);
-
-        if (ok) {
-            return adjustedNumerator / denominator;
-        }
-
-        // if ok is false, the multiplication overflowed, attempt the multiplication
-        // with reduced values
-
-        // assign the larger value to a and the smaller value to b
-        (uint256 a, uint256 b) = value > numerator ? (value, numerator) : (numerator, value);
-
-        // for an overflow to occur, "a" must be more than 10^38
-        // reduce "a" and the denominator to allow larger values to be handled
-
-        uint256 scaledDenominator = Calc.roundUpDivision(denominator, FLOAT_PRECISION_SQRT);
-
-        // if "b" is much larger than the scaledDenominator, then reduce "b" before multiplying it
-        // by the scaled down "a" value
-        if (b > scaledDenominator * FLOAT_PRECISION_SQRT) {
-            return (a / FLOAT_PRECISION_SQRT) * (b / scaledDenominator);
-        }
-
-        return ((a / FLOAT_PRECISION_SQRT) * b) / scaledDenominator;
+    function applyFactor(uint256 value, int256 factor, bool roundUpMagnitude) internal pure returns (int256) {
+        return mulDiv(value, factor, FLOAT_PRECISION, roundUpMagnitude);
     }
 
-    function applyFraction(uint256 value, int256 numerator, uint256 denominator) internal pure returns (int256) {
-        uint256 result = applyFraction(value, numerator.abs(), denominator);
+    function mulDiv(uint256 value, uint256 numerator, uint256 denominator) internal pure returns (uint256) {
+        return Math.mulDiv(value, numerator, denominator);
+    }
+
+    function mulDiv(int256 value, uint256 numerator, uint256 denominator) internal pure returns (int256) {
+        return mulDiv(numerator, value, denominator);
+    }
+
+    function mulDiv(uint256 value, int256 numerator, uint256 denominator) internal pure returns (int256) {
+        uint256 result = mulDiv(value, numerator.abs(), denominator);
         return numerator > 0 ? result.toInt256() : -result.toInt256();
+    }
+
+    function mulDiv(uint256 value, int256 numerator, uint256 denominator, bool roundUpMagnitude) internal pure returns (int256) {
+        uint256 result = mulDiv(value, numerator.abs(), denominator, roundUpMagnitude);
+        return numerator > 0 ? result.toInt256() : -result.toInt256();
+    }
+
+    function mulDiv(uint256 value, uint256 numerator, uint256 denominator, bool roundUpMagnitude) internal pure returns (uint256) {
+        if (roundUpMagnitude) {
+            return Math.mulDiv(value, numerator, denominator, Math.Rounding.Up);
+        }
+
+        return Math.mulDiv(value, numerator, denominator);
     }
 
     function applyExponentFactor(
@@ -103,42 +109,14 @@ library Precision {
         return weiToFloat(weiValue);
     }
 
-    function toFactor(uint256 value, uint256 divisor, bool roundUp) internal pure returns (uint256) {
+    function toFactor(uint256 value, uint256 divisor, bool roundUpMagnitude) internal pure returns (uint256) {
         if (value == 0) { return 0; }
 
-        (bool ok, uint256 numerator) = SafeMath.tryMul(value, FLOAT_PRECISION);
-        if (ok) {
-            if (roundUp) {
-                return Calc.roundUpDivision(numerator, divisor);
-            }
-
-            return numerator / divisor;
+        if (roundUpMagnitude) {
+            return Math.mulDiv(value, FLOAT_PRECISION, divisor, Math.Rounding.Up);
         }
 
-        // if ok is false, the multiplication overflowed, attempt the multiplication
-        // with reduced values
-
-        // for an overflow to occur, "value" must be more than 10^47
-        // reduce "value" to allow larger values to be handled
-        // note that this can still overflow if "value" is more than 10^62
-        numerator = value * FLOAT_PRECISION_SQRT;
-
-        // after applying the scaling factor the numerator would be at least 10^(47 - 15) => 10^32
-        // if the divisor is more than 10^25, then reduce the divisor before calculating the final result
-        if (divisor > 10 ** 25) {
-            if (roundUp) {
-                return Calc.roundUpDivision(numerator, divisor / FLOAT_PRECISION_SQRT);
-            }
-
-            return numerator / (divisor / FLOAT_PRECISION_SQRT);
-        }
-
-        // perform the division before scaling the final result up
-        if (roundUp) {
-            return Calc.roundUpDivision(numerator, divisor) * FLOAT_PRECISION_SQRT;
-        }
-
-        return (numerator / divisor) * FLOAT_PRECISION_SQRT;
+        return Math.mulDiv(value, FLOAT_PRECISION, divisor);
     }
 
     function toFactor(uint256 value, uint256 divisor) internal pure returns (uint256) {
