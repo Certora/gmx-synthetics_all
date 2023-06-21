@@ -77,12 +77,15 @@ digraph G {
     // "A.sol" -> "B.sol";
     "WithdrawalVault.sol" -> "RoleStore.sol";
     "WithdrawalVault.sol" -> "DataStore.sol";
+    "WithdrawalVault.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
 
     "OrderVault.sol" -> "RoleStore.sol";
     "OrderVault.sol" -> "DataStore.sol";
+    "OrderVault.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
 
     "DepositVault.sol" -> "RoleStore.sol";
     "DepositVault.sol" -> "DataStore.sol";
+    "DepositVault.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
 
     "ExchangeRouter.sol" -> "Router.sol";
     "ExchangeRouter.sol" -> "RoleStore.sol";
@@ -91,6 +94,9 @@ digraph G {
     "ExchangeRouter.sol" -> "DepositHandler.sol";
     "ExchangeRouter.sol" -> "WithdrawalHandler.sol";
     "ExchangeRouter.sol" -> "OrderHandler.sol";
+    "ExchangeRouter.sol" -> "MarketToken.sol";
+    "ExchangeRouter.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
+    //"ExchangeRouter.sol" -> "WNT.sol";
 
     "Router.sol" -> "RoleStore.sol";
 
@@ -100,8 +106,7 @@ digraph G {
     "MarketToken.sol" -> "DataStore.sol";
 
     "IWNT.sol" -> "WNT.sol";
-    "ExchangeRouter.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
-
+    
     "AdlHandler.sol" -> "RoleStore.sol";
     "AdlHandler.sol" -> "DataStore.sol";
     "AdlHandler.sol" -> "EventEmitter.sol";
@@ -109,12 +114,15 @@ digraph G {
     "AdlHandler.sol" -> "Oracle.sol";
     "AdlHandler.sol" -> "SwapHandler.sol";
     "AdlHandler.sol" -> "IReferralStorage.sol";
+    "AdlHandler.sol" -> "MarketToken.sol";
 
     "DepositHandler.sol" -> "RoleStore.sol";
     "DepositHandler.sol" -> "DataStore.sol";
     "DepositHandler.sol" -> "EventEmitter.sol";
     "DepositHandler.sol" -> "DepositVault.sol";
     "DepositHandler.sol" -> "Oracle.sol";
+    "DepositHandler.sol" -> "MarketToken.sol";
+    "DepositHandler.sol" -> "WNT.sol";
 
     "LiquidationHandler.sol" -> "RoleStore.sol";
     "LiquidationHandler.sol" -> "DataStore.sol";
@@ -123,6 +131,7 @@ digraph G {
     "LiquidationHandler.sol" -> "Oracle.sol";
     "LiquidationHandler.sol" -> "SwapHandler.sol";
     "LiquidationHandler.sol" -> "IReferralStorage.sol";
+    "LiquidationHandler.sol" -> "MarketToken.sol";
 
     "OrderHandler.sol" -> "RoleStore.sol";
     "OrderHandler.sol" -> "DataStore.sol";
@@ -131,18 +140,24 @@ digraph G {
     "OrderHandler.sol" -> "Oracle.sol";
     "OrderHandler.sol" -> "SwapHandler.sol";
     "OrderHandler.sol" -> "IReferralStorage.sol";
+    "OrderHandler.sol" -> "MarketToken.sol";
+    "OrderHandler.sol" -> "WNT.sol";
 
     "WithdrawalHandler.sol" -> "RoleStore.sol";
     "WithdrawalHandler.sol" -> "DataStore.sol";
     "WithdrawalHandler.sol" -> "EventEmitter.sol";
     "WithdrawalHandler.sol" -> "WithdrawalVault.sol";
     "WithdrawalHandler.sol" -> "Oracle.sol";
+    "WithdrawalHandler.sol" -> "MarketToken.sol";
+    "WithdrawalHandler.sol" -> "WNT.sol";
 
     "SwapHandler.sol" -> "RoleStore.sol";
+    "SwapHandler.sol" -> "MarketToken.sol";
 
     "FeeHandler.sol" -> "RoleStore.sol";
     "FeeHandler.sol" -> "DataStore.sol";
     "FeeHandler.sol" -> "EventEmitter.sol";
+    "FeeHandler.sol" -> "MarketToken.sol";
 
     "Config.sol" -> "RoleStore.sol";
     "Config.sol" -> "DataStore.sol";
@@ -171,6 +186,7 @@ digraph G {
 
     "Reader.sol" -> "DataStore.sol";
     "Reader.sol" -> "IReferralStorage.sol";
+    "Reader.sol" -> "MarketToken.sol";
 
     "MarketFactory.sol" -> "RoleStore.sol";
     "MarketFactory.sol" -> "DataStore.sol";
