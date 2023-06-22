@@ -1,10 +1,16 @@
 import { expect } from "chai";
 
+import { usingResult } from "../../utils/use";
 import { deployFixture } from "../../utils/fixture";
 import { expandDecimals, decimalToFloat } from "../../utils/math";
 import { getBalanceOf, getSupplyOf } from "../../utils/token";
 import { getClaimableFeeAmount } from "../../utils/fee";
-import { getPoolAmount, getSwapImpactPoolAmount, getMarketTokenPrice } from "../../utils/market";
+import {
+  getPoolAmount,
+  getSwapImpactPoolAmount,
+  getMarketTokenPrice,
+  getMarketTokenPriceWithPoolValue,
+} from "../../utils/market";
 import { handleDeposit } from "../../utils/deposit";
 import {
   getWithdrawalCount,
@@ -21,16 +27,25 @@ describe("Exchange.Withdrawal", () => {
 
   let fixture;
   let user0, user1, user2;
-  let reader, dataStore, withdrawalHandler, ethUsdMarket, ethUsdSpotOnlyMarket, wnt, usdc;
+  let reader, dataStore, withdrawalHandler, ethUsdMarket, ethUsdSingleTokenMarket, ethUsdSpotOnlyMarket, wnt, usdc;
 
   beforeEach(async () => {
     fixture = await deployFixture();
     ({ user0, user1, user2 } = fixture.accounts);
-    ({ reader, dataStore, withdrawalHandler, ethUsdMarket, ethUsdSpotOnlyMarket, wnt, usdc } = fixture.contracts);
+    ({ reader, dataStore, withdrawalHandler, ethUsdMarket, ethUsdSingleTokenMarket, ethUsdSpotOnlyMarket, wnt, usdc } =
+      fixture.contracts);
   });
 
   it("createWithdrawal", async () => {
     expect(await getWithdrawalCount(dataStore)).eq(0);
+
+    await handleDeposit(fixture, {
+      create: {
+        market: ethUsdMarket,
+        longTokenAmount: expandDecimals(10, 18),
+        shortTokenAmount: expandDecimals(10 * 5000, 6),
+      },
+    });
 
     await createWithdrawal(fixture, {
       account: user0,
@@ -74,15 +89,6 @@ describe("Exchange.Withdrawal", () => {
       },
     });
 
-    await createWithdrawal(fixture, {
-      receiver: user0,
-      market: ethUsdMarket,
-      marketTokenAmount: expandDecimals(1000, 18),
-      minLongTokenAmount: 100,
-      minShortTokenAmount: 50,
-      shouldUnwrapNativeToken: false,
-      gasUsageLabel: "createWithdrawal",
-    });
     expect(await getBalanceOf(ethUsdMarket.marketToken, user0.address)).eq(expandDecimals(100 * 1000, 18));
     expect(await wnt.balanceOf(withdrawalHandler.address)).eq(0);
     expect(await usdc.balanceOf(withdrawalHandler.address)).eq(0);
@@ -93,6 +99,16 @@ describe("Exchange.Withdrawal", () => {
 
     expect(await getPoolAmount(dataStore, ethUsdMarket.marketToken, wnt.address)).eq(expandDecimals(10, 18));
     expect(await getPoolAmount(dataStore, ethUsdMarket.marketToken, usdc.address)).eq(expandDecimals(50 * 1000, 6));
+
+    await createWithdrawal(fixture, {
+      receiver: user0,
+      market: ethUsdMarket,
+      marketTokenAmount: expandDecimals(1000, 18),
+      minLongTokenAmount: 100,
+      minShortTokenAmount: 50,
+      shouldUnwrapNativeToken: false,
+      gasUsageLabel: "createWithdrawal",
+    });
 
     const withdrawalKeys = await getWithdrawalKeys(dataStore, 0, 1);
     let withdrawal = await reader.getWithdrawal(dataStore.address, withdrawalKeys[0]);
@@ -171,11 +187,11 @@ describe("Exchange.Withdrawal", () => {
     // 0.05%: 0.0005
     await dataStore.setUint(keys.swapFeeFactorKey(ethUsdMarket.marketToken), decimalToFloat(5, 4));
 
-    // set price impact to 0.1% for every $50,000 of token imbalance
+    // set price impact to 0.1% for every $100,000 of token imbalance
     // 0.1% => 0.001
-    // 0.001 / 50,000 => 2 * (10 ** -8)
-    await dataStore.setUint(keys.swapImpactFactorKey(ethUsdMarket.marketToken, true), decimalToFloat(2, 8));
-    await dataStore.setUint(keys.swapImpactFactorKey(ethUsdMarket.marketToken, false), decimalToFloat(2, 8));
+    // 0.001 / 100,000 => 1 * (10 ** -8)
+    await dataStore.setUint(keys.swapImpactFactorKey(ethUsdMarket.marketToken, true), decimalToFloat(1, 8));
+    await dataStore.setUint(keys.swapImpactFactorKey(ethUsdMarket.marketToken, false), decimalToFloat(1, 8));
     await dataStore.setUint(keys.swapImpactExponentFactorKey(ethUsdMarket.marketToken), decimalToFloat(2, 0));
 
     await handleDeposit(fixture, {
@@ -251,10 +267,9 @@ describe("Exchange.Withdrawal", () => {
     expect(await getClaimableFeeAmount(dataStore, ethUsdMarket.marketToken, wnt.address)).eq("1499774632447446"); // 0.001499774632447446
     expect(await getClaimableFeeAmount(dataStore, ethUsdMarket.marketToken, usdc.address)).eq("0");
 
-    await expect(getMarketTokenPrice(fixture)).to.be.revertedWithCustomError(
-      reader,
-      "UnexpectedSupplyForTokenPriceCalculation"
-    );
+    await usingResult(getMarketTokenPrice(fixture), (marketTokenPrice) => {
+      expect(marketTokenPrice).eq(decimalToFloat(1));
+    });
 
     expect(await getBalanceOf(ethUsdMarket.marketToken, user0.address)).eq("0");
     expect(await getSupplyOf(ethUsdMarket.marketToken)).eq("0");
@@ -274,15 +289,123 @@ describe("Exchange.Withdrawal", () => {
   });
 
   it("handle withdrawal error", async () => {
+    await handleDeposit(fixture, {
+      create: {
+        market: ethUsdMarket,
+        longTokenAmount: expandDecimals(10, 18),
+      },
+    });
+
+    expect(await getBalanceOf(ethUsdMarket.marketToken, user0.address)).eq(expandDecimals(50 * 1000, 18));
+
     await handleWithdrawal(fixture, {
       create: {
         market: ethUsdMarket,
         marketTokenAmount: expandDecimals(49940, 18),
-        minLongTokenAmount: 100,
+        minLongTokenAmount: expandDecimals(11, 18),
+      },
+      execute: {
+        gasUsageLabel: "executeWithdrawal",
+        expectedCancellationReason: "InsufficientOutputAmount",
+      },
+    });
+
+    expect(await getBalanceOf(ethUsdMarket.marketToken, user0.address)).eq(expandDecimals(50 * 1000, 18));
+  });
+
+  it("single token market", async () => {
+    await handleDeposit(fixture, {
+      create: {
+        market: ethUsdSingleTokenMarket,
+        shortTokenAmount: expandDecimals(20 * 1000, 6),
+      },
+      execute: {
+        gasUsageLabel: "executeDeposit",
+      },
+    });
+
+    expect(await getBalanceOf(ethUsdSingleTokenMarket.marketToken, user0.address)).eq(expandDecimals(20 * 1000, 18));
+    expect(await getSupplyOf(ethUsdSingleTokenMarket.marketToken)).eq(expandDecimals(20 * 1000, 18));
+
+    await usingResult(
+      getMarketTokenPriceWithPoolValue(fixture, {
+        market: ethUsdSingleTokenMarket,
+        prices: {
+          longTokenPrice: {
+            min: expandDecimals(1, 6 + 18),
+            max: expandDecimals(1, 6 + 18),
+          },
+        },
+      }),
+      async ([marketTokenPrice, poolValueInfo]) => {
+        expect(marketTokenPrice).eq(expandDecimals(1, 30));
+        expect(poolValueInfo.poolValue).eq(expandDecimals(20 * 1000, 30));
+      }
+    );
+
+    await handleDeposit(fixture, {
+      create: {
+        market: ethUsdSingleTokenMarket,
+        longTokenAmount: expandDecimals(30 * 1000, 6),
+      },
+      execute: {
+        gasUsageLabel: "executeDeposit",
+      },
+    });
+
+    expect(await getBalanceOf(ethUsdSingleTokenMarket.marketToken, user0.address)).eq(expandDecimals(50 * 1000, 18));
+    expect(await getSupplyOf(ethUsdSingleTokenMarket.marketToken)).eq(expandDecimals(50 * 1000, 18));
+
+    await usingResult(
+      getMarketTokenPriceWithPoolValue(fixture, {
+        market: ethUsdSingleTokenMarket,
+        prices: {
+          longTokenPrice: {
+            min: expandDecimals(1, 6 + 18),
+            max: expandDecimals(1, 6 + 18),
+          },
+        },
+      }),
+      async ([marketTokenPrice, poolValueInfo]) => {
+        expect(marketTokenPrice).eq(expandDecimals(1, 30));
+        expect(poolValueInfo.poolValue).eq(expandDecimals(50 * 1000, 30));
+      }
+    );
+
+    expect(await usdc.balanceOf(ethUsdSingleTokenMarket.marketToken)).eq(expandDecimals(50 * 1000, 6));
+    expect(await usdc.balanceOf(user2.address)).eq(0);
+
+    await handleWithdrawal(fixture, {
+      create: {
+        market: ethUsdSingleTokenMarket,
+        marketTokenAmount: expandDecimals(5000, 18),
+        receiver: user2,
       },
       execute: {
         gasUsageLabel: "executeWithdrawal",
       },
     });
+
+    expect(await getBalanceOf(ethUsdSingleTokenMarket.marketToken, user0.address)).eq(expandDecimals(45 * 1000, 18));
+    expect(await getSupplyOf(ethUsdSingleTokenMarket.marketToken)).eq(expandDecimals(45 * 1000, 18));
+
+    expect(await usdc.balanceOf(ethUsdSingleTokenMarket.marketToken)).eq(expandDecimals(45 * 1000, 6));
+    expect(await usdc.balanceOf(user2.address)).eq(expandDecimals(5 * 1000, 6));
+
+    await usingResult(
+      getMarketTokenPriceWithPoolValue(fixture, {
+        market: ethUsdSingleTokenMarket,
+        prices: {
+          longTokenPrice: {
+            min: expandDecimals(1, 6 + 18),
+            max: expandDecimals(1, 6 + 18),
+          },
+        },
+      }),
+      async ([marketTokenPrice, poolValueInfo]) => {
+        expect(marketTokenPrice).eq(expandDecimals(1, 30));
+        expect(poolValueInfo.poolValue).eq(expandDecimals(45 * 1000, 30));
+      }
+    );
   });
 });

@@ -41,11 +41,6 @@ library DecreasePositionUtils {
         uint256 secondaryOutputAmount;
     }
 
-    error InvalidDecreaseOrderSize(uint256 sizeDeltaUsd, uint256 positionSizeInUsd);
-    error UnableToWithdrawCollateralDueToLeverage(int256 estimatedRemainingCollateralUsd);
-    error InvalidDecreasePositionSwapType(Order.DecreasePositionSwapType decreasePositionSwapType);
-    error PositionShouldNotBeLiquidated();
-
     // @dev decreases a position
     // The decreasePosition function decreases the size of an existing position
     // in a market. It takes a PositionUtils.UpdatePositionParams object as an input, which
@@ -70,9 +65,15 @@ library DecreasePositionUtils {
     ) external returns (DecreasePositionResult memory) {
         PositionUtils.DecreasePositionCache memory cache;
 
-        cache.prices = MarketUtils.getMarketPricesForPosition(
+        cache.prices = MarketUtils.getMarketPrices(
             params.contracts.oracle,
             params.market
+        );
+
+        cache.collateralTokenPrice = MarketUtils.getCachedTokenPrice(
+            params.order.initialCollateralToken(),
+            params.market,
+            cache.prices
         );
 
         // cap the order size to the position size
@@ -89,28 +90,29 @@ library DecreasePositionUtils {
 
                 params.order.setSizeDeltaUsd(params.position.sizeInUsd());
             } else {
-                revert InvalidDecreaseOrderSize(params.order.sizeDeltaUsd(), params.position.sizeInUsd());
+                revert Errors.InvalidDecreaseOrderSize(params.order.sizeDeltaUsd(), params.position.sizeInUsd());
             }
         }
 
-        if (params.order.sizeDeltaUsd() < params.position.sizeInUsd() && params.order.initialCollateralDeltaAmount() > 0) {
+        // if the position will be partially decreased then do a check on the
+        // remaining collateral amount and update the order attributes if needed
+        if (params.order.sizeDeltaUsd() < params.position.sizeInUsd()) {
             // estimate pnl based on indexTokenPrice
             (cache.estimatedPositionPnlUsd, /* uint256 sizeDeltaInTokens */) = PositionUtils.getPositionPnlUsd(
                 params.contracts.dataStore,
                 params.market,
                 cache.prices,
                 params.position,
-                cache.prices.indexTokenPrice.midPrice(),
+                cache.prices.indexTokenPrice.pickPriceForPnl(params.position.isLong(), false),
                 params.position.sizeInUsd()
             );
 
-            cache.estimatedRealizedPnlUsd = cache.estimatedPositionPnlUsd * params.order.sizeDeltaUsd().toInt256() / params.position.sizeInUsd().toInt256();
+            cache.estimatedRealizedPnlUsd = Precision.mulDiv(cache.estimatedPositionPnlUsd, params.order.sizeDeltaUsd(), params.position.sizeInUsd());
             cache.estimatedRemainingPnlUsd = cache.estimatedPositionPnlUsd - cache.estimatedRealizedPnlUsd;
 
             PositionUtils.WillPositionCollateralBeSufficientValues memory positionValues = PositionUtils.WillPositionCollateralBeSufficientValues(
                 params.position.sizeInUsd() - params.order.sizeDeltaUsd(), // positionSizeInUsd
                 params.position.collateralAmount() - params.order.initialCollateralDeltaAmount(), // positionCollateralAmount
-                cache.estimatedRemainingPnlUsd, // positionPnlUsd
                 cache.estimatedRealizedPnlUsd,  // realizedPnlUsd
                 -params.order.sizeDeltaUsd().toInt256() // openInterestDelta
             );
@@ -124,9 +126,13 @@ library DecreasePositionUtils {
                 positionValues
             );
 
+            // do not allow withdrawal of collateral if it would lead to the position
+            // having an insufficient amount of collateral
+            // this helps to prevent gaming by opening a position then reducing collateral
+            // to increase the leverage of the position
             if (!willBeSufficient) {
                 if (params.order.sizeDeltaUsd() == 0) {
-                    revert UnableToWithdrawCollateralDueToLeverage(estimatedRemainingCollateralUsd);
+                    revert Errors.UnableToWithdrawCollateral(estimatedRemainingCollateralUsd);
                 }
 
                 OrderEventUtils.emitOrderCollateralDeltaAmountAutoUpdated(
@@ -136,11 +142,46 @@ library DecreasePositionUtils {
                     0
                 );
 
+                // the estimatedRemainingCollateralUsd subtracts the initialCollateralDeltaAmount
+                // since the initialCollateralDeltaAmount will be set to zero, the initialCollateralDeltaAmount
+                // should be added back to the estimatedRemainingCollateralUsd
+                Price.Props memory collateralTokenPrice = MarketUtils.getCachedTokenPrice(
+                    params.position.collateralToken(),
+                    params.market,
+                    cache.prices
+                );
+                estimatedRemainingCollateralUsd += (params.order.initialCollateralDeltaAmount() * collateralTokenPrice.min).toInt256();
                 params.order.setInitialCollateralDeltaAmount(0);
             }
 
-            // if the remaining collateral will be below the min collateral usd value, then close the position
-            if (estimatedRemainingCollateralUsd < params.contracts.dataStore.getUint(Keys.MIN_COLLATERAL_USD).toInt256()) {
+            // if the remaining collateral including position pnl will be below
+            // the min collateral usd value, then close the position
+            //
+            // if the position has sufficient remaining collateral including pnl
+            // then allow the position to be partially closed and the updated
+            // position to remain open
+            if ((estimatedRemainingCollateralUsd + cache.estimatedRemainingPnlUsd) < params.contracts.dataStore.getUint(Keys.MIN_COLLATERAL_USD).toInt256()) {
+                OrderEventUtils.emitOrderSizeDeltaAutoUpdated(
+                    params.contracts.eventEmitter,
+                    params.orderKey,
+                    params.order.sizeDeltaUsd(),
+                    params.position.sizeInUsd()
+                );
+
+                params.order.setSizeDeltaUsd(params.position.sizeInUsd());
+            }
+
+            if (
+                params.position.sizeInUsd() > params.order.sizeDeltaUsd()  &&
+                params.position.sizeInUsd() - params.order.sizeDeltaUsd() < params.contracts.dataStore.getUint(Keys.MIN_POSITION_SIZE_USD)
+            ) {
+                OrderEventUtils.emitOrderSizeDeltaAutoUpdated(
+                    params.contracts.eventEmitter,
+                    params.orderKey,
+                    params.order.sizeDeltaUsd(),
+                    params.position.sizeInUsd()
+                );
+
                 params.order.setSizeDeltaUsd(params.position.sizeInUsd());
             }
         }
@@ -156,21 +197,25 @@ library DecreasePositionUtils {
 
         if (params.order.decreasePositionSwapType() != Order.DecreasePositionSwapType.NoSwap &&
             cache.pnlToken == params.position.collateralToken()) {
-            revert InvalidDecreasePositionSwapType(params.order.decreasePositionSwapType());
-        }
-
-        if (BaseOrderUtils.isLiquidationOrder(params.order.orderType()) && !PositionUtils.isPositionLiquidatable(
-            params.contracts.dataStore,
-            params.contracts.referralStorage,
-            params.position,
-            params.market,
-            cache.prices,
-            true
-        )) {
-            revert PositionShouldNotBeLiquidated();
+            params.order.setDecreasePositionSwapType(Order.DecreasePositionSwapType.NoSwap);
         }
 
         PositionUtils.updateFundingAndBorrowingState(params, cache.prices);
+
+        if (BaseOrderUtils.isLiquidationOrder(params.order.orderType())) {
+            (bool isLiquidatable, /* string memory reason */) = PositionUtils.isPositionLiquidatable(
+                params.contracts.dataStore,
+                params.contracts.referralStorage,
+                params.position,
+                params.market,
+                cache.prices,
+                true // shouldValidateMinCollateralUsd
+            );
+
+            if (!isLiquidatable) {
+                revert Errors.PositionShouldNotBeLiquidated();
+            }
+        }
 
         cache.initialCollateralAmount = params.position.collateralAmount();
         (
@@ -192,7 +237,7 @@ library DecreasePositionUtils {
 
         params.position.setSizeInUsd(cache.nextPositionSizeInUsd);
         params.position.setSizeInTokens(params.position.sizeInTokens() - values.sizeDeltaInTokens);
-        params.position.setCollateralAmount(values.remainingCollateralAmount.toUint256());
+        params.position.setCollateralAmount(values.remainingCollateralAmount);
         params.position.setDecreasedAtBlock(Chain.currentBlockNumber());
 
         PositionUtils.incrementClaimableFundingAmount(params, fees);
@@ -207,22 +252,11 @@ library DecreasePositionUtils {
 
             PositionStoreUtils.remove(params.contracts.dataStore, params.positionKey, params.order.account());
         } else {
-            if (!fees.funding.hasPendingLongTokenFundingFee) {
-                params.position.setLongTokenFundingAmountPerSize(fees.funding.latestLongTokenFundingAmountPerSize);
-            }
-            if (!fees.funding.hasPendingShortTokenFundingFee) {
-                params.position.setShortTokenFundingAmountPerSize(fees.funding.latestShortTokenFundingAmountPerSize);
-            }
             params.position.setBorrowingFactor(cache.nextPositionBorrowingFactor);
 
-            PositionUtils.validatePosition(
-                params.contracts.dataStore,
-                params.contracts.referralStorage,
-                params.position,
-                params.market,
-                cache.prices,
-                false
-            );
+            params.position.setFundingFeeAmountPerSize(fees.funding.latestFundingFeeAmountPerSize);
+            params.position.setLongTokenClaimableFundingAmountPerSize(fees.funding.latestLongTokenClaimableFundingAmountPerSize);
+            params.position.setShortTokenClaimableFundingAmountPerSize(fees.funding.latestShortTokenClaimableFundingAmountPerSize);
 
             PositionStoreUtils.set(params.contracts.dataStore, params.positionKey, params.position);
         }
@@ -242,43 +276,58 @@ library DecreasePositionUtils {
             -values.sizeDeltaInTokens.toInt256()
         );
 
-        MarketUtils.applyDeltaToPoolAmount(
-            params.contracts.dataStore,
-            params.contracts.eventEmitter,
-            params.market.marketToken,
-            values.pnlTokenForPool,
-            values.pnlAmountForPool
-        );
-
-        MarketUtils.applyDeltaToPoolAmount(
-            params.contracts.dataStore,
-            params.contracts.eventEmitter,
-            params.market.marketToken,
-            params.position.collateralToken(),
-            fees.feeAmountForPool.toInt256()
-        );
-
+        // affiliate rewards are still distributed even if the order is a liquidation order
+        // this is expected as a partial liquidation is considered the same as an automatic
+        // closing of a position
         PositionUtils.handleReferral(params, fees);
 
-        PositionPricingUtils.emitPositionFeesCollected(
+        // validatePosition should be called after open interest and all other market variables
+        // have been updated
+        if (params.position.sizeInUsd() != 0 || params.position.sizeInTokens() != 0) {
+            // validate position which validates liquidation state is only called
+            // if the remaining position size is not zero
+            // due to this, a user can still manually close their position if
+            // it is in a partially liquidatable state
+            // this should not cause any issues as a liquidation is the same
+            // as automatically closing a position
+            // the only difference is that if the position has insufficient / negative
+            // collateral a liquidation transaction should still complete
+            // while a manual close transaction should revert
+            PositionUtils.validatePosition(
+                params.contracts.dataStore,
+                params.contracts.referralStorage,
+                params.position,
+                params.market,
+                cache.prices,
+                false, // shouldValidateMinPositionSize
+                false // shouldValidateMinCollateralUsd
+            );
+        }
+
+        PositionEventUtils.emitPositionFeesCollected(
             params.contracts.eventEmitter,
+            params.orderKey,
             params.market.marketToken,
             params.position.collateralToken(),
+            params.order.sizeDeltaUsd(),
             false,
             fees
         );
 
         PositionEventUtils.emitPositionDecrease(
             params.contracts.eventEmitter,
+            params.orderKey,
             params.positionKey,
             params.position,
             params.order.sizeDeltaUsd(),
             cache.initialCollateralAmount - params.position.collateralAmount(),
             params.order.orderType(),
-            values
+            values,
+            cache.prices.indexTokenPrice,
+            cache.collateralTokenPrice
         );
 
-        values = DecreasePositionCollateralUtils.swapWithdrawnCollateralToPnlToken(params, values);
+        values = DecreasePositionSwapUtils.swapWithdrawnCollateralToPnlToken(params, values);
 
         return DecreasePositionResult(
             values.output.outputToken,

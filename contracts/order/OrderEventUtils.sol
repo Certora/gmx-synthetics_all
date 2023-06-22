@@ -25,26 +25,28 @@ library OrderEventUtils {
     ) external {
         EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(5);
+        eventData.addressItems.initItems(6);
         eventData.addressItems.setItem(0, "account", order.account());
         eventData.addressItems.setItem(1, "receiver", order.receiver());
         eventData.addressItems.setItem(2, "callbackContract", order.callbackContract());
-        eventData.addressItems.setItem(3, "market", order.market());
-        eventData.addressItems.setItem(4, "initialCollateralToken", order.initialCollateralToken());
+        eventData.addressItems.setItem(3, "uiFeeReceiver", order.uiFeeReceiver());
+        eventData.addressItems.setItem(4, "market", order.market());
+        eventData.addressItems.setItem(5, "initialCollateralToken", order.initialCollateralToken());
 
         eventData.addressItems.initArrayItems(1);
         eventData.addressItems.setItem(0, "swapPath", order.swapPath());
 
-        eventData.uintItems.initItems(9);
-        eventData.uintItems.setItem(0, "sizeDeltaUsd", order.sizeDeltaUsd());
-        eventData.uintItems.setItem(1, "initialCollateralDeltaAmount", order.initialCollateralDeltaAmount());
-        eventData.uintItems.setItem(2, "triggerPrice", order.triggerPrice());
-        eventData.uintItems.setItem(3, "acceptablePrice", order.acceptablePrice());
-        eventData.uintItems.setItem(4, "executionFee", order.executionFee());
-        eventData.uintItems.setItem(5, "callbackGasLimit", order.callbackGasLimit());
-        eventData.uintItems.setItem(6, "minOutputAmount", order.minOutputAmount());
-        eventData.uintItems.setItem(7, "updatedAtBlock", order.updatedAtBlock());
-        eventData.uintItems.setItem(8, "orderType", uint256(order.orderType()));
+        eventData.uintItems.initItems(10);
+        eventData.uintItems.setItem(0, "orderType", uint256(order.orderType()));
+        eventData.uintItems.setItem(1, "decreasePositionSwapType", uint256(order.decreasePositionSwapType()));
+        eventData.uintItems.setItem(2, "sizeDeltaUsd", order.sizeDeltaUsd());
+        eventData.uintItems.setItem(3, "initialCollateralDeltaAmount", order.initialCollateralDeltaAmount());
+        eventData.uintItems.setItem(4, "triggerPrice", order.triggerPrice());
+        eventData.uintItems.setItem(5, "acceptablePrice", order.acceptablePrice());
+        eventData.uintItems.setItem(6, "executionFee", order.executionFee());
+        eventData.uintItems.setItem(7, "callbackGasLimit", order.callbackGasLimit());
+        eventData.uintItems.setItem(8, "minOutputAmount", order.minOutputAmount());
+        eventData.uintItems.setItem(9, "updatedAtBlock", order.updatedAtBlock());
 
         eventData.boolItems.initItems(3);
         eventData.boolItems.setItem(0, "isLong", order.isLong());
@@ -82,18 +84,20 @@ library OrderEventUtils {
         EventEmitter eventEmitter,
         bytes32 key,
         uint256 sizeDeltaUsd,
+        uint256 acceptablePrice,
         uint256 triggerPrice,
-        uint256 acceptablePrice
+        uint256 minOutputAmount
     ) external {
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
         eventData.bytes32Items.setItem(0, "key", key);
 
-        eventData.uintItems.initItems(3);
+        eventData.uintItems.initItems(4);
         eventData.uintItems.setItem(0, "sizeDeltaUsd", sizeDeltaUsd);
-        eventData.uintItems.setItem(1, "triggerPrice", triggerPrice);
-        eventData.uintItems.setItem(2, "acceptablePrice", acceptablePrice);
+        eventData.uintItems.setItem(1, "acceptablePrice", acceptablePrice);
+        eventData.uintItems.setItem(2, "triggerPrice", triggerPrice);
+        eventData.uintItems.setItem(3, "minOutputAmount", minOutputAmount);
 
         eventEmitter.emitEventLog1(
             "OrderUpdated",

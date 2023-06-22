@@ -17,7 +17,7 @@ const func = async ({ gmx, deployments }: HardhatRuntimeEnvironment) => {
       const { priceFeed, oracleType } = oracleConfig.tokens[tokenSymbol];
 
       const oracleTypeKey = keys.oracleTypeKey(token.address);
-      await setBytes32IfDifferent(oracleTypeKey, oracleType);
+      await setBytes32IfDifferent(oracleTypeKey, oracleType, "oracle type");
 
       if (!priceFeed) {
         continue;
@@ -31,6 +31,12 @@ const func = async ({ gmx, deployments }: HardhatRuntimeEnvironment) => {
       const priceFeedMultiplierKey = keys.priceFeedMultiplierKey(token.address);
       const priceFeedMultiplier = expandDecimals(1, 60 - priceFeed.decimals - token.decimals);
       await setUintIfDifferent(priceFeedMultiplierKey, priceFeedMultiplier, `${tokenSymbol} price feed multiplier`);
+
+      await setUintIfDifferent(
+        keys.priceFeedHeartbeatDurationKey(token.address),
+        priceFeed.heartbeatDuration,
+        `${tokenSymbol} heartbeat duration`
+      );
     }
   }
 };

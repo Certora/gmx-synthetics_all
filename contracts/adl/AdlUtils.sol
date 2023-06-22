@@ -10,6 +10,7 @@ import "../order/OrderEventUtils.sol";
 import "../position/PositionUtils.sol";
 import "../position/PositionStoreUtils.sol";
 import "../nonce/NonceUtils.sol";
+import "../callback/CallbackUtils.sol";
 
 // @title AdlUtils
 // @dev Library to help with auto-deleveraging
@@ -58,9 +59,6 @@ library AdlUtils {
         uint256 updatedAtBlock;
     }
 
-    error InvalidSizeDeltaForAdl(uint256 sizeDeltaUsd, uint256 positionSizeInUsd);
-    error AdlNotEnabled();
-
     // @dev Multiple positions may need to be reduced to ensure that the pending
     // profits does not exceed the allowed thresholds
     //
@@ -97,21 +95,32 @@ library AdlUtils {
         uint256 latestAdlBlock = getLatestAdlBlock(dataStore, market, isLong);
 
         if (!maxOracleBlockNumbers.areGreaterThanOrEqualTo(latestAdlBlock)) {
-            OracleUtils.revertOracleBlockNumbersAreSmallerThanRequired(maxOracleBlockNumbers, latestAdlBlock);
+            revert Errors.OracleBlockNumbersAreSmallerThanRequired(maxOracleBlockNumbers, latestAdlBlock);
         }
 
         Market.Props memory _market = MarketUtils.getEnabledMarket(dataStore, market);
         MarketUtils.MarketPrices memory prices = MarketUtils.getMarketPrices(oracle, _market);
+        // if the MAX_PNL_FACTOR_FOR_ADL is set to be higher than MAX_PNL_FACTOR_FOR_WITHDRAWALS
+        // it is possible for a pool to be in a state where withdrawals and ADL is not allowed
+        // this is similar to the case where there is a large amount of open positions relative
+        // to the amount of tokens in the pool
         (bool shouldEnableAdl, int256 pnlToPoolFactor, uint256 maxPnlFactor) = MarketUtils.isPnlFactorExceeded(
             dataStore,
             _market,
             prices,
             isLong,
-            Keys.MAX_PNL_FACTOR
+            Keys.MAX_PNL_FACTOR_FOR_ADL
         );
 
         setIsAdlEnabled(dataStore, market, isLong, shouldEnableAdl);
-        setLatestAdlBlock(dataStore, market, isLong, block.number);
+        // the latest ADL block is always updated, an ADL keeper could continually
+        // cause the latest ADL block to be updated and prevent ADL orders
+        // from being executed, however, this may be preferrable over a case
+        // where stale prices could be used by ADL keepers to execute orders
+        // as such updating of the ADL block is allowed and it is expected
+        // that ADL keepers will keep this block updated so that latest prices
+        // will be used for ADL
+        setLatestAdlBlock(dataStore, market, isLong, Chain.currentBlockNumber());
 
         emitAdlStateUpdated(eventEmitter, market, isLong, pnlToPoolFactor, maxPnlFactor, shouldEnableAdl);
     }
@@ -127,27 +136,44 @@ library AdlUtils {
         Position.Props memory position = PositionStoreUtils.get(params.dataStore, positionKey);
 
         if (params.sizeDeltaUsd > position.sizeInUsd()) {
-            revert InvalidSizeDeltaForAdl(params.sizeDeltaUsd, position.sizeInUsd());
+            revert Errors.InvalidSizeDeltaForAdl(params.sizeDeltaUsd, position.sizeInUsd());
         }
 
         Order.Addresses memory addresses = Order.Addresses(
             params.account, // account
             params.account, // receiver
-            address(0), // callbackContract
+            CallbackUtils.getSavedCallbackContract(params.dataStore, params.account, params.market), // callbackContract
+            address(0), // uiFeeReceiver
             params.market, // market
             position.collateralToken(), // initialCollateralToken
             new address[](0) // swapPath
         );
 
+        // no slippage is set for this order, it may be preferrable for ADL orders
+        // to be executed, in case of large price impact, the user could be refunded
+        // through a protocol fund if required, this amount could later be claimed
+        // from the price impact pool, this claiming process should be added if
+        // required
+        //
+        // setting a maximum price impact that will work for majority of cases
+        // may also be challenging since the price impact would vary based on the
+        // amount of collateral being swapped
+        //
+        // note that the decreasePositionSwapType should be SwapPnlTokenToCollateralToken
+        // because fees are calculated with reference to the collateral token
+        // fees are deducted from the output amount if the output token is the same as the
+        // collateral token
+        // swapping the pnl token to the collateral token helps to ensure fees can be paid
+        // using the realized profit
         Order.Numbers memory numbers = Order.Numbers(
             Order.OrderType.MarketDecrease, // orderType
-            Order.DecreasePositionSwapType.NoSwap, // decreasePositionSwapType
+            Order.DecreasePositionSwapType.SwapPnlTokenToCollateralToken, // decreasePositionSwapType
             params.sizeDeltaUsd, // sizeDeltaUsd
             0, // initialCollateralDeltaAmount
             0, // triggerPrice
             position.isLong() ? 0 : type(uint256).max, // acceptablePrice
             0, // executionFee
-            0, // callbackGasLimit
+            params.dataStore.getUint(Keys.MAX_CALLBACK_GAS_LIMIT), // callbackGasLimit
             0, // minOutputAmount
             params.updatedAtBlock // updatedAtBlock
         );
@@ -186,12 +212,12 @@ library AdlUtils {
     ) external view {
         bool isAdlEnabled = AdlUtils.getIsAdlEnabled(dataStore, market, isLong);
         if (!isAdlEnabled) {
-            revert AdlNotEnabled();
+            revert Errors.AdlNotEnabled();
         }
 
         uint256 latestAdlBlock = AdlUtils.getLatestAdlBlock(dataStore, market, isLong);
         if (!maxOracleBlockNumbers.areGreaterThanOrEqualTo(latestAdlBlock)) {
-            OracleUtils.revertOracleBlockNumbersAreSmallerThanRequired(maxOracleBlockNumbers, latestAdlBlock);
+            revert Errors.OracleBlockNumbersAreSmallerThanRequired(maxOracleBlockNumbers, latestAdlBlock);
         }
     }
 

@@ -7,8 +7,7 @@ export type BaseMarketConfig = {
   reserveFactorLongs: BigNumberish;
   reserveFactorShorts: BigNumberish;
 
-  minCollateralFactorForLongs: BigNumberish;
-  minCollateralFactorForShorts: BigNumberish;
+  minCollateralFactor: BigNumberish;
 
   maxLongTokenPoolAmount: BigNumberish;
   maxShortTokenPoolAmount: BigNumberish;
@@ -38,6 +37,7 @@ export type BaseMarketConfig = {
 
   positiveMaxPositionImpactFactor: BigNumberish;
   negativeMaxPositionImpactFactor: BigNumberish;
+  maxPositionImpactFactorForLiquidations: BigNumberish;
 
   swapFeeFactor: BigNumberish;
   positiveSwapImpactFactor: BigNumberish;
@@ -54,6 +54,8 @@ export type BaseMarketConfig = {
 
   fundingFactor: BigNumberish;
   fundingExponentFactor: BigNumberish;
+
+  virtualMarketId?: string;
 };
 
 export type MarketConfig = Partial<BaseMarketConfig> &
@@ -79,8 +81,7 @@ const baseMarketConfig: BaseMarketConfig = {
   reserveFactorLongs: decimalToFloat(5, 1), // 50%,
   reserveFactorShorts: decimalToFloat(5, 1), // 50%,
 
-  minCollateralFactorForLongs: decimalToFloat(1, 2), // 1%
-  minCollateralFactorForShorts: decimalToFloat(1, 2), // 1%
+  minCollateralFactor: decimalToFloat(1, 2), // 1%
 
   maxLongTokenPoolAmount: expandDecimals(1 * 1000 * 1000 * 1000, 18),
   maxShortTokenPoolAmount: expandDecimals(1 * 1000 * 1000 * 1000, 18),
@@ -104,27 +105,28 @@ const baseMarketConfig: BaseMarketConfig = {
   maxPnlFactorForWithdrawalsShorts: decimalToFloat(3, 1), // 30%
 
   positionFeeFactor: decimalToFloat(5, 4), // 0.05%
-  positivePositionImpactFactor: decimalToFloat(2, 7), // 0.00002 %
+  positivePositionImpactFactor: decimalToFloat(5, 8), // 0.000005 %
   negativePositionImpactFactor: decimalToFloat(1, 7), // 0.00001 %
   positionImpactExponentFactor: decimalToFloat(2, 0), // 2
 
   positiveMaxPositionImpactFactor: decimalToFloat(2, 2), // 2%
   negativeMaxPositionImpactFactor: decimalToFloat(2, 2), // 2%
+  maxPositionImpactFactorForLiquidations: decimalToFloat(1, 2), // 1%
 
-  swapFeeFactor: decimalToFloat(1, 3), // 0.1%,
-  positiveSwapImpactFactor: decimalToFloat(2, 5), // 0.002 %
+  swapFeeFactor: decimalToFloat(5, 4), // 0.05%,
+  positiveSwapImpactFactor: decimalToFloat(5, 6), // 0.0005 %
   negativeSwapImpactFactor: decimalToFloat(1, 5), // 0.001 %
   swapImpactExponentFactor: decimalToFloat(2, 0), // 2
 
   minCollateralUsd: decimalToFloat(1, 0), // 1 USD
 
-  borrowingFactorForLongs: decimalToFloat(1, 7), // 0.00001% / second
-  borrowingFactorForShorts: decimalToFloat(1, 7), // 0.00001% / second
+  borrowingFactorForLongs: decimalToFloat(1, 5), // 0.001% / second
+  borrowingFactorForShorts: decimalToFloat(1, 5), // 0.001% / second
 
   borrowingExponentFactorForLongs: decimalToFloat(1),
   borrowingExponentFactorForShorts: decimalToFloat(1),
 
-  fundingFactor: decimalToFloat(1, 7), // 0.00001% / second
+  fundingFactor: decimalToFloat(1, 6), // 0.0001% / second
   fundingExponentFactor: decimalToFloat(1),
 };
 
@@ -132,8 +134,7 @@ const hardhatBaseMarketConfig: Partial<BaseMarketConfig> = {
   reserveFactorLongs: decimalToFloat(5, 1), // 50%,
   reserveFactorShorts: decimalToFloat(5, 1), // 50%,
 
-  minCollateralFactorForLongs: decimalToFloat(1, 2), // 1%
-  minCollateralFactorForShorts: decimalToFloat(1, 2), // 1%
+  minCollateralFactor: decimalToFloat(1, 2), // 1%
 
   maxLongTokenPoolAmount: expandDecimals(1 * 1000 * 1000 * 1000, 18),
   maxShortTokenPoolAmount: expandDecimals(1 * 1000 * 1000 * 1000, 18),
@@ -158,23 +159,107 @@ const hardhatBaseMarketConfig: Partial<BaseMarketConfig> = {
 
   positiveMaxPositionImpactFactor: decimalToFloat(2, 2), // 2%
   negativeMaxPositionImpactFactor: decimalToFloat(2, 2), // 2%
+  maxPositionImpactFactorForLiquidations: decimalToFloat(1, 2), // 1%
 };
 
 const config: {
   [network: string]: MarketConfig[];
 } = {
   arbitrum: [],
-  arbitrumGoerli: [],
-  avalanche: [],
-  avalancheFuji: [
-    {
-      tokens: { indexToken: "WAVAX", longToken: "WAVAX", shortToken: "USDC" },
-    },
+  arbitrumGoerli: [
     {
       tokens: { indexToken: "WETH", longToken: "WETH", shortToken: "USDC" },
+      virtualMarketId: "0x04533437e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481d",
+    },
+    {
+      tokens: { indexToken: "WETH", longToken: "WETH", shortToken: "DAI" },
+      virtualMarketId: "0x04533437e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481d",
+    },
+    { tokens: { indexToken: "WETH", longToken: "USDC", shortToken: "USDC" } },
+    {
+      tokens: { indexToken: "WBTC", longToken: "WBTC", shortToken: "USDC" },
+      virtualMarketId: "0x11111137e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481f",
+    },
+    {
+      tokens: { indexToken: "WBTC", longToken: "WBTC", shortToken: "DAI" },
+    },
+    {
+      tokens: { indexToken: "SOL", longToken: "WBTC", shortToken: "USDC" },
+    },
+    {
+      tokens: { longToken: "USDC", shortToken: "USDT" },
+      swapOnly: true,
+    },
+    { tokens: { indexToken: "DOGE", longToken: "WBTC", shortToken: "DAI" } },
+    { tokens: { indexToken: "LINK", longToken: "WBTC", shortToken: "DAI" } },
+    { tokens: { indexToken: "BNB", longToken: "WBTC", shortToken: "DAI" } },
+    { tokens: { indexToken: "ADA", longToken: "WBTC", shortToken: "DAI" } },
+    { tokens: { indexToken: "TRX", longToken: "WBTC", shortToken: "DAI" } },
+    { tokens: { indexToken: "MATIC", longToken: "WBTC", shortToken: "USDC" } },
+    { tokens: { indexToken: "DOT", longToken: "WBTC", shortToken: "USDC" } },
+    { tokens: { indexToken: "UNI", longToken: "WBTC", shortToken: "USDC" } },
+    {
+      tokens: {
+        indexToken: "TEST",
+        longToken: "WBTC",
+        shortToken: "USDC",
+      },
+      positivePositionImpactFactor: decimalToFloat(125, 7), // 0.00125 %
+      negativePositionImpactFactor: decimalToFloat(25, 6), // 0.0025 %
+      positionImpactExponentFactor: decimalToFloat(2, 0), // 2
+      positiveSwapImpactFactor: decimalToFloat(5, 6), // 0.0005 %
+      negativeSwapImpactFactor: decimalToFloat(1, 5), // 0.001 %
+      swapImpactExponentFactor: decimalToFloat(2, 0), // 2
+    },
+  ],
+  avalanche: [],
+  avalancheFuji: [
+    { tokens: { indexToken: "WAVAX", longToken: "WAVAX", shortToken: "USDC" } },
+    {
+      tokens: { indexToken: "WETH", longToken: "WETH", shortToken: "USDC" },
+      virtualMarketId: "0x04533437e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481d",
+    },
+    {
+      tokens: { indexToken: "WETH", longToken: "WETH", shortToken: "DAI" },
+      virtualMarketId: "0x04533437e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481d",
+    },
+    { tokens: { indexToken: "WETH", longToken: "USDC", shortToken: "USDC" } },
+    {
+      tokens: { indexToken: "WBTC", longToken: "WBTC", shortToken: "USDC" },
+      virtualMarketId: "0x11111137e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481f",
+    },
+    {
+      tokens: { indexToken: "WBTC", longToken: "WBTC", shortToken: "DAI" },
+      virtualMarketId: "0x11111137e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481f",
     },
     {
       tokens: { indexToken: "SOL", longToken: "WETH", shortToken: "USDC" },
+      virtualMarketId: "0x04533437e2e8ae1c70c421e7a0dd36e023e0d6217198f889f9eb9c2a6727481d",
+    },
+    {
+      tokens: { longToken: "USDC", shortToken: "USDT" },
+      swapOnly: true,
+    },
+    { tokens: { indexToken: "DOGE", longToken: "WETH", shortToken: "DAI" } },
+    { tokens: { indexToken: "LINK", longToken: "WETH", shortToken: "DAI" } },
+    { tokens: { indexToken: "BNB", longToken: "WETH", shortToken: "DAI" } },
+    { tokens: { indexToken: "ADA", longToken: "WETH", shortToken: "DAI" } },
+    { tokens: { indexToken: "TRX", longToken: "WETH", shortToken: "DAI" } },
+    { tokens: { indexToken: "MATIC", longToken: "WETH", shortToken: "USDC" } },
+    { tokens: { indexToken: "DOT", longToken: "WETH", shortToken: "USDC" } },
+    { tokens: { indexToken: "UNI", longToken: "WETH", shortToken: "USDC" } },
+    {
+      tokens: {
+        indexToken: "TEST",
+        longToken: "WETH",
+        shortToken: "USDC",
+      },
+      positivePositionImpactFactor: decimalToFloat(125, 7), // 0.00125 %
+      negativePositionImpactFactor: decimalToFloat(25, 6), // 0.0025 %
+      positionImpactExponentFactor: decimalToFloat(2, 0), // 2
+      positiveSwapImpactFactor: decimalToFloat(5, 6), // 0.0005 %
+      negativeSwapImpactFactor: decimalToFloat(1, 5), // 0.001 %
+      swapImpactExponentFactor: decimalToFloat(2, 0), // 2
     },
   ],
   hardhat: [
@@ -182,11 +267,20 @@ const config: {
       tokens: { indexToken: "WETH", longToken: "WETH", shortToken: "USDC" },
     },
     {
+      tokens: { indexToken: "WETH", longToken: "WETH", shortToken: "USDT" },
+    },
+    {
       tokens: { longToken: "WETH", shortToken: "USDC" },
       swapOnly: true,
     },
     {
+      tokens: { indexToken: "WBTC", longToken: "WBTC", shortToken: "USDC" },
+    },
+    {
       tokens: { indexToken: "SOL", longToken: "WETH", shortToken: "USDC" },
+    },
+    {
+      tokens: { indexToken: "WETH", longToken: "USDC", shortToken: "USDC" },
     },
   ],
   localhost: [
@@ -208,8 +302,14 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const tokens = await hre.gmx.getTokens();
   const defaultMarketConfig = hre.network.name === "hardhat" ? hardhatBaseMarketConfig : baseMarketConfig;
   if (markets) {
+    const seen = new Set<string>();
     for (const market of markets) {
       const tokenSymbols = Object.values(market.tokens);
+      const tokenSymbolsKey = tokenSymbols.join(":");
+      if (seen.has(tokenSymbolsKey)) {
+        throw new Error(`Duplicate market: ${tokenSymbolsKey}`);
+      }
+      seen.add(tokenSymbolsKey);
       for (const tokenSymbol of tokenSymbols) {
         if (!tokens[tokenSymbol]) {
           throw new Error(`Market ${tokenSymbols.join(":")} uses token that does not exist: ${tokenSymbol}`);

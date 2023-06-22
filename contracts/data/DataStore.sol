@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 import "../role/RoleModule.sol";
 import "../utils/Calc.sol";
+import "../utils/Printer.sol";
 
 // @title DataStore
 // @dev DataStore for all general state values
@@ -84,6 +85,17 @@ contract DataStore is RoleModule {
             revert(errorMessage);
         }
         uint256 nextUint = Calc.sumReturnUint256(currValue, value);
+        uintValues[key] = nextUint;
+        return nextUint;
+    }
+
+    // @dev add the input uint value to the existing uint value
+    // @param key the key of the value
+    // @param value the input int value
+    // @return the new uint value
+    function applyDeltaToUint(bytes32 key, uint256 value) external onlyController returns (uint256) {
+        uint256 currValue = uintValues[key];
+        uint256 nextUint = currValue + value;
         uintValues[key] = nextUint;
         return nextUint;
     }

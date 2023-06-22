@@ -1,6 +1,6 @@
 import hre from "hardhat";
 
-import { getMarketTokenAddress } from "../utils/market";
+import { getMarketTokenAddress, DEFAULT_MARKET_TYPE } from "../utils/market";
 import { bigNumberify, expandDecimals } from "../utils/math";
 
 import { WNT, ExchangeRouter, MintableToken } from "../typechain-types";
@@ -88,6 +88,7 @@ async function main() {
     weth.address,
     weth.address,
     usdc.address,
+    DEFAULT_MARKET_TYPE,
     marketFactory.address,
     roleStore.address,
     dataStore.address
@@ -106,6 +107,7 @@ async function main() {
     longTokenSwapPath: [],
     initialShortToken: usdc.address,
     shortTokenSwapPath: [],
+    uiFeeReceiver: ethers.constants.AddressZero,
   };
   console.log("exchange router %s", exchangeRouter.address);
   console.log("deposit store %s", depositVault.address);

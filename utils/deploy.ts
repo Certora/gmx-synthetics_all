@@ -1,3 +1,4 @@
+import { DeployFunction } from "hardhat-deploy/dist/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 export async function deployContract(name, args, contractOptions = {}) {
@@ -5,13 +6,37 @@ export async function deployContract(name, args, contractOptions = {}) {
   return await contractFactory.deploy(...args);
 }
 
-export async function contractAt(name, address) {
-  const contractFactory = await ethers.getContractFactory(name);
+export async function contractAt(name, address, provider) {
+  let contractFactory = await ethers.getContractFactory(name);
+  if (provider) {
+    contractFactory = contractFactory.connect(provider);
+  }
   return await contractFactory.attach(address);
 }
 
-export function createDeployFunction({ contractName, dependencyNames, getDeployArgs, libraryNames, afterDeploy }) {
-  const func = async ({ getNamedAccounts, deployments, gmx }: HardhatRuntimeEnvironment) => {
+export function createDeployFunction({
+  contractName,
+  dependencyNames = [],
+  getDeployArgs = null,
+  libraryNames = [],
+  afterDeploy = null,
+  id,
+}: {
+  contractName: string;
+  dependencyNames?: string[];
+  getDeployArgs?: (args: { dependencyContracts: any }) => Promise<any[]>;
+  libraryNames?: string[];
+  afterDeploy?: (args: {
+    deployedContract: any;
+    deployer: string;
+    getNamedAccounts: () => Promise<any>;
+    deployments: any;
+    gmx: any;
+    network: any;
+  }) => Promise<void>;
+  id?: string;
+}): DeployFunction {
+  const func = async ({ getNamedAccounts, deployments, gmx, network }: HardhatRuntimeEnvironment) => {
     const { deploy, get } = deployments;
     const { deployer } = await getNamedAccounts();
 
@@ -48,8 +73,6 @@ export function createDeployFunction({ contractName, dependencyNames, getDeployA
         libraries,
       });
     } catch (e) {
-      // console.error("Deploy error", e);
-
       // the caught error might not be very informative
       // e.g. if some library dependency is missing, which library it is
       // is not shown in the error
@@ -65,7 +88,13 @@ export function createDeployFunction({ contractName, dependencyNames, getDeployA
     }
 
     if (afterDeploy) {
-      await afterDeploy({ deployedContract, deployer, getNamedAccounts, deployments, gmx });
+      await afterDeploy({ deployedContract, deployer, getNamedAccounts, deployments, gmx, network });
+    }
+
+    if (id) {
+      // hardhat-deploy would not redeploy a contract if it already exists with the same id
+      // with `id` it's possible to control whether a contract should be redeployed
+      return true;
     }
   };
 
@@ -77,6 +106,9 @@ export function createDeployFunction({ contractName, dependencyNames, getDeployA
     dependencies = dependencies.concat(libraryNames);
   }
 
+  if (id) {
+    func.id = id;
+  }
   func.tags = [contractName];
   func.dependencies = dependencies;
 

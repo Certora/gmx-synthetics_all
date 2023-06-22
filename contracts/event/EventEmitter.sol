@@ -3,11 +3,6 @@
 pragma solidity ^0.8.0;
 
 import "../role/RoleModule.sol";
-import "../order/Order.sol";
-import "../deposit/Deposit.sol";
-import "../withdrawal/Withdrawal.sol";
-import "../pricing/SwapPricingUtils.sol";
-import "../pricing/PositionPricingUtils.sol";
 import "./EventUtils.sol";
 
 // @title EventEmitter
@@ -19,23 +14,23 @@ import "./EventUtils.sol";
 contract EventEmitter is RoleModule {
     event EventLog(
         address msgSender,
-        string indexed eventNameHash,
         string eventName,
+        string indexed eventNameHash,
         EventUtils.EventLogData eventData
     );
 
     event EventLog1(
         address msgSender,
-        string indexed eventNameHash,
         string eventName,
+        string indexed eventNameHash,
         bytes32 indexed topic1,
         EventUtils.EventLogData eventData
     );
 
     event EventLog2(
         address msgSender,
-        string indexed eventNameHash,
         string eventName,
+        string indexed eventNameHash,
         bytes32 indexed topic1,
         bytes32 indexed topic2,
         EventUtils.EventLogData eventData
