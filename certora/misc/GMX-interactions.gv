@@ -1,0 +1,221 @@
+digraph G {
+    // ---------------------------------------------------------------------------------------
+    // Contracts
+    // Vaults:
+    "WithdrawalVault.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "OrderVault.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "DepositVault.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    // "Bank.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // StrictBank is Bank
+    // "StrictBank.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // DepositVault is StrictBank
+
+    // Routers:
+    "ExchangeRouter.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "Router.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+
+    // Price Feeds:
+    //"IPriceFeed.sol"; // interface see below
+    //"MockPriceFeed.sol" // mock
+
+    // Tokens:
+    "MarketToken.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // stores funds for the market and keeps track of the liquidity owners
+    //"MintableToken.sol" [shape="polygon" style="filled" fillcolor="#00ffee"];  // mock (?) GMX+GLP
+    //"WNT.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // mock is ERC20
+    //"IWNT.sol" [shape="polygon" style="filled" fillcolor="#FFA500"]; // interface
+
+    // Handlers:
+    "AdlHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "DepositHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "LiquidationHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "OrderHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "WithdrawalHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "SwapHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "FeeHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    // "BaseOrderHandler.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // AdlHandler is BaseOrderHandler
+
+    // Storage:
+    //"ReferralStorage.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"]; // mock
+    "DataStore.sol" [shape="polygon" style="filled" fillcolor="#D30000"]; // 435 loc
+    "RoleStore.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "OracleStore.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+
+    // Misc
+    "Config.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    // "BasicMulticall.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // Config is BasicMulticall
+    "Timelock.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "EventEmitter.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    "Oracle.sol" [shape="polygon" style="filled" fillcolor="#D30000"];  // 539 loc
+    // "OracleModule.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // DepositHandler is OracleModule
+    "MarketFactory.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];
+    // "RoleModule.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // MarketFactory is RoleModule
+    "Reader.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // only has getters
+    // "GlobalReentrancyGuard.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // BaseOrderHandler is GlobalReentrancyGuard
+    // "PayableMulticall.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // ExchangeRouter is PayableMulticall
+    
+    // ---------------------------------------------------------------------------------------
+    // Interfaces
+    "IDepositCallbackReceiver.sol" [shape="polygon" style="filled" fillcolor="#FFA500"];
+    "IOrderCallbackReceiver.sol" [shape="polygon" style="filled" fillcolor="#FFA500"];
+    "IWithdrawalCallbackReceiver.sol" [shape="polygon" style="filled" fillcolor="#FFA500"];
+    //"ArbSys.sol" [shape="polygon" style="filled" fillcolor="#FFA500"]; // used to determine blocknumber and blockhash
+    "IPriceFeed.sol" [shape="polygon" style="filled" fillcolor="#FFA500"];
+    "IReferralStorage.sol" [shape="polygon" style="filled" fillcolor="#FFA500"];
+    "IWNT.sol" [shape="polygon" style="filled" fillcolor="#FFA500"];
+
+    // ---------------------------------------------------------------------------------------
+    // Mocks
+    // "Governable.sol" [shape="polygon" style="filled" fillcolor="#FFFF99"];  // ReferralStorage is Governable
+    "MintableToken.sol" [shape="polygon" style="filled" fillcolor="#00ffee"];  // mock (?) GMX+GLP
+    "MockPriceFeed.sol" [shape="polygon" style="filled" fillcolor="#00ffee"];
+    // "Multicall3.sol" [shape="polygon" style="filled" fillcolor="#00ffee"];  // probably (?) related to BasicMulticall.sol
+    "ReferralStorage.sol" [shape="polygon" style="filled" fillcolor="#00ffee"]; // mock
+    "RevertingCallbackReceiver.sol" [shape="polygon" style="filled" fillcolor="#00ffee"];
+    "WNT.sol" [shape="polygon" style="filled" fillcolor="#00ffee"];  // ERC20
+
+    // ---------------------------------------------------------------------------------------
+    // Interactions
+    // contract A calls contract B
+    // "A.sol" -> "B.sol";
+    "WithdrawalVault.sol" -> "RoleStore.sol";
+    "WithdrawalVault.sol" -> "DataStore.sol";
+    "WithdrawalVault.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
+
+    "OrderVault.sol" -> "RoleStore.sol";
+    "OrderVault.sol" -> "DataStore.sol";
+    "OrderVault.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
+
+    "DepositVault.sol" -> "RoleStore.sol";
+    "DepositVault.sol" -> "DataStore.sol";
+    "DepositVault.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
+
+    "ExchangeRouter.sol" -> "Router.sol";
+    "ExchangeRouter.sol" -> "RoleStore.sol";
+    "ExchangeRouter.sol" -> "DataStore.sol";
+    "ExchangeRouter.sol" -> "EventEmitter.sol";
+    "ExchangeRouter.sol" -> "DepositHandler.sol";
+    "ExchangeRouter.sol" -> "WithdrawalHandler.sol";
+    "ExchangeRouter.sol" -> "OrderHandler.sol";
+    "ExchangeRouter.sol" -> "MarketToken.sol";
+    "ExchangeRouter.sol" -> "IWNT.sol";  // using TokenUtils.wnt(dataStore)
+    //"ExchangeRouter.sol" -> "WNT.sol";
+
+    "Router.sol" -> "RoleStore.sol";
+
+    "IPriceFeed.sol" -> "MockPriceFeed.sol";
+
+    "MarketToken.sol" -> "RoleStore.sol";
+    "MarketToken.sol" -> "DataStore.sol";
+
+    "IWNT.sol" -> "WNT.sol";
+    
+    "AdlHandler.sol" -> "RoleStore.sol";
+    "AdlHandler.sol" -> "DataStore.sol";
+    "AdlHandler.sol" -> "EventEmitter.sol";
+    "AdlHandler.sol" -> "OrderVault.sol";
+    "AdlHandler.sol" -> "Oracle.sol";
+    "AdlHandler.sol" -> "SwapHandler.sol";
+    "AdlHandler.sol" -> "IReferralStorage.sol";
+    "AdlHandler.sol" -> "MarketToken.sol";
+
+    "DepositHandler.sol" -> "RoleStore.sol";
+    "DepositHandler.sol" -> "DataStore.sol";
+    "DepositHandler.sol" -> "EventEmitter.sol";
+    "DepositHandler.sol" -> "DepositVault.sol";
+    "DepositHandler.sol" -> "Oracle.sol";
+    "DepositHandler.sol" -> "MarketToken.sol";
+    "DepositHandler.sol" -> "WNT.sol";
+
+    "LiquidationHandler.sol" -> "RoleStore.sol";
+    "LiquidationHandler.sol" -> "DataStore.sol";
+    "LiquidationHandler.sol" -> "EventEmitter.sol";
+    "LiquidationHandler.sol" -> "OrderVault.sol";
+    "LiquidationHandler.sol" -> "Oracle.sol";
+    "LiquidationHandler.sol" -> "SwapHandler.sol";
+    "LiquidationHandler.sol" -> "IReferralStorage.sol";
+    "LiquidationHandler.sol" -> "MarketToken.sol";
+
+    "OrderHandler.sol" -> "RoleStore.sol";
+    "OrderHandler.sol" -> "DataStore.sol";
+    "OrderHandler.sol" -> "EventEmitter.sol";
+    "OrderHandler.sol" -> "OrderVault.sol";
+    "OrderHandler.sol" -> "Oracle.sol";
+    "OrderHandler.sol" -> "SwapHandler.sol";
+    "OrderHandler.sol" -> "IReferralStorage.sol";
+    "OrderHandler.sol" -> "MarketToken.sol";
+    "OrderHandler.sol" -> "WNT.sol";
+
+    "WithdrawalHandler.sol" -> "RoleStore.sol";
+    "WithdrawalHandler.sol" -> "DataStore.sol";
+    "WithdrawalHandler.sol" -> "EventEmitter.sol";
+    "WithdrawalHandler.sol" -> "WithdrawalVault.sol";
+    "WithdrawalHandler.sol" -> "Oracle.sol";
+    "WithdrawalHandler.sol" -> "MarketToken.sol";
+    "WithdrawalHandler.sol" -> "WNT.sol";
+
+    "SwapHandler.sol" -> "RoleStore.sol";
+    "SwapHandler.sol" -> "MarketToken.sol";
+
+    "FeeHandler.sol" -> "RoleStore.sol";
+    "FeeHandler.sol" -> "DataStore.sol";
+    "FeeHandler.sol" -> "EventEmitter.sol";
+    "FeeHandler.sol" -> "MarketToken.sol";
+
+    "Config.sol" -> "RoleStore.sol";
+    "Config.sol" -> "DataStore.sol";
+    "Config.sol" -> "EventEmitter.sol";
+
+    "Timelock.sol" -> "RoleStore.sol";
+    "Timelock.sol" -> "DataStore.sol";
+    "Timelock.sol" -> "EventEmitter.sol";
+    "Timelock.sol" -> "OracleStore.sol";
+
+    "EventEmitter.sol" -> "RoleStore.sol";
+
+    //ReferralStorage has no interaction with other contracts
+
+    "DataStore.sol" -> "RoleStore.sol";
+
+    //RoleStore has no interaction with other contracts
+
+    "OracleStore.sol" -> "RoleStore.sol";
+    "OracleStore.sol" -> "EventEmitter.sol";
+
+    "Oracle.sol" -> "RoleStore.sol";
+    "Oracle.sol" -> "OracleStore.sol";
+    "Oracle.sol" -> "IPriceFeed.sol";
+    "Oracle.sol" -> "DataStore.sol"; // it can use any DataStore contract instance
+
+    "Reader.sol" -> "DataStore.sol";
+    "Reader.sol" -> "IReferralStorage.sol";
+    "Reader.sol" -> "MarketToken.sol";
+
+    "MarketFactory.sol" -> "RoleStore.sol";
+    "MarketFactory.sol" -> "DataStore.sol";
+    "MarketFactory.sol" -> "EventEmitter.sol";
+
+    // "DepositHandler.sol" -> "ExecuteDepositUtils.sol";
+    // "ExecuteDepositUtils.sol" -> "CallbackUtils.sol";
+    // "CallbackUtils.sol" -> "IDepositCallbackReceiver.sol";
+    // the commented above effectively is:
+    "DepositHandler.sol" -> "IDepositCallbackReceiver.sol";
+    "IDepositCallbackReceiver.sol" -> "RevertingCallbackReceiver.sol"; // mock
+
+    // "AdlHandler.sol" -> "OrderUtils.sol";
+    // "LiquidationHandler.sol" -> "OrderUtils.sol";
+    // "OrderHandler.sol" -> "OrderUtils.sol";
+    // "OrderUtils.sol" -> "CallbackUtils.sol";
+    // "CallbackUtils.sol" -> "IOrderCallbackReceiver.sol";
+    // the commented above effectively is:
+    "AdlHandler.sol" -> "IOrderCallbackReceiver.sol";
+    "LiquidationHandler.sol" -> "IOrderCallbackReceiver.sol";
+    "OrderHandler.sol" -> "IOrderCallbackReceiver.sol";
+
+    
+    // "WithdrawalHandler.sol" -> "WithdrawalUtils.sol";
+    // "WithdrawalUtils.sol" -> "CallbackUtils.sol";
+    // "CallbackUtils.sol" -> "IWithdrawalCallbackReceiver.sol";
+    // the commented above effectively is:
+    "WithdrawalHandler.sol" -> "IWithdrawalCallbackReceiver.sol";
+
+    "IReferralStorage.sol" -> "ReferralStorage.sol";
+
+}
