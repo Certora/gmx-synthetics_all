@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import "hardhat/console.sol";
+// import "hardhat/console.sol";  // munging
 
 /**
  * @title Printer
@@ -13,6 +13,7 @@ library Printer {
     using SafeCast for int256;
 
     function log(string memory label, int256 value) internal view {
+        /*
         if (value < 0) {
             console.log(
                 "%s -%s",
@@ -26,5 +27,6 @@ library Printer {
                 value.toUint256()
             );
         }
+        */
     }
 }
