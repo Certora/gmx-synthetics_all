@@ -73,14 +73,14 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
         bytes32 actionKey = _addOracleSignerActionKey(account);
         _signalPendingAction(actionKey, "addOracleSigner");
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventEmitter.emitEventLog1(
-            "SignalAddOracleSigner",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventEmitter.emitEventLog1(
+        //     "SignalAddOracleSigner",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     function addOracleSignerAfterSignal(address account) external onlyTimelockAdmin nonReentrant {
@@ -89,14 +89,14 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
 
         oracleStore.addSigner(account);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventEmitter.emitEventLog1(
-            "AddOracleSigner",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventEmitter.emitEventLog1(
+        //     "AddOracleSigner",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     function signalRemoveOracleSigner(address account) external onlyTimelockAdmin nonReentrant {
@@ -107,14 +107,14 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
         bytes32 actionKey = _removeOracleSignerActionKey(account);
         _signalPendingAction(actionKey, "removeOracleSigner");
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventEmitter.emitEventLog1(
-            "SignalRemoveOracleSigner",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventEmitter.emitEventLog1(
+        //     "SignalRemoveOracleSigner",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     function removeOracleSignerAfterSignal(address account) external onlyTimelockAdmin nonReentrant {
@@ -123,14 +123,14 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
 
         oracleStore.removeSigner(account);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventEmitter.emitEventLog1(
-            "RemoveOracleSigner",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventEmitter.emitEventLog1(
+        //     "RemoveOracleSigner",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev signal setting of the fee receiver
@@ -143,14 +143,14 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
         bytes32 actionKey = _setFeeReceiverActionKey(account);
         _signalPendingAction(actionKey, "setFeeReceiver");
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventEmitter.emitEventLog1(
-            "SignalSetFeeReceiver",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventEmitter.emitEventLog1(
+        //     "SignalSetFeeReceiver",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev set the fee receiver
@@ -161,14 +161,14 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
 
         dataStore.setAddress(Keys.FEE_RECEIVER, account);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventEmitter.emitEventLog1(
-            "SetFeeReceiver",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventEmitter.emitEventLog1(
+        //     "SetFeeReceiver",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev signal granting of a role
@@ -178,16 +178,16 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
         bytes32 actionKey = _grantRoleActionKey(account, roleKey);
         _signalPendingAction(actionKey, "grantRole");
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "roleKey", roleKey);
-        eventEmitter.emitEventLog1(
-            "SignalGrantRole",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "roleKey", roleKey);
+        // eventEmitter.emitEventLog1(
+        //     "SignalGrantRole",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev grant a role
@@ -199,16 +199,16 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
 
         roleStore.grantRole(account, roleKey);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "roleKey", roleKey);
-        eventEmitter.emitEventLog1(
-            "GrantRole",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "roleKey", roleKey);
+        // eventEmitter.emitEventLog1(
+        //     "GrantRole",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev signal revoking of a role
@@ -218,16 +218,16 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
         bytes32 actionKey = _revokeRoleActionKey(account, roleKey);
         _signalPendingAction(actionKey, "revokeRole");
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "roleKey", roleKey);
-        eventEmitter.emitEventLog1(
-            "SignalRevokeRole",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "roleKey", roleKey);
+        // eventEmitter.emitEventLog1(
+        //     "SignalRevokeRole",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev revoke a role
@@ -239,16 +239,16 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
 
         roleStore.revokeRole(account, roleKey);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "account", account);
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "roleKey", roleKey);
-        eventEmitter.emitEventLog1(
-            "RevokeRole",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "account", account);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "roleKey", roleKey);
+        // eventEmitter.emitEventLog1(
+        //     "RevokeRole",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev signal setting of a price feed
@@ -273,19 +273,19 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
 
         _signalPendingAction(actionKey, "setPriceFeed");
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(2);
-        eventData.addressItems.setItem(0, "token", token);
-        eventData.addressItems.setItem(1, "priceFeed", priceFeed);
-        eventData.uintItems.initItems(3);
-        eventData.uintItems.setItem(0, "priceFeedMultiplier", priceFeedMultiplier);
-        eventData.uintItems.setItem(1, "priceFeedHeartbeatDuration", priceFeedHeartbeatDuration);
-        eventData.uintItems.setItem(2, "stablePrice", stablePrice);
-        eventEmitter.emitEventLog1(
-            "SignalSetPriceFeed",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(2);
+        // eventData.addressItems.setItem(0, "token", token);
+        // eventData.addressItems.setItem(1, "priceFeed", priceFeed);
+        // eventData.uintItems.initItems(3);
+        // eventData.uintItems.setItem(0, "priceFeedMultiplier", priceFeedMultiplier);
+        // eventData.uintItems.setItem(1, "priceFeedHeartbeatDuration", priceFeedHeartbeatDuration);
+        // eventData.uintItems.setItem(2, "stablePrice", stablePrice);
+        // eventEmitter.emitEventLog1(
+        //     "SignalSetPriceFeed",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev sets a price feed
@@ -315,19 +315,19 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
         dataStore.setUint(Keys.priceFeedHeartbeatDurationKey(token), priceFeedHeartbeatDuration);
         dataStore.setUint(Keys.stablePriceKey(token), stablePrice);
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(2);
-        eventData.addressItems.setItem(0, "token", token);
-        eventData.addressItems.setItem(1, "priceFeed", priceFeed);
-        eventData.uintItems.initItems(3);
-        eventData.uintItems.setItem(0, "priceFeedMultiplier", priceFeedMultiplier);
-        eventData.uintItems.setItem(1, "priceFeedHeartbeatDuration", priceFeedHeartbeatDuration);
-        eventData.uintItems.setItem(2, "stablePrice", stablePrice);
-        eventEmitter.emitEventLog1(
-            "SetPriceFeed",
-            actionKey,
-            eventData
-        );
+        // EventUtils.EventLogData memory eventData;
+        // eventData.addressItems.initItems(2);
+        // eventData.addressItems.setItem(0, "token", token);
+        // eventData.addressItems.setItem(1, "priceFeed", priceFeed);
+        // eventData.uintItems.initItems(3);
+        // eventData.uintItems.setItem(0, "priceFeedMultiplier", priceFeedMultiplier);
+        // eventData.uintItems.setItem(1, "priceFeedHeartbeatDuration", priceFeedHeartbeatDuration);
+        // eventData.uintItems.setItem(2, "stablePrice", stablePrice);
+        // eventEmitter.emitEventLog1(
+        //     "SetPriceFeed",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev cancels a previously signalled pending action
@@ -346,19 +346,19 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
 
         pendingActions[actionKey] = Chain.currentTimestamp() + timelockDelay;
 
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "actionKey", actionKey);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "actionKey", actionKey);
 
-        eventData.stringItems.initItems(1);
-        eventData.stringItems.setItem(0, "actionLabel", actionLabel);
+        // eventData.stringItems.initItems(1);
+        // eventData.stringItems.setItem(0, "actionLabel", actionLabel);
 
-        eventEmitter.emitEventLog1(
-            "SignalPendingAction",
-            actionKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SignalPendingAction",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     // @dev the key for the addOracleSigner action
@@ -429,19 +429,19 @@ contract Timelock is ReentrancyGuard, RoleModule, BasicMulticall {
         }
         delete pendingActions[actionKey];
 
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "actionKey", actionKey);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "actionKey", actionKey);
 
-        eventData.stringItems.initItems(1);
-        eventData.stringItems.setItem(0, "actionLabel", actionLabel);
+        // eventData.stringItems.initItems(1);
+        // eventData.stringItems.setItem(0, "actionLabel", actionLabel);
 
-        eventEmitter.emitEventLog1(
-            "ClearPendingAction",
-            actionKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "ClearPendingAction",
+        //     actionKey,
+        //     eventData
+        // );
     }
 
     function _validateTimelockDelay() internal view {

@@ -24,24 +24,24 @@ library ReferralEventUtils {
         uint256 nextValue,
         uint256 nextPoolValue
     ) external {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(3);
-        eventData.addressItems.setItem(0, "market", market);
-        eventData.addressItems.setItem(1, "token", token);
-        eventData.addressItems.setItem(2, "affiliate", affiliate);
+        // eventData.addressItems.initItems(3);
+        // eventData.addressItems.setItem(0, "market", market);
+        // eventData.addressItems.setItem(1, "token", token);
+        // eventData.addressItems.setItem(2, "affiliate", affiliate);
 
-        eventData.uintItems.initItems(3);
-        eventData.uintItems.setItem(0, "delta", delta);
-        eventData.uintItems.setItem(1, "nextValue", nextValue);
-        eventData.uintItems.setItem(2, "nextPoolValue", nextPoolValue);
+        // eventData.uintItems.initItems(3);
+        // eventData.uintItems.setItem(0, "delta", delta);
+        // eventData.uintItems.setItem(1, "nextValue", nextValue);
+        // eventData.uintItems.setItem(2, "nextPoolValue", nextPoolValue);
 
-        eventEmitter.emitEventLog2(
-            "AffiliateRewardUpdated",
-            Cast.toBytes32(market),
-            Cast.toBytes32(affiliate),
-            eventData
-        );
+        // eventEmitter.emitEventLog2(
+        //     "AffiliateRewardUpdated",
+        //     Cast.toBytes32(market),
+        //     Cast.toBytes32(affiliate),
+        //     eventData
+        // );
     }
 
     function emitAffiliateRewardClaimed(
@@ -53,22 +53,22 @@ library ReferralEventUtils {
         uint256 amount,
         uint256 nextPoolValue
     ) external {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(4);
-        eventData.addressItems.setItem(0, "market", market);
-        eventData.addressItems.setItem(1, "token", token);
-        eventData.addressItems.setItem(2, "affiliate", affiliate);
-        eventData.addressItems.setItem(3, "receiver", receiver);
+        // eventData.addressItems.initItems(4);
+        // eventData.addressItems.setItem(0, "market", market);
+        // eventData.addressItems.setItem(1, "token", token);
+        // eventData.addressItems.setItem(2, "affiliate", affiliate);
+        // eventData.addressItems.setItem(3, "receiver", receiver);
 
-        eventData.uintItems.initItems(2);
-        eventData.uintItems.setItem(0, "amount", amount);
-        eventData.uintItems.setItem(1, "nextPoolValue", nextPoolValue);
+        // eventData.uintItems.initItems(2);
+        // eventData.uintItems.setItem(0, "amount", amount);
+        // eventData.uintItems.setItem(1, "nextPoolValue", nextPoolValue);
 
-        eventEmitter.emitEventLog1(
-            "AffiliateRewardClaimed",
-            Cast.toBytes32(affiliate),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "AffiliateRewardClaimed",
+        //     Cast.toBytes32(affiliate),
+        //     eventData
+        // );
     }
 }
