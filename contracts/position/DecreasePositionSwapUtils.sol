@@ -41,10 +41,10 @@ library DecreasePositionSwapUtils {
                 values.output.outputAmount = values.output.secondaryOutputAmount + swapOutputAmount;
                 values.output.secondaryOutputAmount = 0;
             } catch Error(string memory reason) {
-                emit SwapUtils.SwapReverted(reason, "");
+                // emit SwapUtils.SwapReverted(reason, "");
             } catch (bytes memory reasonBytes) {
                 (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
-                emit SwapUtils.SwapReverted(reason, reasonBytes);
+                // emit SwapUtils.SwapReverted(reason, reasonBytes);
             }
         }
 
@@ -79,10 +79,10 @@ library DecreasePositionSwapUtils {
             ) returns (address /* tokenOut */, uint256 swapOutputAmount) {
                 return (true, swapOutputAmount);
             } catch Error(string memory reason) {
-                emit SwapUtils.SwapReverted(reason, "");
+                // emit SwapUtils.SwapReverted(reason, "");
             } catch (bytes memory reasonBytes) {
                 (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
-                emit SwapUtils.SwapReverted(reason, reasonBytes);
+                // emit SwapUtils.SwapReverted(reason, reasonBytes);
             }
         }
 
