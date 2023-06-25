@@ -61,23 +61,23 @@ library OracleUtils {
 
     // compacted prices have a length of 32 bits
     uint256 public constant COMPACTED_PRICE_BIT_LENGTH = 32;
-    uint256 public constant COMPACTED_PRICE_BITMASK = Bits.BITMASK_32;
+    uint256 public constant COMPACTED_PRICE_BITMASK = ~uint256(0) >> (256 - 32); //Bits.BITMASK_32;
 
     // compacted precisions have a length of 8 bits
     uint256 public constant COMPACTED_PRECISION_BIT_LENGTH = 8;
-    uint256 public constant COMPACTED_PRECISION_BITMASK = Bits.BITMASK_8;
+    uint256 public constant COMPACTED_PRECISION_BITMASK = ~uint256(0) >> (256 - 8); //Bits.BITMASK_8;
 
     // compacted block numbers have a length of 64 bits
     uint256 public constant COMPACTED_BLOCK_NUMBER_BIT_LENGTH = 64;
-    uint256 public constant COMPACTED_BLOCK_NUMBER_BITMASK = Bits.BITMASK_64;
+    uint256 public constant COMPACTED_BLOCK_NUMBER_BITMASK = ~uint256(0) >> (256 - 64); //Bits.BITMASK_64;
 
     // compacted timestamps have a length of 64 bits
     uint256 public constant COMPACTED_TIMESTAMP_BIT_LENGTH = 64;
-    uint256 public constant COMPACTED_TIMESTAMP_BITMASK = Bits.BITMASK_64;
+    uint256 public constant COMPACTED_TIMESTAMP_BITMASK = ~uint256(0) >> (256 - 64); //Bits.BITMASK_64;
 
     // compacted price indexes have a length of 8 bits
     uint256 public constant COMPACTED_PRICE_INDEX_BIT_LENGTH = 8;
-    uint256 public constant COMPACTED_PRICE_INDEX_BITMASK = Bits.BITMASK_8;
+    uint256 public constant COMPACTED_PRICE_INDEX_BITMASK = ~uint256(0) >> (256 - 8); //Bits.BITMASK_8;
 
     function validateBlockNumberWithinRange(
         uint256[] memory minOracleBlockNumbers,
