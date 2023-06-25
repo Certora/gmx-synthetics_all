@@ -152,6 +152,10 @@ digraph G {
     "WithdrawalHandler.sol" -> "WNT.sol";
 
     "SwapHandler.sol" -> "RoleStore.sol";
+    "SwapHandler.sol" -> "DataStore.sol";
+    "SwapHandler.sol" -> "EventEmitter.sol";
+    "SwapHandler.sol" -> "Oracle.sol";
+    "SwapHandler.sol" -> "Bank.sol";
     "SwapHandler.sol" -> "MarketToken.sol";
 
     "FeeHandler.sol" -> "RoleStore.sol";
