@@ -63,7 +63,7 @@ contract ReferralStorage is IReferralStorage, Governable {
     // @param _isActive whether to set the handler as active or inactive
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;
-        emit SetHandler(_handler, _isActive);
+        // emit SetHandler(_handler, _isActive);
     }
 
     // @dev set values for a tier
@@ -78,7 +78,7 @@ contract ReferralStorage is IReferralStorage, Governable {
         tier.totalRebate = _totalRebate;
         tier.discountShare = _discountShare;
         tiers[_tierId] = tier;
-        emit SetTier(_tierId, _totalRebate, _discountShare);
+        // emit SetTier(_tierId, _totalRebate, _discountShare);
     }
 
     // @dev set the tier for an affiliate
@@ -86,7 +86,7 @@ contract ReferralStorage is IReferralStorage, Governable {
     // @param _tierId the tier to set to
     function setReferrerTier(address _referrer, uint256 _tierId) external override onlyGov {
         referrerTiers[_referrer] = _tierId;
-        emit SetReferrerTier(_referrer, _tierId);
+        // emit SetReferrerTier(_referrer, _tierId);
     }
 
     // @dev set the discount share for an affiliate
@@ -95,7 +95,7 @@ contract ReferralStorage is IReferralStorage, Governable {
         require(_discountShare <= BASIS_POINTS, "ReferralStorage: invalid discountShare");
 
         referrerDiscountShares[msg.sender] = _discountShare;
-        emit SetReferrerDiscountShare(msg.sender, _discountShare);
+        // emit SetReferrerDiscountShare(msg.sender, _discountShare);
     }
 
     // @dev set the referral code for a trader
@@ -118,7 +118,7 @@ contract ReferralStorage is IReferralStorage, Governable {
         require(codeOwners[_code] == address(0), "ReferralStorage: code already exists");
 
         codeOwners[_code] = msg.sender;
-        emit RegisterCode(msg.sender, _code);
+        // emit RegisterCode(msg.sender, _code);
     }
 
     // @dev for affiliates to set a new owner for a referral code they own
@@ -131,7 +131,7 @@ contract ReferralStorage is IReferralStorage, Governable {
         require(msg.sender == account, "ReferralStorage: forbidden");
 
         codeOwners[_code] = _newAccount;
-        emit SetCodeOwner(msg.sender, _newAccount, _code);
+        // emit SetCodeOwner(msg.sender, _newAccount, _code);
     }
 
     // @dev set the owner of a referral code
@@ -141,7 +141,7 @@ contract ReferralStorage is IReferralStorage, Governable {
         require(_code != bytes32(0), "ReferralStorage: invalid _code");
 
         codeOwners[_code] = _newAccount;
-        emit GovSetCodeOwner(_code, _newAccount);
+        // emit GovSetCodeOwner(_code, _newAccount);
     }
 
     // @dev get the referral info for a trader
@@ -160,6 +160,6 @@ contract ReferralStorage is IReferralStorage, Governable {
     // @param _code the referral code
     function _setTraderReferralCode(address _account, bytes32 _code) private {
         traderReferralCodes[_account] = _code;
-        emit SetTraderReferralCode(_account, _code);
+        // emit SetTraderReferralCode(_account, _code);
     }
 }

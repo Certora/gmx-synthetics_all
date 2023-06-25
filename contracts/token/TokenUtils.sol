@@ -87,7 +87,7 @@ library TokenUtils {
         if (success1) { return; }
 
         (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(returndata);
-        emit TokenTransferReverted(reason, returndata);
+        // emit TokenTransferReverted(reason, returndata);
 
         // throw custom errors to prevent spoofing of errors
         // this is necessary because contracts like DepositHandler, WithdrawalHandler, OrderHandler

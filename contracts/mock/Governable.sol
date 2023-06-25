@@ -41,6 +41,6 @@ contract Governable {
         address prevGov = gov;
         gov = _gov;
 
-        emit SetGov(prevGov, _gov);
+        // emit SetGov(prevGov, _gov);
     }
 }

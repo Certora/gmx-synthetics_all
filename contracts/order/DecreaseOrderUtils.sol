@@ -232,7 +232,7 @@ library DecreaseOrderUtils {
         string memory reason,
         bytes memory reasonBytes
     ) internal {
-        emit SwapUtils.SwapReverted(reason, reasonBytes);
+        // emit SwapUtils.SwapReverted(reason, reasonBytes);
 
         _validateOutputAmount(
             oracle,

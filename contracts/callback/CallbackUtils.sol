@@ -81,7 +81,7 @@ library CallbackUtils {
             eventData
         ) {
         } catch {
-            emit AfterDepositExecutionError(key, deposit);
+            // emit AfterDepositExecutionError(key, deposit);
         }
     }
 
@@ -101,7 +101,7 @@ library CallbackUtils {
             eventData
         ) {
         } catch {
-            emit AfterDepositCancellationError(key, deposit);
+            // emit AfterDepositCancellationError(key, deposit);
         }
     }
 
@@ -121,7 +121,7 @@ library CallbackUtils {
             eventData
         ) {
         } catch {
-            emit AfterWithdrawalExecutionError(key, withdrawal);
+            // emit AfterWithdrawalExecutionError(key, withdrawal);
         }
     }
 
@@ -141,7 +141,7 @@ library CallbackUtils {
             eventData
         ) {
         } catch {
-            emit AfterWithdrawalCancellationError(key, withdrawal);
+            // emit AfterWithdrawalCancellationError(key, withdrawal);
         }
     }
 
@@ -164,7 +164,7 @@ library CallbackUtils {
             eventData
         ) {
         } catch {
-            emit AfterOrderExecutionError(key, order);
+            // emit AfterOrderExecutionError(key, order);
         }
     }
 
@@ -184,7 +184,7 @@ library CallbackUtils {
             eventData
         ) {
         } catch {
-            emit AfterOrderCancellationError(key, order);
+            // emit AfterOrderCancellationError(key, order);
         }
     }
 
@@ -204,7 +204,7 @@ library CallbackUtils {
             eventData
         ) {
         } catch {
-            emit AfterOrderFrozenError(key, order);
+            // emit AfterOrderFrozenError(key, order);
         }
     }
 
