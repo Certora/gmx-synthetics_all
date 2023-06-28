@@ -15,7 +15,7 @@ certoraRun  contracts/config/Timelock.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---staging \
+--server staging --prover_version alex/nonskey-minus-skey \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
