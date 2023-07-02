@@ -94,11 +94,11 @@ contract AdlHandler is BaseOrderHandler {
         uint256 sizeDeltaUsd,
         OracleUtils.SetPricesParams calldata oracleParams
     ) external
-        globalNonReentrant
-        onlyAdlKeeper
-        withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
+        //globalNonReentrant
+        //onlyAdlKeeper
+        //withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
     {
-        ExecuteAdlCache memory cache;
+        /*ExecuteAdlCache memory cache;
 
         cache.startingGas = gasleft();
 
@@ -166,6 +166,6 @@ contract AdlHandler is BaseOrderHandler {
 
         if (cache.nextPnlToPoolFactor < cache.minPnlFactorForAdl.toInt256()) {
             revert Errors.PnlOvercorrected(cache.nextPnlToPoolFactor, cache.minPnlFactorForAdl);
-        }
+        }*/
     }
 }
