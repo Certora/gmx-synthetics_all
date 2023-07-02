@@ -116,16 +116,22 @@ methods {
 
 }
 
-rule sanity(method f) {
+/*rule sanity(method f) {
     env e;
     calldataarg args;
     f(e, args);
     assert false;
-}
+}*/
 
-/*rule updateAdlStateTest() {
+rule claimFeesTest() {
     env e;
     calldataarg args;
-    updateAdlState(e, args);
+
+    address[] markets;
+    address[] tokens;
+
+    require markets.length == 1;
+
+    claimFees(e, markets, tokens);
     assert false;
-}*/
+}
