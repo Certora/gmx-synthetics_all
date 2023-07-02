@@ -16,7 +16,7 @@ certoraRun  contracts/fee/FeeHandler.sol \
 --prover_args "-optimisticFallback true" \
 \
 --send_only \
---msg "GMX FeeHandler light, dispatch dataStore MarketToken WNT, no linking"
+--msg "GMX FeeHandler claimFeesTest with market require 1, dispatch dataStore MarketToken WNT, no linking"
 
 # --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
 # --link  FeeHandler:roleStore=RoleStore \
