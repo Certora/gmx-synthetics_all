@@ -10,9 +10,9 @@ methods {
     function _._nonReentrantAfter() internal => NONDET;
     //onlyAdlKeeper modifier
     function _._validateRole(bytes32,string memory) internal => NONDET;
-    //withOraclePrices modifier
-    function setPrices(address,address,OracleUtils.SetPricesParams) external => NONDET;
-    function _.clearAllPrices() external => NONDET;
+    //withOraclePrices modifier --> already summarized below (see Oracle summaries) as NONDET
+    //function _.setPrices(address,address,OracleUtils.SetPricesParams) external => NONDET;
+    //function _.clearAllPrices() external => NONDET;
 
     //function OracleUtils._ external => NONDET;
 
