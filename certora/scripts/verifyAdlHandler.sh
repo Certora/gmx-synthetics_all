@@ -22,7 +22,7 @@ certoraRun  contracts/exchange/AdlHandler.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---staging \
+--server production \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
