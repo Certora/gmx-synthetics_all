@@ -1,10 +1,10 @@
 certoraRun  contracts/oracle/OracleStore.sol \
-            contracts/role/RoleStore.sol \
+            certora/harness/RoleStoreHarness.sol \
             contracts/event/EventEmitter.sol \
 \
 --verify OracleStore:certora/specs/OracleStore.spec \
 \
---link  OracleStore:roleStore=RoleStore \
+--link  OracleStore:roleStore=RoleStoreHarness \
         OracleStore:eventEmitter=EventEmitter \
 --solc solc8.19 \
 --loop_iter 2 \
@@ -15,4 +15,5 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---msg "GMX OracleStore linking munged to remove emits" 
+--msg "GMX OracleStore linking munged to remove emits" \
+--rule non_controller_add_signer
