@@ -25,3 +25,39 @@ rule sanity_satisfy(method f) {
 // the address will not appear in the result of getSigner(s) for any index
 // -- calling getSignerCount() twice in a row with no other interleaving calls
 // results in the same value. Similar for getSigner(s)
+// -- the results from getSigner and getSigners are consistent.
+
+
+rule double_get_signer_count {
+    env e;
+    uint256 signer_count_one;
+    uint256 signer_count_two;
+    signer_count_one = getSignerCount(e);
+    signer_count_two = getSignerCount(e);
+    assert(signer_count_one == signer_count_two);
+}
+
+rule non_controller_add_signer {
+    env e;
+    calldataarg args;
+    address new_signer_address;
+    uint256 signer_count_before;
+    uint256 signer_count_after;
+    require(!roleStore.hasRole(e.msg.sender, "CONTROLLER"));
+    signer_count_before = getSignerCount(e);
+    addSigner(e, new_signer_address);
+    signer_count_after = getSignerCount(e);
+    assert(signer_count_before == signer_count_after);
+}
+
+/*
+rule remove_signer_not_in_list {
+    env e;
+    address signer_remove_arg;
+    address some_get_signer_result_before;
+    uint256 some_index_before;
+    // there is no index for which the signer is in the list
+    
+    removeSigner(e, signer_remove_arg);
+}
+*/
