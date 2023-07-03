@@ -12,7 +12,7 @@ certoraRun  contracts/deposit/DepositVault.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin \
 --solc_allow_path . \
---staging \
+--server production \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
