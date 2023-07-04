@@ -137,11 +137,6 @@ rule non_controller_remove_signer {
 // 3. calling removeSigner with an address that has not been added
 // to the list of signers previously will have no affect on: getSigner(s), 
 // getSignerCount
-//
-// status:
-// Currently throwing an internal error about types.
-// It is apparently bad to call a solidity function inside a
-// quantifier though, so this property may not be expressible.
 rule remove_signer_not_in_list {
     env e;
     address signer_remove_arg;
@@ -151,17 +146,11 @@ rule remove_signer_not_in_list {
     // uint256 some_index_after;
     uint256 signer_count_after;
 
-    // Here I am just trying to ensure that the instance of OracleStore
-    // under verification is the same as the one in the harness, so
-    // that we can use signersContains to get the state of the store
-    // under verification. This does not seem to work though...
-    require(e.msg.sender == oracleStore); 
-    
     // there is no index for which the signer is in the list
     require(!oracleStore.signersContains(e, signer_remove_arg));
 
     signer_count_before = getSignerCount(e);
-    removeSigner(e, signer_remove_arg);
+    oracleStore.removeSigner(e, signer_remove_arg);
     signer_count_after = getSignerCount(e);
 
     assert(signer_count_before == signer_count_after);
