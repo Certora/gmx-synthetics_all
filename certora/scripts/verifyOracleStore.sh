@@ -1,5 +1,6 @@
 certoraRun  contracts/oracle/OracleStore.sol \
             certora/harness/RoleStoreHarness.sol \
+            certora/harness/OracleStoreHarness.sol \
             contracts/event/EventEmitter.sol \
 \
 --verify OracleStore:certora/specs/OracleStore.spec \
