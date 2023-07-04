@@ -140,20 +140,25 @@ rule non_controller_remove_signer {
 rule remove_signer_not_in_list {
     env e;
     address signer_remove_arg;
-    // address some_signer_arg; // may or may not be same as arg to call
-    // uint256 some_index_before;
     uint256 signer_count_before;
-    // uint256 some_index_after;
     uint256 signer_count_after;
+    uint256 some_index;
+    address signer_at_index_before;
+    address signer_at_index_after;
 
-    // there is no index for which the signer is in the list
+    // the signer address argument is not in the list
     require(!oracleStore.signersContains(e, signer_remove_arg));
 
     signer_count_before = getSignerCount(e);
+    signer_at_index_before = getSigner(e, some_index);
+
     oracleStore.removeSigner(e, signer_remove_arg);
+
     signer_count_after = getSignerCount(e);
+    signer_at_index_after= getSigner(e, some_index);
 
     assert(signer_count_before == signer_count_after);
+    assert(signer_at_index_before == signer_at_index_after);
 }
 
 // 7. calling getSignerCount() twice in a row with no other interleaving calls
