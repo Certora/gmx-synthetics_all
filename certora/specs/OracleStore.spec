@@ -40,6 +40,8 @@ rule double_get_signer_count {
     assert(signer_count_one == signer_count_two);
 }
 
+// currently failing sanity... is it because we need the specific
+// roleStore that is a member of OracleStore ?
 rule non_controller_add_signer {
     env e;
     calldataarg args;
@@ -57,14 +59,21 @@ rule non_controller_add_signer {
     assert(signer_count_before == signer_count_after);
 }
 
-/*
 rule remove_signer_not_in_list {
     env e;
     address signer_remove_arg;
-    address some_get_signer_result_before;
-    uint256 some_index_before;
-    // there is no index for which the signer is in the list
+    // address some_signer_arg; // may or may not be same as arg to call
+    // uint256 some_index_before;
+    uint256 signer_count_before;
+    // uint256 some_index_after;
+    uint256 signer_count_after;
     
+    // there is no index for which the signer is in the list
+    require(forall uint256 index. getSigner(e, index) != signer_remove_arg);
+
+    signer_count_before = getSignerCount(e);
     removeSigner(e, signer_remove_arg);
+    signer_count_after = getSignerCount(e);
+
+    assert(signer_count_before == signer_count_after);
 }
-*/
