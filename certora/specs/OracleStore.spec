@@ -1,6 +1,8 @@
 using RoleStoreHarness as roleStore;
 using OracleStoreHarness as oracleStore;
 
+definition UINT256_MAX() returns uint256 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+
 methods {
     //RoleStore
     //function RoleStore.hasRole(address,bytes32) external => DISPATCHER(true);
@@ -159,6 +161,39 @@ rule remove_signer_not_in_list {
 
     assert(signer_count_before == signer_count_after);
     assert(signer_at_index_before == signer_at_index_after);
+}
+
+// 4. calling getSigner with an invalid index "fails gracefully"
+
+// 5. calling addSigner with the controller role will: increase getSignerCount, and add the signer to the result of getSinger(s) for some index(es).
+// status: last assert fails... not sure why yet...
+rule add_signer_valid_liveness {
+    env e;
+    calldataarg args;
+    address new_signer_address;
+    uint256 signer_count_before;
+    uint256 signer_count_after;
+
+    // The caller *does* have the controller role
+    bytes32 myController = roleStore.getCONTROLLER(e);
+    require(roleStore.hasRole(e, e.msg.sender, myController));
+
+
+    signer_count_before = getSignerCount(e);
+    require(signer_count_before < UINT256_MAX()); // reasonable: not many signers
+
+    oracleStore.addSigner(e, new_signer_address);
+    assert(!lastReverted, "addSigner does not revert with correct permissions");
+
+    signer_count_after = getSignerCount(e);
+
+    assert(signer_count_after == assert_uint256(signer_count_before + 1) ||
+        signer_count_after == signer_count_before,
+        "the signer count increments after adding a new signer, or is the same (in case it was already a signer)");
+    
+    assert(oracleStore.signersContains(e, new_signer_address),
+        "the new signer has been added to the list");
+
 }
 
 // 7. calling getSignerCount() twice in a row with no other interleaving calls
