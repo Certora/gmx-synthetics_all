@@ -1,4 +1,5 @@
 using RoleStoreHarness as roleStore;
+using OracleStoreHarness as oracleStore;
 
 methods {
     //RoleStore
@@ -76,9 +77,15 @@ rule remove_signer_not_in_list {
     uint256 signer_count_before;
     // uint256 some_index_after;
     uint256 signer_count_after;
+
+    // Here I am just trying to ensure that the instance of OracleStore
+    // under verification is the same as the one in the harness, so
+    // that we can use signersContains to get the state of the store
+    // under verification. This does not seem to work though...
+    require(e.msg.sender == oracleStore); 
     
     // there is no index for which the signer is in the list
-    require(forall uint256 index. getSigner(e, index) != signer_remove_arg);
+    require(!oracleStore.signersContains(e, signer_remove_arg));
 
     signer_count_before = getSignerCount(e);
     removeSigner(e, signer_remove_arg);
