@@ -17,4 +17,4 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --prover_args "-optimisticFallback true" \
 --send_only \
 --msg "GMX OracleStore linking munged to remove emits" \
---rule remove_signer_not_in_list
+--rule non_controller_remove_signer

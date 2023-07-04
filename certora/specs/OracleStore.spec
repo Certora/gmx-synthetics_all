@@ -16,11 +16,13 @@ rule sanity_satisfy(method f) {
 
 // Natural language specifications
 // 1. for addSigner, if the caller does not have the controller role
+// the contract reverts and
 // the result of calling getSigner will not change before/after the function
 // (i.e. only those with the controller role can change signers)
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
 // 2. for removeSigner, if the caller does not have the controller role
+// the contract reverts and
 // the result of calling getSigner will not change before/after the function
 // (i.e. only those with the controller role can change signers)
 //     -- similar as last spec but using getSigners()
@@ -37,28 +39,99 @@ rule sanity_satisfy(method f) {
 // 8. the results from getSigner and getSigners are consistent.
 
 // 1. for addSigner, if the caller does not have the controller role
+// the contract reverts and
 // the result of calling getSigner will not change before/after the function
 // (i.e. only those with the controller role can change signers)
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
-// status:
-// currently failing sanity... is it because we need the specific
-// roleStore that is a member of OracleStore ?
+//
+// status: works as long as I do not also test getSigners which fails
+// probably due to lack of constraints around memory
 rule non_controller_add_signer {
     env e;
     calldataarg args;
     address new_signer_address;
     uint256 signer_count_before;
     uint256 signer_count_after;
+    uint256 some_index;
+    address signer_at_index_before;
+    address signer_at_index_after;
+    // uint256 signers_arr_idx;
+    // uint256 some_start;
+    // uint256 some_end;
+    // address[] signers_before;
+    // address[] signers_after;
 
+    // The caller does  not have the controller role
     bytes32 myController = roleStore.getCONTROLLER(e);
-
     require(!roleStore.hasRole(e, e.msg.sender, myController));
 
+    // The index used to check the getSigners result is within the
+    // range used
+    // require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
+
     signer_count_before = getSignerCount(e);
-    addSigner(e, new_signer_address);
+    signer_at_index_before = getSigner(e, some_index);
+    // signers_before = getSigners(e, some_start, some_end);
+    
+    addSigner@withrevert(e, new_signer_address);
+    assert(lastReverted, "the call reverts");
+    
     signer_count_after = getSignerCount(e);
-    assert(signer_count_before == signer_count_after);
+    signer_at_index_after = getSigner(e, some_index);
+    // signers_after = getSigners(e, some_start, some_end);
+
+    assert(signer_count_before == signer_count_after, "signer count has not changed");
+    assert(signer_at_index_before == signer_at_index_after, "getSigners has not changed");
+    // assert(signers_before[signers_arr_idx] == signers_after[signers_arr_idx]);
+}
+
+// 2. for removeSigner, if the caller does not have the controller role
+// the contract reverts and
+// the result of calling getSigner will not change before/after the function
+// (i.e. only those with the controller role can change signers)
+//     -- similar as last spec but using getSigners()
+//     -- similar as last spec but using getSignerCount()
+//
+// status: works as long as I do not also test getSigners which fails
+// probably due to lack of constraints around memory
+rule non_controller_remove_signer {
+    env e;
+    calldataarg args;
+    address remove_signer_address;
+    uint256 signer_count_before;
+    uint256 signer_count_after;
+    uint256 some_index;
+    address signer_at_index_before;
+    address signer_at_index_after;
+    // uint256 signers_arr_idx;
+    // uint256 some_start;
+    // uint256 some_end;
+    // address[] signers_before;
+    // address[] signers_after;
+
+    // The caller does  not have the controller role
+    bytes32 myController = roleStore.getCONTROLLER(e);
+    require(!roleStore.hasRole(e, e.msg.sender, myController));
+
+    // The index used to check the getSigners result is within the
+    // range used
+    // require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
+
+    signer_count_before = getSignerCount(e);
+    signer_at_index_before = getSigner(e, some_index);
+    // signers_before = getSigners(e, some_start, some_end);
+    
+    removeSigner@withrevert(e, remove_signer_address);
+    assert(lastReverted, "the call reverts");
+    
+    signer_count_after = getSignerCount(e);
+    signer_at_index_after = getSigner(e, some_index);
+    // signers_after = getSigners(e, some_start, some_end);
+
+    assert(signer_count_before == signer_count_after, "signer count has not changed");
+    assert(signer_at_index_before == signer_at_index_after, "getSigners has not changed");
+    // assert(signers_before[signers_arr_idx] == signers_after[signers_arr_idx]);
 }
 
 // 3. calling removeSigner with an address that has not been added
