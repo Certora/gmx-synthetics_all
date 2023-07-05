@@ -175,11 +175,12 @@ rule add_signer_valid_liveness {
     uint256 signer_count_after;
 
     // The caller *does* have the controller role
-    bytes32 myController = roleStore.getCONTROLLER(e);
-    require(roleStore.hasRole(e, e.msg.sender, myController));
+    // bytes32 myController = roleStore.getCONTROLLER(e);
+    // require(roleStore.hasRole(e, e.msg.sender, myController));
+    require (oracleStore.hasControllerRole(e));
 
 
-    signer_count_before = getSignerCount(e);
+    signer_count_before = oracleStore.getSignerCount(e);
     // NOTE: This does not seem to affect verification result at the moment.
     // Try removing this later...
     require(signer_count_before < UINT256_MAX()); // reasonable: not many signers
@@ -187,7 +188,7 @@ rule add_signer_valid_liveness {
     oracleStore.addSigner(e, new_signer_address);
     // assert(!lastReverted, "addSigner does not revert with correct permissions"); // NOTE: fails... must be other reasons for reverts
 
-    signer_count_after = getSignerCount(e);
+    signer_count_after = oracleStore.getSignerCount(e);
 
     assert(signer_count_after == assert_uint256(signer_count_before + 1) ||
         signer_count_after == signer_count_before,
