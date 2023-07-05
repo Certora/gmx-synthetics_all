@@ -1,4 +1,3 @@
-using RoleStoreHarness as roleStore;
 using OracleStoreHarness as oracleStore;
 
 definition UINT256_MAX() returns uint256 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
@@ -65,22 +64,23 @@ rule non_controller_add_signer {
     // address[] signers_after;
 
     // The caller does  not have the controller role
-    bytes32 myController = roleStore.getCONTROLLER(e);
-    require(!roleStore.hasRole(e, e.msg.sender, myController));
+    // bytes32 myController = roleStore.getCONTROLLER(e);
+    // require(!roleStore.hasRole(e, e.msg.sender, myController));
+    require(!oracleStore.hasControllerRole(e));
 
     // The index used to check the getSigners result is within the
     // range used
     // require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
 
-    signer_count_before = getSignerCount(e);
-    signer_at_index_before = getSigner(e, some_index);
+    signer_count_before = oracleStore.getSignerCount(e);
+    signer_at_index_before = oracleStore.getSigner(e, some_index);
     // signers_before = getSigners(e, some_start, some_end);
     
-    addSigner@withrevert(e, new_signer_address);
+    oracleStore.addSigner@withrevert(e, new_signer_address);
     assert(lastReverted, "the call reverts");
     
-    signer_count_after = getSignerCount(e);
-    signer_at_index_after = getSigner(e, some_index);
+    signer_count_after = oracleStore.getSignerCount(e);
+    signer_at_index_after = oracleStore.getSigner(e, some_index);
     // signers_after = getSigners(e, some_start, some_end);
 
     assert(signer_count_before == signer_count_after, "signer count has not changed");
@@ -113,22 +113,23 @@ rule non_controller_remove_signer {
     // address[] signers_after;
 
     // The caller does  not have the controller role
-    bytes32 myController = roleStore.getCONTROLLER(e);
-    require(!roleStore.hasRole(e, e.msg.sender, myController));
+    // bytes32 myController = roleStore.getCONTROLLER(e);
+    // require(!roleStore.hasRole(e, e.msg.sender, myController));
+    require(!oracleStore.hasControllerRole(e));
 
     // The index used to check the getSigners result is within the
     // range used
     // require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
 
-    signer_count_before = getSignerCount(e);
-    signer_at_index_before = getSigner(e, some_index);
+    signer_count_before = oracleStore.getSignerCount(e);
+    signer_at_index_before = oracleStore.getSigner(e, some_index);
     // signers_before = getSigners(e, some_start, some_end);
     
-    removeSigner@withrevert(e, remove_signer_address);
+    oracleStore.removeSigner@withrevert(e, remove_signer_address);
     assert(lastReverted, "the call reverts");
     
-    signer_count_after = getSignerCount(e);
-    signer_at_index_after = getSigner(e, some_index);
+    signer_count_after = oracleStore.getSignerCount(e);
+    signer_at_index_after = oracleStore.getSigner(e, some_index);
     // signers_after = getSigners(e, some_start, some_end);
 
     assert(signer_count_before == signer_count_after, "signer count has not changed");
@@ -151,13 +152,13 @@ rule remove_signer_not_in_list {
     // the signer address argument is not in the list
     require(!oracleStore.signersContains(e, signer_remove_arg));
 
-    signer_count_before = getSignerCount(e);
-    signer_at_index_before = getSigner(e, some_index);
+    signer_count_before = oracleStore.getSignerCount(e);
+    signer_at_index_before = oracleStore.getSigner(e, some_index);
 
     oracleStore.removeSigner(e, signer_remove_arg);
 
-    signer_count_after = getSignerCount(e);
-    signer_at_index_after= getSigner(e, some_index);
+    signer_count_after = oracleStore.getSignerCount(e);
+    signer_at_index_after= oracleStore.getSigner(e, some_index);
 
     assert(signer_count_before == signer_count_after);
     assert(signer_at_index_before == signer_at_index_after);
@@ -211,18 +212,19 @@ rule remove_signer_valid_liveness {
     uint256 signer_count_after;
 
     // The caller *does* have the controller role
-    bytes32 myController = roleStore.getCONTROLLER(e);
-    require(roleStore.hasRole(e, e.msg.sender, myController)); 
+    // bytes32 myController = roleStore.getCONTROLLER(e);
+    // require(roleStore.hasRole(e, e.msg.sender, myController)); 
+    require(oracleStore.hasControllerRole(e));
 
     // the signer to be deleted is really in the set
     require(oracleStore.signersContains(e, signer_to_remove));
 
-    signer_count_before = getSignerCount(e);
+    signer_count_before = oracleStore.getSignerCount(e);
 
     oracleStore.removeSigner(e, signer_to_remove);
     // assert(!lastReverted, "removeSigner does not revert with correct permissions");
 
-    signer_count_after = getSignerCount(e);
+    signer_count_after = oracleStore.getSignerCount(e);
 
     assert(signer_count_after == assert_uint256(signer_count_before - 1),
         "Removing a signer that exists and with correct permissions reduces signer count" );
