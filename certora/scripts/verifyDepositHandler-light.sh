@@ -1,4 +1,5 @@
 certoraRun  contracts/exchange/DepositHandler.sol \
+            contracts/data/DataStore.sol \
 \
 --verify DepositHandler:certora/specs/DepositHandler.spec \
 \
@@ -15,8 +16,8 @@ certoraRun  contracts/exchange/DepositHandler.sol \
 --prover_version gmx/1 \
 \
 --send_only \
---msg "GMX DepositHandler light, createDepositOnly, modifiers are NONDET" \
---rule createDepositOnly
+--msg "GMX DepositHandler light with DataStore, sanity, modifiers are NONDET" \
+--rule sanity
 
 # contracts/data/DataStore.sol \
 # --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \

@@ -214,12 +214,12 @@ methods {
 
 }
 
-/*rule sanity(method f) {
+rule sanity(method f) {
     env e;
     calldataarg args;
     f(e, args);
     assert false;
-}*/
+}
 
 /*rule claimFeesTest() {
     env e;
@@ -265,6 +265,6 @@ rule simulateExecuteDepositOnly() {
 rule _executeDepositOnly() {
     env e;
     calldataarg args;
-    cancelDeposit(e, args);
+    _executeDeposit(e, args);
     assert false;
 }
