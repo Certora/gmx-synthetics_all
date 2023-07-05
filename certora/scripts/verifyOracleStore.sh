@@ -17,4 +17,4 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --prover_args "-optimisticFallback true" \
 --send_only \
 --rule remove_signer_valid_liveness \
---msg "remove_signer, try EnumberableSet invariant"
+--msg "signers invariant with harness"
