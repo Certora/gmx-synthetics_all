@@ -26,6 +26,11 @@ contract StrictBank is Bank {
 
     constructor(RoleStore _roleStore, DataStore _dataStore) Bank(_roleStore, _dataStore) {}
 
+    // Chandra added this
+    function getBalance(address token) public view returns (uint256) {
+        return tokenBalances[token];
+    }
+
     // @dev records a token transfer into the contract
     // @param token the token to record the transfer for
     // @return the amount of tokens transferred in
@@ -61,5 +66,10 @@ contract StrictBank is Bank {
     // @param token the token that was transferred out
     function _afterTransferOut(address token) internal override {
         tokenBalances[token] = IERC20(token).balanceOf(address(this));
+    }
+
+    // Chandra added this
+    function afterTransferOut(address token) external {
+        _afterTransferOut(token);
     }
 }
