@@ -203,7 +203,6 @@ rule add_signer_valid_liveness {
 // 6. calling removeSigner as a controller and on an address that has been 
 // added to the list of signers previously will: decrease getSigners, ensure
 // the address will not appear in the result of getSigner(s) for any index
-// status: last assert also fails here... confused about why as well.
 rule remove_signer_valid_liveness {
     env e;
     calldataarg args;
@@ -212,13 +211,11 @@ rule remove_signer_valid_liveness {
     uint256 signer_count_after;
 
     uint256 signers_invariant_index;
-    uint256 signers_invariant_address;
+    address signers_invariant_address;
+    address[] signer_set_values;
 
-    // invariants that the specify the EnumerableSet is well-formed.
-    require (oracleStore.signers._inner.values[signers_invariant_index] ==
-        signers_invariant_address) <=> (oracleStore.signers._inner._indexes[signers_invariant_address] == signers_invariant_index);
-
-
+    signer_set_values = oracleStore.getSignerSetValues(e);
+    require ((signer_set_values[signers_invariant_index] == signers_invariant_address) <=> (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
 
     // The caller *does* have the controller role
     // bytes32 myController = roleStore.getCONTROLLER(e);
