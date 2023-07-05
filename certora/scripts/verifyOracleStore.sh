@@ -16,5 +16,5 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---msg "add_signer_valid" \
+--msg "add_signer_valid_fix_harness" \
 --rule add_signer_valid_liveness
