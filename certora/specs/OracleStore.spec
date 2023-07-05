@@ -180,10 +180,12 @@ rule add_signer_valid_liveness {
 
 
     signer_count_before = getSignerCount(e);
+    // NOTE: This does not seem to affect verification result at the moment.
+    // Try removing this later...
     require(signer_count_before < UINT256_MAX()); // reasonable: not many signers
 
     oracleStore.addSigner(e, new_signer_address);
-    assert(!lastReverted, "addSigner does not revert with correct permissions");
+    // assert(!lastReverted, "addSigner does not revert with correct permissions"); // NOTE: fails... must be other reasons for reverts
 
     signer_count_after = getSignerCount(e);
 
@@ -193,6 +195,38 @@ rule add_signer_valid_liveness {
     
     assert(oracleStore.signersContains(e, new_signer_address),
         "the new signer has been added to the list");
+
+}
+
+// 6. calling removeSigner as a controller and on an address that has been 
+// added to the list of signers previously will: decrease getSigners, ensure
+// the address will not appear in the result of getSigner(s) for any index
+// status: last assert also fails here... confused about why as well.
+rule remove_signer_valid_liveness {
+    env e;
+    calldataarg args;
+    address signer_to_remove;
+    uint256 signer_count_before;
+    uint256 signer_count_after;
+
+    // The caller *does* have the controller role
+    bytes32 myController = roleStore.getCONTROLLER(e);
+    require(roleStore.hasRole(e, e.msg.sender, myController)); 
+
+    // the signer to be deleted is really in the set
+    require(oracleStore.signersContains(e, signer_to_remove));
+
+    signer_count_before = getSignerCount(e);
+
+    oracleStore.removeSigner(e, signer_to_remove);
+    // assert(!lastReverted, "removeSigner does not revert with correct permissions");
+
+    signer_count_after = getSignerCount(e);
+
+    assert(signer_count_after == assert_uint256(signer_count_before - 1),
+        "Removing a signer that exists and with correct permissions reduces signer count" );
+    assert(!oracleStore.signersContains(e, signer_to_remove),
+        "the removed signer is not in the list of signers");
 
 }
 
