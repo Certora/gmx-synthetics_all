@@ -16,5 +16,5 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---rule non_controller_add_signer \
---msg "non_controller_add_signer no rolestore harness"
+--rule remove_signer_valid_liveness \
+--msg "remove_signer, try EnumberableSet invariant"
