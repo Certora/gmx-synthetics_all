@@ -16,5 +16,5 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---msg "GMX OracleStore linking munged to remove emits" \
---rule add_signer_valid_liveness
+--msg "remove_signer_valid" \
+--rule remove_signer_valid_liveness
