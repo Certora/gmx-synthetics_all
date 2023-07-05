@@ -211,6 +211,15 @@ rule remove_signer_valid_liveness {
     uint256 signer_count_before;
     uint256 signer_count_after;
 
+    uint256 signers_invariant_index;
+    uint256 signers_invariant_address;
+
+    // invariants that the specify the EnumerableSet is well-formed.
+    require (oracleStore.signers._inner.values[signers_invariant_index] ==
+        signers_invariant_address) <=> (oracleStore.signers._inner._indexes[signers_invariant_address] == signers_invariant_index);
+
+
+
     // The caller *does* have the controller role
     // bytes32 myController = roleStore.getCONTROLLER(e);
     // require(roleStore.hasRole(e, e.msg.sender, myController)); 
@@ -222,7 +231,7 @@ rule remove_signer_valid_liveness {
     signer_count_before = oracleStore.getSignerCount(e);
 
     oracleStore.removeSigner(e, signer_to_remove);
-    // assert(!lastReverted, "removeSigner does not revert with correct permissions");
+    assert(!lastReverted, "removeSigner does not revert with correct permissions");
 
     signer_count_after = oracleStore.getSignerCount(e);
 
@@ -230,7 +239,6 @@ rule remove_signer_valid_liveness {
         "Removing a signer that exists and with correct permissions reduces signer count" );
     assert(!oracleStore.signersContains(e, signer_to_remove),
         "the removed signer is not in the list of signers");
-
 }
 
 // 7. calling getSignerCount() twice in a row with no other interleaving calls
