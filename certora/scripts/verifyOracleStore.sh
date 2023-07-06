@@ -16,5 +16,5 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---rule remove_signer_valid_liveness \
---msg "signers invariant with harness"
+--rule get_invalid_index \
+--msg "valid_liveness put max back"

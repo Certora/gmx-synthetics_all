@@ -46,8 +46,8 @@ rule sanity_satisfy(method f) {
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
 //
-// status: works as long as I do not also test getSigners which fails
-// probably due to lack of constraints around memory
+// status: not working -- fails revert assertion and also others
+// if that one is commented out.
 rule non_controller_add_signer {
     env e;
     calldataarg args;
@@ -62,6 +62,14 @@ rule non_controller_add_signer {
     // uint256 some_end;
     // address[] signers_before;
     // address[] signers_after;
+
+    // Assuming: The "signers" set obeys an invariant that
+    // the two data structures it uses internally are consistent.
+    uint256 signers_invariant_index;
+    address signers_invariant_address;
+    address[] signer_set_values;
+    signer_set_values = oracleStore.getSignerSetValues(e);
+    require ((signer_set_values[signers_invariant_index] == signers_invariant_address) <=> (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
 
     // The caller does  not have the controller role
     // bytes32 myController = roleStore.getCONTROLLER(e);
@@ -95,8 +103,8 @@ rule non_controller_add_signer {
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
 //
-// status: works as long as I do not also test getSigners which fails
-// probably due to lack of constraints around memory
+// status: not working -- fails revert assertion and also others
+// if that one is commented out.
 rule non_controller_remove_signer {
     env e;
     calldataarg args;
@@ -140,6 +148,7 @@ rule non_controller_remove_signer {
 // 3. calling removeSigner with an address that has not been added
 // to the list of signers previously will have no affect on: getSigner(s), 
 // getSignerCount
+// status: passing
 rule remove_signer_not_in_list {
     env e;
     address signer_remove_arg;
@@ -165,9 +174,33 @@ rule remove_signer_not_in_list {
 }
 
 // 4. calling getSigner with an invalid index "fails gracefully"
+rule get_invalid_index {
+    env e;
+    address signer_at_index;
+
+    // Assuming: The "signers" set obeys an invariant that
+    // the two data structures it uses internally are consistent.
+    uint256 signers_invariant_index;
+    address signers_invariant_address;
+    address[] signer_set_values;
+    signer_set_values = oracleStore.getSignerSetValues(e);
+    require ((signer_set_values[signers_invariant_index] 
+        == signers_invariant_address) <=> 
+        (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
+
+
+    // This spec could probably be made more general,
+    // but starting simple with testing getting an element
+    // when it is empty
+
+    require(oracleStore.getSignerCount(e) == 0);
+
+    signer_at_index = oracleStore.getSigner@withrevert(e, 1);
+    assert(lastReverted);
+}
 
 // 5. calling addSigner with the controller role will: increase getSignerCount, and add the signer to the result of getSinger(s) for some index(es).
-// status: last assert fails... not sure why yet...
+// status: passing
 rule add_signer_valid_liveness {
     env e;
     calldataarg args;
@@ -182,8 +215,6 @@ rule add_signer_valid_liveness {
 
 
     signer_count_before = oracleStore.getSignerCount(e);
-    // NOTE: This does not seem to affect verification result at the moment.
-    // Try removing this later...
     require(signer_count_before < UINT256_MAX()); // reasonable: not many signers
 
     oracleStore.addSigner(e, new_signer_address);
@@ -203,6 +234,7 @@ rule add_signer_valid_liveness {
 // 6. calling removeSigner as a controller and on an address that has been 
 // added to the list of signers previously will: decrease getSigners, ensure
 // the address will not appear in the result of getSigner(s) for any index
+// status: passing
 rule remove_signer_valid_liveness {
     env e;
     calldataarg args;
@@ -210,10 +242,11 @@ rule remove_signer_valid_liveness {
     uint256 signer_count_before;
     uint256 signer_count_after;
 
+    // Assuming: The "signers" set obeys an invariant that
+    // the two data structures it uses internally are consistent.
     uint256 signers_invariant_index;
     address signers_invariant_address;
     address[] signer_set_values;
-
     signer_set_values = oracleStore.getSignerSetValues(e);
     require ((signer_set_values[signers_invariant_index] == signers_invariant_address) <=> (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
 
@@ -240,6 +273,7 @@ rule remove_signer_valid_liveness {
 
 // 7. calling getSignerCount() twice in a row with no other interleaving calls
 // results in the same value. Similar for getSigner(s)
+// status: passing
 rule double_get_signer_count {
     env e;
     uint256 signer_count_one;
