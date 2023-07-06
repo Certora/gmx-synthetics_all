@@ -1,10 +1,11 @@
 using OracleStoreHarness as oracleStore;
+// using RoleStore as roleStore;
 
 definition UINT256_MAX() returns uint256 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
 methods {
     //RoleStore
-    //function RoleStore.hasRole(address,bytes32) external => DISPATCHER(true);
+    // function _.hasRole(address,bytes32) external => DISPATCHER(true);
     // definition CONTROLLER() returns bytes32 = 70546d1c92f8c2132ae23a23f5177aa8526356051c7510df99f50e012d221529;
 }
 
@@ -46,8 +47,7 @@ rule sanity_satisfy(method f) {
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
 //
-// status: not working -- fails revert assertion and also others
-// if that one is commented out.
+// status: working but need to fix things with sets
 rule non_controller_add_signer {
     env e;
     calldataarg args;
@@ -102,9 +102,7 @@ rule non_controller_add_signer {
 // (i.e. only those with the controller role can change signers)
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
-//
-// status: not working -- fails revert assertion and also others
-// if that one is commented out.
+// status: working but need to fix things with sets
 rule non_controller_remove_signer {
     env e;
     calldataarg args;
@@ -148,34 +146,63 @@ rule non_controller_remove_signer {
 // 3. calling removeSigner with an address that has not been added
 // to the list of signers previously will have no affect on: getSigner(s), 
 // getSignerCount
-// status: passing
+// status: last assert using arrays fails... need invariants about set
 rule remove_signer_not_in_list {
     env e;
     address signer_remove_arg;
+
     uint256 signer_count_before;
     uint256 signer_count_after;
+
     uint256 some_index;
     address signer_at_index_before;
     address signer_at_index_after;
 
+    uint256 signers_arr_idx;
+    uint256 some_start;
+    uint256 some_end;
+    address[] signers_before;
+    address[] signers_after;
+
+    // Assuming: The "signers" set obeys an invariant that
+    // the two data structures it uses internally are consistent.
+    uint256 signers_invariant_index;
+    address signers_invariant_address;
+    address[] signer_set_values;
+    signer_set_values = oracleStore.getSignerSetValues(e);
+    require ((signer_set_values[signers_invariant_index] == signers_invariant_address) <=> (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
+
     // the signer address argument is not in the list
     require(!oracleStore.signersContains(e, signer_remove_arg));
-
+    
     signer_count_before = oracleStore.getSignerCount(e);
+
+    // The index used to check the getSigners result is within the
+    // range used
+    require(some_start <= some_end && 
+        some_end <= signer_count_before);
+    require(signers_arr_idx <= assert_uint256(some_end - some_start));
+
     signer_at_index_before = oracleStore.getSigner(e, some_index);
+    signers_before = oracleStore.getSigners(e, some_start, some_end);
 
     oracleStore.removeSigner(e, signer_remove_arg);
 
     signer_count_after = oracleStore.getSignerCount(e);
     signer_at_index_after= oracleStore.getSigner(e, some_index);
+    signers_after = oracleStore.getSigners(e, some_start, some_end);
 
     assert(signer_count_before == signer_count_after);
     assert(signer_at_index_before == signer_at_index_after);
+    assert(signers_before[signers_arr_idx] == signers_after[signers_arr_idx]);
 }
 
 // 4. calling getSigner with an invalid index "fails gracefully"
+// status: passing
 rule get_invalid_index {
     env e;
+    uint256 signers_size;
+    uint256 some_index;
     address signer_at_index;
 
     // Assuming: The "signers" set obeys an invariant that
@@ -188,14 +215,13 @@ rule get_invalid_index {
         == signers_invariant_address) <=> 
         (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
 
+    signers_size = oracleStore.getSignerCount(e);
 
-    // This spec could probably be made more general,
-    // but starting simple with testing getting an element
-    // when it is empty
+    // Make an index that is out of bounds
+    require(some_index > signers_size);
 
-    require(oracleStore.getSignerCount(e) == 0);
-
-    signer_at_index = oracleStore.getSigner@withrevert(e, 1);
+    // acceessing the out of bounds element causes a revert
+    signer_at_index = oracleStore.getSigner@withrevert(e, some_index);
     assert(lastReverted);
 }
 
