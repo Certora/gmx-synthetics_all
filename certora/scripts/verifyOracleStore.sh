@@ -1,12 +1,13 @@
 certoraRun  contracts/oracle/OracleStore.sol \
-            certora/harness/RoleStoreHarness.sol \
+            contracts/role/RoleStore.sol \
             certora/harness/OracleStoreHarness.sol \
             contracts/event/EventEmitter.sol \
 \
 --verify OracleStore:certora/specs/OracleStore.spec \
 \
---link  OracleStore:roleStore=RoleStoreHarness \
-        OracleStore:eventEmitter=EventEmitter \
+--link  OracleStoreHarness:roleStore=RoleStore \
+        OracleStore:roleStore=RoleStore \
+        OracleStoreHarness:eventEmitter=EventEmitter \
 --solc solc8.19 \
 --loop_iter 2 \
 --optimistic_loop \
@@ -16,5 +17,4 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---rule get_invalid_index \
---msg "valid_liveness put max back"
+--msg "rerun all rules after changing linking"
