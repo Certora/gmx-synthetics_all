@@ -247,7 +247,7 @@ rule createOrderOnly() {
 rule updateOrderOnly() {
     env e; calldataarg args;
     //updateOrder(e, args);
-    
+
     bytes32 key;
     uint256 sizeDeltaUsd;
     uint256 acceptablePrice;
@@ -255,24 +255,24 @@ rule updateOrderOnly() {
     uint256 minOutputAmount;
     Order.Props order;
 
-    require order.addresses.account == 0;
-    require order.addresses.receiver == 0;
-    require order.addresses.callbackContract == 0;
-    require order.addresses.uiFeeReceiver == 0;
-    require order.addresses.market == 0;
-    require order.addresses.initialCollateralToken == 0;
+    require order.addresses.account != 0;
+    require order.addresses.receiver != 0;
+    require order.addresses.callbackContract != 0;
+    require order.addresses.uiFeeReceiver != 0;
+    require order.addresses.market != 0;
+    require order.addresses.initialCollateralToken != 0;
     //require order.addresses.swapPath == address [0]; //not working
 
-    //require order.numbers.orderType == MarketSwap; //not working
+    require order.numbers.orderType == Order.OrderType.MarketSwap; //MarketSwap; //not working
     //require order.numbers.decreasePositionSwapType == NoSwap; //not working
-    require order.numbers.sizeDeltaUsd == 0;
-    require order.numbers.initialCollateralDeltaAmount == 0;
-    require order.numbers.triggerPrice == 0;
-    require order.numbers.acceptablePrice == 0;
-    require order.numbers.executionFee == 0;
-    require order.numbers.callbackGasLimit == 0;
-    require order.numbers.minOutputAmount == 0;
-    require order.numbers.updatedAtBlock == 0;
+    require order.numbers.sizeDeltaUsd != 0;
+    require order.numbers.initialCollateralDeltaAmount != 0;
+    require order.numbers.triggerPrice != 0;
+    require order.numbers.acceptablePrice != 0;
+    require order.numbers.executionFee != 0;
+    require order.numbers.callbackGasLimit != 0;
+    require order.numbers.minOutputAmount != 0;
+    require order.numbers.updatedAtBlock != 0;
 
     require order.flags.isLong == false;
     require order.flags.shouldUnwrapNativeToken == false;
@@ -309,3 +309,38 @@ rule _executeOrderOnly() {
     _executeOrder(e, args);
     assert false;
 }
+
+
+// Rule ideas:
+// createOrder:
+// 1. createOrder() should revert only if:
+//    a. the order type is not allowed (FeatureUtils.validateFeature)
+//    b. the account == 0
+//    c. the params.orderType == Order.OrderType.Liquidation
+//    d. initialCollateralDeltaAmount < params.numbers.executionFee
+//    e. wntAmount < params.numbers.executionFee
+//    f. market.marketToken != 0
+//    g. isMarketDisabled == true
+//    h. isSwapOnlyMarket (market.indexToken == address(0))
+//    i. validateSwapPath: swapPath.length > maxSwapPathLength
+//    j. any of the markets on the swapPath: market.marketToken == address(0)
+//    k. the receiver == 0
+//    l. callbackGasLimit > maxCallbackGasLimit
+//    m. executionFee < minExecutionFee
+//    n. order.sizeDeltaUsd() == 0 && order.initialCollateralDeltaAmount() == 0
+
+// 2. The nonce bytes32 key = NonceUtils.getNextKey(dataStore);
+//    is always increased by one after any type of order is created:
+//    ADL, Deposit, Liquidation, Any order type, Withdrawal
+//    this might be ***problematic*** as the returned key is hash of the nonce
+//    bytes32 key = keccak256(abi.encode(address(dataStore), nonce));
+
+// 3. On successful order creation/update its property (props.numbers.updatedAtBlock) is correctly updated:
+//    props.setUpdatedAtBlock(Chain.currentBlockNumber());
+
+
+
+
+// mental notes:
+// - the referral code is set when calling the createOrder() and can be set to anything - who controls it?
+// - storing of orders in the datastore is with OrderStoreUtils.sol and it uses hash of a key hash
