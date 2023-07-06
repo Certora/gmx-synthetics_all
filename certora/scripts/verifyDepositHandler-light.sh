@@ -12,11 +12,12 @@ certoraRun  contracts/exchange/DepositHandler.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
+--prover_args '-mediumTimeout 100' \
 --server production \
 --prover_version gmx/1 \
 \
 --send_only \
---msg "GMX DepositHandler light with DataStore, sanity, modifiers are NONDET" \
+--msg "GMX DepositHandler light mediumTimeout 100, with DataStore, sanity, modifiers are NONDET" \
 --rule sanity
 
 # contracts/data/DataStore.sol \
