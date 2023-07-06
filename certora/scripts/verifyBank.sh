@@ -1,6 +1,5 @@
-certoraRun.py contracts/bank/StrictBank.sol \
-              contracts/bank/Bank.sol \
---verify StrictBank:certora/specs/StrictBank.spec \
+certoraRun.py certora/harness/StrictBankHarness.sol \
+--verify StrictBankHarness:certora/specs/StrictBank.spec \
 --solc solc8.19 \
 --loop_iter 2 \
 --optimistic_loop \
