@@ -1,64 +1,64 @@
-// methods {
-//     /// DataStore (to be dispatched only if the DataStore contract isn't linked to the harness Oracle)
-//     // function _.getUint(bytes32) external => DISPATCHER(true);
-//     // function _.getAddress(bytes32) external => DISPATCHER(true);
-//     // function _.getBytes32(bytes32) external => DISPATCHER(true);
-//     /// PriceFeed
-//     function _.latestRoundData() external => DISPATCHER(true);
-//     /// Array (temporary summarization)
-//     function _.getMedian(uint256[] memory) internal => NONDET;
-//     /// Chain
-//     function _.arbBlockNumber() external => ghostBlockNumber() expect uint256 ALL;
-//     function _.arbBlockHash(uint256 blockNumber) external => ghostBlockHash(blockNumber) expect bytes32 ALL;
-//     /// Oracle summaries
-//     function Oracle._getSalt() internal returns bytes32 => mySalt();
-//     /// @notice : the following summaries aren't applied (issue)
-//     //function OracleHarness._getPriceFeedPrice(address,address) internal returns (bool, uint256) => NONDET;
-//     //function OracleHarness._setPrices(address,address,address[] memory, OracleUtils.SetPricesParams memory) internal => NONDET;
+methods {
+    /// DataStore (to be dispatched only if the DataStore contract isn't linked to the harness Oracle)
+    // function _.getUint(bytes32) external => DISPATCHER(true);
+    // function _.getAddress(bytes32) external => DISPATCHER(true);
+    // function _.getBytes32(bytes32) external => DISPATCHER(true);
+    /// PriceFeed
+    function _.latestRoundData() external => DISPATCHER(true);
+    /// Array (temporary summarization)
+    function _.getMedian(uint256[] memory) internal => NONDET;
+    /// Chain
+    function _.arbBlockNumber() external => ghostBlockNumber() expect uint256 ALL;
+    function _.arbBlockHash(uint256 blockNumber) external => ghostBlockHash(blockNumber) expect bytes32 ALL;
+    /// Oracle summaries
+    function Oracle._getSalt() internal returns bytes32 => mySalt();
+    /// @notice : the following summaries aren't applied (issue)
+    //function OracleHarness._getPriceFeedPrice(address,address) internal returns (bool, uint256) => NONDET;
+    //function OracleHarness._setPrices(address,address,address[] memory, OracleUtils.SetPricesParams memory) internal => NONDET;
 
-//     /// Getters:
-//     function OracleHarness.primaryPrices(address) external returns (uint256,uint256);
-//     function OracleHarness.secondaryPrices(address) external returns (uint256,uint256);
-//     function OracleHarness.customPrices(address) external returns (uint256,uint256);
-//     function OracleHarness.getSignerByInfo(uint256, uint256) external returns (address);
-// }
+    /// Getters:
+    function OracleHarness.primaryPrices(address) external returns (uint256,uint256);
+    function OracleHarness.secondaryPrices(address) external returns (uint256,uint256);
+    function OracleHarness.customPrices(address) external returns (uint256,uint256);
+    function OracleHarness.getSignerByInfo(uint256, uint256) external returns (address);
+}
 
-// definition isSetPrices(method f) returns bool = f.selector == 0xdf026811;
+definition isSetPrices(method f) returns bool = f.selector == 0xdf026811;
 
-// ghost mySalt() returns bytes32;
+ghost mySalt() returns bytes32;
 
-// ghost ghostBlockNumber() returns uint256 {
-//     axiom ghostBlockNumber() !=0;
-// }
+ghost ghostBlockNumber() returns uint256 {
+    axiom ghostBlockNumber() !=0;
+}
 
-// ghost ghostBlockHash(uint256) returns bytes32 {
-//     axiom forall uint256 num1. forall uint256 num2. 
-//         num1 != num2 => ghostBlockHash(num1) != ghostBlockHash(num2);
-// }
+ghost ghostBlockHash(uint256) returns bytes32 {
+    axiom forall uint256 num1. forall uint256 num2. 
+        num1 != num2 => ghostBlockHash(num1) != ghostBlockHash(num2);
+}
 
-// function ghostMedian(uint256[] array) returns uint256 {
-//     uint256 med;
-//     uint256 len = array.length;
-//     require med >= array[0] && med <= array[require_uint256(len-1)];
-//     return med;
-// }
+function ghostMedian(uint256[] array) returns uint256 {
+    uint256 med;
+    uint256 len = array.length;
+    require med >= array[0] && med <= array[require_uint256(len-1)];
+    return med;
+}
 
-// rule complexityCheck(method f)
-// filtered{f-> !isSetPrices(f)} {
-//     env e; 
-//     calldataarg args;
-//     f(e, args);
+rule complexityCheck(method f)
+filtered{f-> !isSetPrices(f)} {
+    env e; 
+    calldataarg args;
+    f(e, args);
 
-//     assert false, "this assertion should fail";
-// }
+    assert false, "this assertion should fail";
+}
 
-// rule setPricesComplexity() {
-//     env e; 
-//     calldataarg args;
-//     setPrices(e, args);
+rule setPricesComplexity() {
+    env e; 
+    calldataarg args;
+    setPrices(e, args);
 
-//     assert false, "this assertion should fail";
-// }
+    assert false, "this assertion should fail";
+}
 
 // rule validateSignerConsistency() {
 //     env e1; env e2;
