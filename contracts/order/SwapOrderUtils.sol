@@ -50,10 +50,10 @@ library SwapOrderUtils {
         ));
 
         EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "outputToken", outputToken);
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "outputAmount", outputAmount);
+        //eventData.addressItems.initItems(1);
+        //eventData.addressItems.setItem(0, "outputToken", outputToken);
+        //eventData.uintItems.initItems(1);
+        //eventData.uintItems.setItem(0, "outputAmount", outputAmount);
         return eventData;
     }
 

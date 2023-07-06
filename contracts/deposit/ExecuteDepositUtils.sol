@@ -229,8 +229,8 @@ library ExecuteDepositUtils {
         );
 
         EventUtils.EventLogData memory eventData;
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "receivedMarketTokens", cache.receivedMarketTokens);
+        //eventData.uintItems.initItems(1);
+        //eventData.uintItems.setItem(0, "receivedMarketTokens", cache.receivedMarketTokens);
         CallbackUtils.afterDepositExecution(params.key, deposit, eventData);
 
         GasUtils.payExecutionFee(
