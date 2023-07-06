@@ -55,7 +55,7 @@ filtered{f-> !isSetPrices(f)} {
 rule setPricesComplexity() {
     env e; 
     calldataarg args;
-    setPrices(e, args);
+    _setPrices(e, args);
 
     assert false, "this assertion should fail";
 }
