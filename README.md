@@ -481,6 +481,14 @@ After the initial setup:
 
 - Virtual IDs must be set on market creation / token whitelisting, if it is set after trading for the token / market is done, the tracking would not be accurate and may need to be adjusted
 
+- If an execution transaction requires a large amount of gas that may be close to the maximum block gas limit, it may be possible to stuff blocks to prevent the transaction from being included in blocks
+
+- In certain blockchains it is possible for the keeper to have control over the tx.gasprice used to execute a transaction
+
+# Feature Development
+
+If new features are added, tests should be added for the different market types, e.g. spot only markets, single token markets.
+
 # Commands
 
 To compile contracts:
