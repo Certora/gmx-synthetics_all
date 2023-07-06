@@ -8,11 +8,8 @@ for CONF_FILE in $CONF_FILES; do
     echo "Executing $CONF_FILE..."
     
     # Execute certoraRun with the current .conf file
-    certoraRun "certora/confs/$CONF_FILE"
+    certoraRun "$CONF_FILE"
     
     echo "Done executing $CONF_FILE."
     echo
 done
-
-# Return to the original directory
-cd -
