@@ -17,4 +17,4 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---msg "rerun all rules after changing linking"
+--msg "all rules using invariant"

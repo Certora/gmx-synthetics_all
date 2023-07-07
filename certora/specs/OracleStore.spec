@@ -9,6 +9,57 @@ methods {
     // definition CONTROLLER() returns bytes32 = 70546d1c92f8c2132ae23a23f5177aa8526356051c7510df99f50e012d221529;
 }
 
+
+//-----------------------------------------------------------------------------
+// EnumerableSet Invariant Lib (Begin)
+//-----------------------------------------------------------------------------
+
+// GHOST COPIES
+ghost mapping(mathint => bytes32) ghostValues {
+    init_state axiom forall mathint x. ghostValues[x] == to_bytes32(0);
+}
+ghost mapping(bytes32 => uint256) ghostIndexes {
+    init_state axiom forall bytes32 x. ghostIndexes[x] == 0;
+}
+ghost uint256 ghostLength {
+    // assumption: it's infeasible to grow the list to these many elements.
+    axiom ghostLength < 0xffffffffffffffffffffffffffffffff;
+}
+
+// HOOKS
+
+hook Sstore currentContract.signers.(offset 0) uint256 newLength STORAGE {
+    ghostLength = newLength;
+}
+hook Sstore currentContract.signers._inner._values[INDEX uint256 index] bytes32 newValue STORAGE {
+    ghostValues[index] = newValue;
+}
+hook Sstore currentContract.signers._inner._indexes[KEY bytes32 value] uint256 newIndex STORAGE {
+    ghostIndexes[value] = newIndex;
+}
+
+hook Sload uint256 length currentContract.signers.(offset 0) STORAGE {
+    require ghostLength == length;
+}
+hook Sload bytes32 value currentContract.signers._inner._values[INDEX uint256 index] STORAGE {
+    require ghostValues[index] == value;
+}
+hook Sload uint256 index currentContract.signers._inner._indexes[KEY bytes32 value] STORAGE {
+    require ghostIndexes[value] == index;
+}
+
+// INVARIANTS
+
+invariant setInvariant()
+    (forall uint256 index. 0 <= index && index < ghostLength => to_mathint(ghostIndexes[ghostValues[index]]) == index + 1)
+    && (forall bytes32 value. ghostIndexes[value] == 0 || 
+         (ghostValues[ghostIndexes[value] - 1] == value && ghostIndexes[value] >= 1 && ghostIndexes[value] <= ghostLength));
+
+//-----------------------------------------------------------------------------
+// Enumerable Set Invariant Lib (End)
+//-----------------------------------------------------------------------------
+
+
 rule sanity_satisfy(method f) {
     env e;
     calldataarg args;
@@ -38,7 +89,6 @@ rule sanity_satisfy(method f) {
 // the address will not appear in the result of getSigner(s) for any index
 // 7. calling getSignerCount() twice in a row with no other interleaving calls
 // results in the same value. Similar for getSigner(s)
-// 8. the results from getSigner and getSigners are consistent.
 
 // 1. for addSigner, if the caller does not have the controller role
 // the contract reverts and
@@ -47,7 +97,7 @@ rule sanity_satisfy(method f) {
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
 //
-// status: working but need to fix things with sets
+// status: last assertion involving arrays fails, but others work
 rule non_controller_add_signer {
     env e;
     calldataarg args;
@@ -57,43 +107,39 @@ rule non_controller_add_signer {
     uint256 some_index;
     address signer_at_index_before;
     address signer_at_index_after;
-    // uint256 signers_arr_idx;
-    // uint256 some_start;
-    // uint256 some_end;
-    // address[] signers_before;
-    // address[] signers_after;
+    uint256 signers_arr_idx;
+    uint256 some_start;
+    uint256 some_end;
+    address[] signers_before;
+    address[] signers_after;
 
-    // Assuming: The "signers" set obeys an invariant that
-    // the two data structures it uses internally are consistent.
-    uint256 signers_invariant_index;
-    address signers_invariant_address;
-    address[] signer_set_values;
-    signer_set_values = oracleStore.getSignerSetValues(e);
-    require ((signer_set_values[signers_invariant_index] == signers_invariant_address) <=> (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
+    requireInvariant setInvariant();
 
     // The caller does  not have the controller role
-    // bytes32 myController = roleStore.getCONTROLLER(e);
-    // require(!roleStore.hasRole(e, e.msg.sender, myController));
     require(!oracleStore.hasControllerRole(e));
-
-    // The index used to check the getSigners result is within the
-    // range used
-    // require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
 
     signer_count_before = oracleStore.getSignerCount(e);
     signer_at_index_before = oracleStore.getSigner(e, some_index);
-    // signers_before = getSigners(e, some_start, some_end);
+    signers_before = getSigners(e, some_start, some_end);
+
+
+    // The range used to check getSigners is less than the size of the signers
+    // and the specific index used to check the resulting array from the call
+    // is within the range of the resulting array.
+    require (some_start <= some_end && some_end <= signer_count_before);
+    require (signers_arr_idx <= assert_uint256(some_end - some_start));
     
     oracleStore.addSigner@withrevert(e, new_signer_address);
     assert(lastReverted, "the call reverts");
     
     signer_count_after = oracleStore.getSignerCount(e);
     signer_at_index_after = oracleStore.getSigner(e, some_index);
-    // signers_after = getSigners(e, some_start, some_end);
+    signers_after = getSigners(e, some_start, some_end);
 
     assert(signer_count_before == signer_count_after, "signer count has not changed");
-    assert(signer_at_index_before == signer_at_index_after, "getSigners has not changed");
-    // assert(signers_before[signers_arr_idx] == signers_after[signers_arr_idx]);
+    assert(signer_at_index_before == signer_at_index_after, "getSigner has not changed");
+    assert(signers_before[signers_arr_idx] == signers_after[signers_arr_idx],   
+    "getSigenrs has not changed");
 }
 
 // 2. for removeSigner, if the caller does not have the controller role
@@ -102,7 +148,7 @@ rule non_controller_add_signer {
 // (i.e. only those with the controller role can change signers)
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
-// status: working but need to fix things with sets
+// status: working but assertion involving call that returns array is commented out
 rule non_controller_remove_signer {
     env e;
     calldataarg args;
@@ -118,9 +164,9 @@ rule non_controller_remove_signer {
     // address[] signers_before;
     // address[] signers_after;
 
+    requireInvariant setInvariant();
+
     // The caller does  not have the controller role
-    // bytes32 myController = roleStore.getCONTROLLER(e);
-    // require(!roleStore.hasRole(e, e.msg.sender, myController));
     require(!oracleStore.hasControllerRole(e));
 
     // The index used to check the getSigners result is within the
@@ -164,13 +210,7 @@ rule remove_signer_not_in_list {
     address[] signers_before;
     address[] signers_after;
 
-    // Assuming: The "signers" set obeys an invariant that
-    // the two data structures it uses internally are consistent.
-    uint256 signers_invariant_index;
-    address signers_invariant_address;
-    address[] signer_set_values;
-    signer_set_values = oracleStore.getSignerSetValues(e);
-    require ((signer_set_values[signers_invariant_index] == signers_invariant_address) <=> (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
+    requireInvariant setInvariant();
 
     // the signer address argument is not in the list
     require(!oracleStore.signersContains(e, signer_remove_arg));
@@ -181,7 +221,7 @@ rule remove_signer_not_in_list {
     // range used
     require(some_start <= some_end && 
         some_end <= signer_count_before);
-    require(signers_arr_idx <= assert_uint256(some_end - some_start));
+    require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
 
     signer_at_index_before = oracleStore.getSigner(e, some_index);
     signers_before = oracleStore.getSigners(e, some_start, some_end);
@@ -205,15 +245,7 @@ rule get_invalid_index {
     uint256 some_index;
     address signer_at_index;
 
-    // Assuming: The "signers" set obeys an invariant that
-    // the two data structures it uses internally are consistent.
-    uint256 signers_invariant_index;
-    address signers_invariant_address;
-    address[] signer_set_values;
-    signer_set_values = oracleStore.getSignerSetValues(e);
-    require ((signer_set_values[signers_invariant_index] 
-        == signers_invariant_address) <=> 
-        (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
+    requireInvariant setInvariant();
 
     signers_size = oracleStore.getSignerCount(e);
 
@@ -234,17 +266,15 @@ rule add_signer_valid_liveness {
     uint256 signer_count_before;
     uint256 signer_count_after;
 
-    // The caller *does* have the controller role
-    // bytes32 myController = roleStore.getCONTROLLER(e);
-    // require(roleStore.hasRole(e, e.msg.sender, myController));
-    require (oracleStore.hasControllerRole(e));
+    requireInvariant setInvariant();
 
+    // The caller *does* have the controller role
+    require (oracleStore.hasControllerRole(e));
 
     signer_count_before = oracleStore.getSignerCount(e);
     require(signer_count_before < UINT256_MAX()); // reasonable: not many signers
 
     oracleStore.addSigner(e, new_signer_address);
-    // assert(!lastReverted, "addSigner does not revert with correct permissions"); // NOTE: fails... must be other reasons for reverts
 
     signer_count_after = oracleStore.getSignerCount(e);
 
@@ -268,13 +298,10 @@ rule remove_signer_valid_liveness {
     uint256 signer_count_before;
     uint256 signer_count_after;
 
+
     // Assuming: The "signers" set obeys an invariant that
     // the two data structures it uses internally are consistent.
-    uint256 signers_invariant_index;
-    address signers_invariant_address;
-    address[] signer_set_values;
-    signer_set_values = oracleStore.getSignerSetValues(e);
-    require ((signer_set_values[signers_invariant_index] == signers_invariant_address) <=> (oracleStore.getSignerSetIndexFor(e, signers_invariant_address) == signers_invariant_index));
+    requireInvariant setInvariant();
 
     // The caller *does* have the controller role
     // bytes32 myController = roleStore.getCONTROLLER(e);
@@ -287,7 +314,6 @@ rule remove_signer_valid_liveness {
     signer_count_before = oracleStore.getSignerCount(e);
 
     oracleStore.removeSigner(e, signer_to_remove);
-    assert(!lastReverted, "removeSigner does not revert with correct permissions");
 
     signer_count_after = oracleStore.getSignerCount(e);
 
@@ -304,6 +330,9 @@ rule double_get_signer_count {
     env e;
     uint256 signer_count_one;
     uint256 signer_count_two;
+
+    requireInvariant setInvariant();
+
     signer_count_one = getSignerCount(e);
     signer_count_two = getSignerCount(e);
     assert(signer_count_one == signer_count_two);
