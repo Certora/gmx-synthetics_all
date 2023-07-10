@@ -20,7 +20,7 @@ methods {
 use builtin rule sanity;
 use builtin rule deepSanity;
 
-// 1. syncTokenBalance, afterTransferOut, and recordTransferIn should not change tokenBalances[token1] where token1 != token2
+// syncTokenBalance, afterTransferOut, and recordTransferIn should not change tokenBalances[token1] where token1 != token2
 rule balanceIndependence(method f, env e, address token1, address token2) filtered {
     f -> f.selector == sig:recordTransferIn(address).selector 
         || f.selector == sig:afterTransferOut(address).selector

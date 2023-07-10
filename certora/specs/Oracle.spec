@@ -13,8 +13,8 @@ methods {
     /// Oracle summaries
     function Oracle._getSalt() internal returns bytes32 => mySalt();
     /// @notice : the following summaries aren't applied (issue)
-    //function OracleHarness._getPriceFeedPrice(address,address) internal returns (bool, uint256) => NONDET;
-    //function OracleHarness._setPrices(address,address,address[] memory, OracleUtils.SetPricesParams memory) internal => NONDET;
+    function _._getPriceFeedPrice(address,address) internal => NONDET;
+    function _._setPrices(address,address,address[] memory, OracleUtils.SetPricesParams memory) internal => NONDET;
 
     /// Getters:
     function OracleHarness.primaryPrices(address) external returns (uint256,uint256);
@@ -22,6 +22,9 @@ methods {
     function OracleHarness.customPrices(address) external returns (uint256,uint256);
     function OracleHarness.getSignerByInfo(uint256, uint256) external returns (address);
 }
+
+use builtin rule sanity;
+// use builtin rule deepSanity;
 
 definition isSetPrices(method f) returns bool = f.selector == 0xdf026811;
 
@@ -43,43 +46,26 @@ function ghostMedian(uint256[] array) returns uint256 {
     return med;
 }
 
-rule complexityCheck(method f)
-filtered{f-> !isSetPrices(f)} {
-    env e; 
-    calldataarg args;
-    f(e, args);
-
-    assert false, "this assertion should fail";
-}
-
-rule setPricesComplexity() {
-    env e; 
-    calldataarg args;
-    _setPrices(e, args);
-
-    assert false, "this assertion should fail";
-}
-
-// rule validateSignerConsistency() {
-//     env e1; env e2;
-//     require e1.msg.value == e2.msg.value;
+rule validateSignerConsistency() {
+    env e1; env e2;
+    require e1.msg.value == e2.msg.value;
     
-//     bytes32 salt1;
-//     bytes32 salt2;
-//     address signer1;
-//     address signer2;
-//     bytes signature;
+    bytes32 salt1;
+    bytes32 salt2;
+    address signer1;
+    address signer2;
+    bytes signature;
 
-//     validateSignerHarness(e1, salt1, signature, signer1);
-//     validateSignerHarness@withrevert(e2, salt2, signature, signer2);
+    validateSignerHarness(e1, salt1, signature, signer1);
+    validateSignerHarness@withrevert(e2, salt2, signature, signer2);
 
-//     assert (salt1 == salt2 && signer1 == signer2) => !lastReverted,
-//         "Revert characteristics of validateSigner are not consistent";
+    assert (salt1 == salt2 && signer1 == signer2) => !lastReverted,
+        "Revert characteristics of validateSigner are not consistent";
 
-//     assert ((salt1 != salt2 && signer1 == signer2) ||
-//         (salt1 == salt2 && signer1 != signer2)) => lastReverted,
-//         "Calling validateSigner twice cannot succeed with changing a single argument";
+    assert ((salt1 != salt2 && signer1 == signer2) ||
+        (salt1 == salt2 && signer1 != signer2)) => lastReverted,
+        "Calling validateSigner twice cannot succeed with changing a single argument";
 
-//     assert (!lastReverted && salt1 == salt2) => (signer1 == signer2),
-//         "Same salt must imply same signer";
-// }
+    assert (!lastReverted && salt1 == salt2) => (signer1 == signer2),
+        "Same salt must imply same signer";
+}

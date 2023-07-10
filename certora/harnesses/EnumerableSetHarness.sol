@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-import "../patched/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract EnumerableSetHarness {
     using EnumerableSet for EnumerableSet.Bytes32Set;
