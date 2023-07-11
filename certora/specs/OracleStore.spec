@@ -122,12 +122,11 @@ rule non_controller_add_signer {
     signer_at_index_before = oracleStore.getSigner(e, some_index);
     signers_before = getSigners(e, some_start, some_end);
 
-
     // The range used to check getSigners is less than the size of the signers
     // and the specific index used to check the resulting array from the call
     // is within the range of the resulting array.
-    require (some_start <= some_end && some_end <= signer_count_before);
-    require (signers_arr_idx <= assert_uint256(some_end - some_start));
+    require (some_start <= some_end && some_end < signer_count_before);
+    require (signers_arr_idx < assert_uint256(some_end - some_start));
     
     oracleStore.addSigner@withrevert(e, new_signer_address);
     assert(lastReverted, "the call reverts");

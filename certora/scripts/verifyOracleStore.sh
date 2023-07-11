@@ -1,12 +1,10 @@
-certoraRun  contracts/oracle/OracleStore.sol \
+certoraRun  certora/harness/OracleStoreHarness.sol \
             contracts/role/RoleStore.sol \
-            certora/harness/OracleStoreHarness.sol \
             contracts/event/EventEmitter.sol \
 \
---verify OracleStore:certora/specs/OracleStore.spec \
+--verify OracleStoreHarness:certora/specs/OracleStore.spec \
 \
 --link  OracleStoreHarness:roleStore=RoleStore \
-        OracleStore:roleStore=RoleStore \
         OracleStoreHarness:eventEmitter=EventEmitter \
 --solc solc8.19 \
 --loop_iter 2 \
@@ -17,4 +15,5 @@ certoraRun  contracts/oracle/OracleStore.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---msg "all rules using invariant"
+--rule non_controller_add_signer \
+--msg "fix array bound, fix oracle setup, fix index range again, drop loop bounds"
