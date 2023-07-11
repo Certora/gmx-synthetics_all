@@ -15,5 +15,4 @@ certoraRun  certora/harness/OracleStoreHarness.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---rule non_controller_add_signer \
---msg "fix array bound, fix oracle setup, fix index range again, drop loop bounds"
+--msg "fix array calls for all rules"

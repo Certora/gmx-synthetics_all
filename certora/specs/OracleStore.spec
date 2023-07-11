@@ -96,8 +96,6 @@ rule sanity_satisfy(method f) {
 // (i.e. only those with the controller role can change signers)
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
-//
-// status: last assertion involving arrays fails, but others work
 rule non_controller_add_signer {
     env e;
     calldataarg args;
@@ -147,7 +145,6 @@ rule non_controller_add_signer {
 // (i.e. only those with the controller role can change signers)
 //     -- similar as last spec but using getSigners()
 //     -- similar as last spec but using getSignerCount()
-// status: working but assertion involving call that returns array is commented out
 rule non_controller_remove_signer {
     env e;
     calldataarg args;
@@ -157,41 +154,42 @@ rule non_controller_remove_signer {
     uint256 some_index;
     address signer_at_index_before;
     address signer_at_index_after;
-    // uint256 signers_arr_idx;
-    // uint256 some_start;
-    // uint256 some_end;
-    // address[] signers_before;
-    // address[] signers_after;
+    uint256 signers_arr_idx;
+    uint256 some_start;
+    uint256 some_end;
+    address[] signers_before;
+    address[] signers_after;
 
     requireInvariant setInvariant();
 
     // The caller does  not have the controller role
     require(!oracleStore.hasControllerRole(e));
 
-    // The index used to check the getSigners result is within the
-    // range used
-    // require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
-
     signer_count_before = oracleStore.getSignerCount(e);
     signer_at_index_before = oracleStore.getSigner(e, some_index);
-    // signers_before = getSigners(e, some_start, some_end);
+    signers_before = getSigners(e, some_start, some_end);
+
+    // The range used to check getSigners is less than the size of the signers
+    // and the specific index used to check the resulting array from the call
+    // is within the range of the resulting array.
+    require (some_start <= some_end && some_end < signer_count_before);
+    require (signers_arr_idx < assert_uint256(some_end - some_start));
     
     oracleStore.removeSigner@withrevert(e, remove_signer_address);
     assert(lastReverted, "the call reverts");
     
     signer_count_after = oracleStore.getSignerCount(e);
     signer_at_index_after = oracleStore.getSigner(e, some_index);
-    // signers_after = getSigners(e, some_start, some_end);
+    signers_after = getSigners(e, some_start, some_end);
 
     assert(signer_count_before == signer_count_after, "signer count has not changed");
     assert(signer_at_index_before == signer_at_index_after, "getSigners has not changed");
-    // assert(signers_before[signers_arr_idx] == signers_after[signers_arr_idx]);
+    assert(signers_before[signers_arr_idx] == signers_after[signers_arr_idx]);
 }
 
 // 3. calling removeSigner with an address that has not been added
 // to the list of signers previously will have no affect on: getSigner(s), 
 // getSignerCount
-// status: last assert using arrays fails... need invariants about set
 rule remove_signer_not_in_list {
     env e;
     address signer_remove_arg;
@@ -215,15 +213,14 @@ rule remove_signer_not_in_list {
     require(!oracleStore.signersContains(e, signer_remove_arg));
     
     signer_count_before = oracleStore.getSignerCount(e);
-
-    // The index used to check the getSigners result is within the
-    // range used
-    require(some_start <= some_end && 
-        some_end <= signer_count_before);
-    require(some_start <= signers_arr_idx && signers_arr_idx < some_end);
-
     signer_at_index_before = oracleStore.getSigner(e, some_index);
     signers_before = oracleStore.getSigners(e, some_start, some_end);
+
+    // The range used to check getSigners is less than the size of the signers
+    // and the specific index used to check the resulting array from the call
+    // is within the range of the resulting array.
+    require (some_start <= some_end && some_end < signer_count_before);
+    require (signers_arr_idx < assert_uint256(some_end - some_start));
 
     oracleStore.removeSigner(e, signer_remove_arg);
 
@@ -237,7 +234,6 @@ rule remove_signer_not_in_list {
 }
 
 // 4. calling getSigner with an invalid index "fails gracefully"
-// status: passing
 rule get_invalid_index {
     env e;
     uint256 signers_size;
@@ -256,8 +252,7 @@ rule get_invalid_index {
     assert(lastReverted);
 }
 
-// 5. calling addSigner with the controller role will: increase getSignerCount, and add the signer to the result of getSinger(s) for some index(es).
-// status: passing
+// 5. calling addSigner with the controller role will: increase getSignerCount, and add the signer to the result of getSinger for some index.
 rule add_signer_valid_liveness {
     env e;
     calldataarg args;
@@ -289,7 +284,6 @@ rule add_signer_valid_liveness {
 // 6. calling removeSigner as a controller and on an address that has been 
 // added to the list of signers previously will: decrease getSigners, ensure
 // the address will not appear in the result of getSigner(s) for any index
-// status: passing
 rule remove_signer_valid_liveness {
     env e;
     calldataarg args;
@@ -297,14 +291,11 @@ rule remove_signer_valid_liveness {
     uint256 signer_count_before;
     uint256 signer_count_after;
 
-
     // Assuming: The "signers" set obeys an invariant that
     // the two data structures it uses internally are consistent.
     requireInvariant setInvariant();
 
     // The caller *does* have the controller role
-    // bytes32 myController = roleStore.getCONTROLLER(e);
-    // require(roleStore.hasRole(e, e.msg.sender, myController)); 
     require(oracleStore.hasControllerRole(e));
 
     // the signer to be deleted is really in the set
@@ -323,8 +314,7 @@ rule remove_signer_valid_liveness {
 }
 
 // 7. calling getSignerCount() twice in a row with no other interleaving calls
-// results in the same value. Similar for getSigner(s)
-// status: passing
+// results in the same value.
 rule double_get_signer_count {
     env e;
     uint256 signer_count_one;
@@ -336,5 +326,3 @@ rule double_get_signer_count {
     signer_count_two = getSignerCount(e);
     assert(signer_count_one == signer_count_two);
 }
-
-
