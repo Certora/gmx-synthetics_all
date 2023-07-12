@@ -217,19 +217,19 @@ library GasUtils {
         address keeper,
         uint256 executionFeeAmount
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "keeper", keeper);
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "keeper", keeper);
 
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "executionFeeAmount", executionFeeAmount);
+        // eventData.uintItems.initItems(1);
+        // eventData.uintItems.setItem(0, "executionFeeAmount", executionFeeAmount);
 
-        eventEmitter.emitEventLog1(
-            "KeeperExecutionFee",
-            Cast.toBytes32(keeper),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "KeeperExecutionFee",
+        //     Cast.toBytes32(keeper),
+        //     eventData
+        // );
     }
 
     function emitExecutionFeeRefund(
@@ -237,18 +237,18 @@ library GasUtils {
         address receiver,
         uint256 refundFeeAmount
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "receiver", receiver);
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "receiver", receiver);
 
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "refundFeeAmount", refundFeeAmount);
+        // eventData.uintItems.initItems(1);
+        // eventData.uintItems.setItem(0, "refundFeeAmount", refundFeeAmount);
 
-        eventEmitter.emitEventLog1(
-            "ExecutionFeeRefund",
-            Cast.toBytes32(receiver),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "ExecutionFeeRefund",
+        //     Cast.toBytes32(receiver),
+        //     eventData
+        // );
     }
 }

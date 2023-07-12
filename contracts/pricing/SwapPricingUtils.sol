@@ -280,34 +280,36 @@ library SwapPricingUtils {
         int256 priceImpactUsd,
         int256 priceImpactAmount
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "orderKey", orderKey);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "orderKey", orderKey);
 
-        eventData.addressItems.initItems(4);
-        eventData.addressItems.setItem(0, "market", market);
-        eventData.addressItems.setItem(1, "receiver", receiver);
-        eventData.addressItems.setItem(2, "tokenIn", tokenIn);
-        eventData.addressItems.setItem(3, "tokenOut", tokenOut);
+        // eventData.addressItems.initItems(4);
+        // eventData.addressItems.setItem(0, "market", market);
+        // eventData.addressItems.setItem(1, "receiver", receiver);
+        // eventData.addressItems.setItem(2, "tokenIn", tokenIn);
+        // eventData.addressItems.setItem(3, "tokenOut", tokenOut);
 
-        eventData.uintItems.initItems(5);
-        eventData.uintItems.setItem(0, "tokenInPrice", tokenInPrice);
-        eventData.uintItems.setItem(1, "tokenOutPrice", tokenOutPrice);
-        eventData.uintItems.setItem(2, "amountIn", amountIn);
-        // note that amountInAfterFees includes negative price impact
-        eventData.uintItems.setItem(3, "amountInAfterFees", amountInAfterFees);
-        eventData.uintItems.setItem(4, "amountOut", amountOut);
+        // eventData.uintItems.initItems(5);
+        // eventData.uintItems.setItem(0, "tokenInPrice", tokenInPrice);
+        // eventData.uintItems.setItem(1, "tokenOutPrice", tokenOutPrice);
+        // eventData.uintItems.setItem(2, "amountIn", amountIn);
+        // // note that amountInAfterFees includes negative price impact
+        // eventData.uintItems.setItem(3, "amountInAfterFees", amountInAfterFees);
+        // eventData.uintItems.setItem(4, "amountOut", amountOut);
 
-        eventData.intItems.initItems(2);
-        eventData.intItems.setItem(0, "priceImpactUsd", priceImpactUsd);
-        eventData.intItems.setItem(1, "priceImpactAmount", priceImpactAmount);
+        // eventData.intItems.initItems(2);
+        // eventData.intItems.setItem(0, "priceImpactUsd", priceImpactUsd);
+        // eventData.intItems.setItem(1, "priceImpactAmount", priceImpactAmount);
+        // eventData.intItems.initItems(1);
+        // eventData.intItems.setItem(0, "priceImpactUsd", priceImpactUsd);
 
-        eventEmitter.emitEventLog1(
-            "SwapInfo",
-            Cast.toBytes32(market),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SwapInfo",
+        //     Cast.toBytes32(market),
+        //     eventData
+        // );
     }
 
     function emitSwapFeesCollected(
@@ -318,28 +320,28 @@ library SwapPricingUtils {
         string memory action,
         SwapFees memory fees
     ) internal {
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.addressItems.initItems(3);
-        eventData.addressItems.setItem(0, "uiFeeReceiver", fees.uiFeeReceiver);
-        eventData.addressItems.setItem(1, "market", market);
-        eventData.addressItems.setItem(2, "token", token);
+        // eventData.addressItems.initItems(3);
+        // eventData.addressItems.setItem(0, "uiFeeReceiver", fees.uiFeeReceiver);
+        // eventData.addressItems.setItem(1, "market", market);
+        // eventData.addressItems.setItem(2, "token", token);
 
-        eventData.stringItems.initItems(1);
-        eventData.stringItems.setItem(0, "action", action);
+        // eventData.stringItems.initItems(1);
+        // eventData.stringItems.setItem(0, "action", action);
 
-        eventData.uintItems.initItems(6);
-        eventData.uintItems.setItem(0, "tokenPrice", tokenPrice);
-        eventData.uintItems.setItem(1, "feeReceiverAmount", fees.feeReceiverAmount);
-        eventData.uintItems.setItem(2, "feeAmountForPool", fees.feeAmountForPool);
-        eventData.uintItems.setItem(3, "amountAfterFees", fees.amountAfterFees);
-        eventData.uintItems.setItem(4, "uiFeeReceiverFactor", fees.uiFeeReceiverFactor);
-        eventData.uintItems.setItem(5, "uiFeeAmount", fees.uiFeeAmount);
+        // eventData.uintItems.initItems(6);
+        // eventData.uintItems.setItem(0, "tokenPrice", tokenPrice);
+        // eventData.uintItems.setItem(1, "feeReceiverAmount", fees.feeReceiverAmount);
+        // eventData.uintItems.setItem(2, "feeAmountForPool", fees.feeAmountForPool);
+        // eventData.uintItems.setItem(3, "amountAfterFees", fees.amountAfterFees);
+        // eventData.uintItems.setItem(4, "uiFeeReceiverFactor", fees.uiFeeReceiverFactor);
+        // eventData.uintItems.setItem(5, "uiFeeAmount", fees.uiFeeAmount);
 
-        eventEmitter.emitEventLog1(
-            "SwapFeesCollected",
-            Cast.toBytes32(market),
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SwapFeesCollected",
+        //     Cast.toBytes32(market),
+        //     eventData
+        // );
     }
 }

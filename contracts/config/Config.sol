@@ -51,22 +51,22 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
 
         dataStore.setBool(fullKey, value);
 
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "baseKey", baseKey);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "baseKey", baseKey);
 
-        eventData.bytesItems.initItems(1);
-        eventData.bytesItems.setItem(0, "data", data);
+        // eventData.bytesItems.initItems(1);
+        // eventData.bytesItems.setItem(0, "data", data);
 
-        eventData.boolItems.initItems(1);
-        eventData.boolItems.setItem(0, "value", value);
+        // eventData.boolItems.initItems(1);
+        // eventData.boolItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetBool",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetBool",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set an address value
@@ -80,22 +80,22 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
 
         dataStore.setAddress(fullKey, value);
 
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "baseKey", baseKey);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "baseKey", baseKey);
 
-        eventData.bytesItems.initItems(1);
-        eventData.bytesItems.setItem(0, "data", data);
+        // eventData.bytesItems.initItems(1);
+        // eventData.bytesItems.setItem(0, "data", data);
 
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "value", value);
+        // eventData.addressItems.initItems(1);
+        // eventData.addressItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetAddress",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetAddress",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set a bytes32 value
@@ -109,20 +109,20 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
 
         dataStore.setBytes32(fullKey, value);
 
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(2);
-        eventData.bytes32Items.setItem(0, "baseKey", baseKey);
-        eventData.bytes32Items.setItem(1, "value", value);
+        // eventData.bytes32Items.initItems(2);
+        // eventData.bytes32Items.setItem(0, "baseKey", baseKey);
+        // eventData.bytes32Items.setItem(1, "value", value);
 
-        eventData.bytesItems.initItems(1);
-        eventData.bytesItems.setItem(0, "data", data);
+        // eventData.bytesItems.initItems(1);
+        // eventData.bytesItems.setItem(0, "data", data);
 
-        eventEmitter.emitEventLog1(
-            "SetBytes32",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetBytes32",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set a uint256 value
@@ -138,22 +138,22 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
 
         dataStore.setUint(fullKey, value);
 
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "baseKey", baseKey);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "baseKey", baseKey);
 
-        eventData.bytesItems.initItems(1);
-        eventData.bytesItems.setItem(0, "data", data);
+        // eventData.bytesItems.initItems(1);
+        // eventData.bytesItems.setItem(0, "data", data);
 
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "value", value);
+        // eventData.uintItems.initItems(1);
+        // eventData.uintItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetUint",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetUint",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev set an int256 value
@@ -167,22 +167,22 @@ contract Config is ReentrancyGuard, RoleModule, BasicMulticall {
 
         dataStore.setInt(fullKey, value);
 
-        EventUtils.EventLogData memory eventData;
+        // EventUtils.EventLogData memory eventData;
 
-        eventData.bytes32Items.initItems(1);
-        eventData.bytes32Items.setItem(0, "baseKey", baseKey);
+        // eventData.bytes32Items.initItems(1);
+        // eventData.bytes32Items.setItem(0, "baseKey", baseKey);
 
-        eventData.bytesItems.initItems(1);
-        eventData.bytesItems.setItem(0, "data", data);
+        // eventData.bytesItems.initItems(1);
+        // eventData.bytesItems.setItem(0, "data", data);
 
-        eventData.intItems.initItems(1);
-        eventData.intItems.setItem(0, "value", value);
+        // eventData.intItems.initItems(1);
+        // eventData.intItems.setItem(0, "value", value);
 
-        eventEmitter.emitEventLog1(
-            "SetInt",
-            baseKey,
-            eventData
-        );
+        // eventEmitter.emitEventLog1(
+        //     "SetInt",
+        //     baseKey,
+        //     eventData
+        // );
     }
 
     // @dev initialize the allowed base keys
