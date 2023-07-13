@@ -1,3 +1,3 @@
 gambit mutate --filename contracts/oracle/OracleStore.sol \
-    --solc-remappings @openzepplin=node_modules/@openzeppelin \
+    --solc-remappings @openzeppelin=node_modules/@openzeppelin \
     --skip-validate
