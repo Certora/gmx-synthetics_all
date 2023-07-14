@@ -1,3 +1,6 @@
+using DataStore as DS;
+using KeysMock as KM;
+
 methods {
     //AdlHandler
     //function _.updateAdlState(address,bool,OracleUtils.SetPricesParams calldata) internal => NONDET;
@@ -134,4 +137,34 @@ rule claimFeesTest() {
 
     claimFees(e, markets, tokens);
     assert false;
+}
+
+rule claimFeesWorkload() {
+    env e;
+    calldataarg args;
+
+    address[] markets;
+    address[] tokens;
+    uint256 i;
+
+    require markets.length > i;
+    require 5 > i;
+    require tokens.length == markets.length;
+
+    // TODO: Check, that the receiver's token[i] balance grows by feeAmount.
+
+    bytes32 key = KM.claimableFeeAmountKey(e, markets[i], tokens[i]);
+    uint256 feeAmountBefore = DS.getUint(e, key);
+    address receiver = DS.getAddress(KM.FEE_RECEIVER(e));
+
+    uint256 balanceBefore = payable(tokens[i]).balanceOf(receiver);
+    // uint256 balanceBefore = MarketToken(payable(markets[i])).balanceOf(receiver);
+
+    claimFees(e, markets, tokens);
+
+    // uint256 balanceAfter = payable(tokens[i]).balanceOf(receiver);
+    assert balanceBefore + feeAmountBefore == to_mathuint(balanceAfter);
+
+    uint256 feeAmountAfter = DS.getUint(e, key);
+    assert feeAmountAfter == 0;
 }

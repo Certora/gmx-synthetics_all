@@ -1,10 +1,12 @@
 certoraRun  contracts/fee/FeeHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
+            certora/mocks/KeysMock.sol \
             contracts/market/MarketToken.sol \
             contracts/mock/WNT.sol \
 \
 --verify FeeHandler:certora/specs/FeeHandler.spec \
+--link FeeHandler:dataStore=DataStore \
 \
 --solc solc8.19 \
 --loop_iter 2 \
@@ -13,6 +15,7 @@ certoraRun  contracts/fee/FeeHandler.sol \
 --solc_allow_path . \
 --server production \
 --rule_sanity \
+--rule claimFeesWorkload \
 --prover_args "-optimisticFallback true" \
 \
 --send_only \
