@@ -6,7 +6,7 @@ certoraRun  contracts/fee/FeeHandler.sol \
             contracts/mock/WNT.sol \
 \
 --verify FeeHandler:certora/specs/FeeHandler.spec \
---link FeeHandler:dataStore=DataStore \
+--link  FeeHandler:dataStore=DataStore \
 \
 --solc solc8.19 \
 --loop_iter 2 \

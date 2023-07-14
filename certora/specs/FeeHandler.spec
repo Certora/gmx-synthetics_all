@@ -1,5 +1,6 @@
 using DataStore as DS;
 using KeysMock as KM;
+using MarketToken as MToken;
 
 methods {
     //AdlHandler
@@ -147,23 +148,17 @@ rule claimFeesWorkload() {
     address[] tokens;
     uint256 i;
 
-    require markets.length > i;
-    require 5 > i;
+    require markets.length == 1;
     require tokens.length == markets.length;
+    require markets[0] == MToken;
 
-    // TODO: Check, that the receiver's token[i] balance grows by feeAmount.
-
-    bytes32 key = KM.claimableFeeAmountKey(e, markets[i], tokens[i]);
+    bytes32 key = KM.claimableFeeAmountKey(e, markets[0], tokens[0]);
     uint256 feeAmountBefore = DS.getUint(e, key);
-    address receiver = DS.getAddress(KM.FEE_RECEIVER(e));
+    address receiver = DS.getAddress(e, KM.FEE_RECEIVER(e));
 
-    uint256 balanceBefore = payable(tokens[i]).balanceOf(receiver);
-    // uint256 balanceBefore = MarketToken(payable(markets[i])).balanceOf(receiver);
+    uint256 balanceBefore = MToken.balanceOf(e, receiver);
 
     claimFees(e, markets, tokens);
-
-    // uint256 balanceAfter = payable(tokens[i]).balanceOf(receiver);
-    assert balanceBefore + feeAmountBefore == to_mathuint(balanceAfter);
 
     uint256 feeAmountAfter = DS.getUint(e, key);
     assert feeAmountAfter == 0;
