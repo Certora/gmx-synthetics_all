@@ -27,4 +27,4 @@ certoraRun  contracts/exchange/AdlHandler.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
 --send_only \
---msg "GMX AdlHandler linking, -splitParallel true, all is commented out, including modifiers"
+--msg "GMX AdlHandler linking, -splitParallel true"

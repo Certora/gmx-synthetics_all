@@ -15,8 +15,10 @@ certoraRun  contracts/config/Timelock.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---server staging --prover_version alex/nonskey-minus-skey \
+--server production \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---msg "GMX Timelock linking munged to remove emits with DISPATCHERs" 
+--msg "GMX Timelock linking munged to remove emits with DISPATCHERs"
+
+# --server staging --prover_version alex/nonskey-minus-skey \

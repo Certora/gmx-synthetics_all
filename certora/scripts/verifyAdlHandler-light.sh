@@ -4,6 +4,9 @@ certoraRun  contracts/exchange/AdlHandler.sol \
 \
 --verify AdlHandler:certora/specs/AdlHandler.spec \
 \
+--link  AdlHandler:roleStore=RoleStore \
+        AdlHandler:dataStore=DataStore \
+\
 --solc solc8.19 \
 --loop_iter 2 \
 --optimistic_loop \
@@ -14,7 +17,7 @@ certoraRun  contracts/exchange/AdlHandler.sol \
 --prover_args "-optimisticFallback true" \
 \
 --send_only \
---msg "GMX AdlHandler light, globalNonReentrant onlyAdlKeeper withOraclePrices NONDET, updateAdlState internal summary, dispatch dataStore, no linking"
+--msg "GMX AdlHandler light, 6, dispatch dataStore, linked"
 
 # --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
 # --link  AdlHandler:roleStore=RoleStore \

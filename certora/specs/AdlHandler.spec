@@ -2,19 +2,23 @@ methods {
     //AdlHandler
     //function _.updateAdlState(address,bool,OracleUtils.SetPricesParams calldata) internal => NONDET;
     //function executeAdl(address,address,address,bool,uint256,OracleUtils.SetPricesParams) external => NONDET;
-    function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal => NONDET;
+    //function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal => NONDET; //this is not correct pointer cannot be nondet
     function _.updateAdlState(address,address,address,address,bool,uint256[] memory) internal => NONDET;
     
     //globalNonReentrant modifier
-    function _._nonReentrantBefore() internal => NONDET;
-    function _._nonReentrantAfter() internal => NONDET;
+    // function _._nonReentrantBefore() internal => NONDET;
+    // function _._nonReentrantAfter() internal => NONDET;
     //onlyAdlKeeper modifier
-    function _._validateRole(bytes32,string memory) internal => NONDET;
+    // function _._validateRole(bytes32,string memory) internal => NONDET;
     //withOraclePrices modifier --> already summarized below (see Oracle summaries) as NONDET
     //function _.setPrices(address,address,OracleUtils.SetPricesParams) external => NONDET;
     //function _.clearAllPrices() external => NONDET;
 
     //function OracleUtils._ external => NONDET;
+
+    // library PositionStoreUtils
+    //function _.get(address,bytes32) external => DISPATCHER(true);
+    //function _.set(address,bytes32,Position.Props) external => DISPATCHER(true);
 
     // ERC20
     function _.name()                                external  => DISPATCHER(true);
