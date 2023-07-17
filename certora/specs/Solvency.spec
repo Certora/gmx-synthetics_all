@@ -19,7 +19,12 @@
 
 methods {
     // WithdrawalHandler
-    // function _.createWithdrawal(address, WithdrawalUtils.CreateWithdrawalParams)  external => NONDET
+    function _.createWithdrawal(address, WithdrawalUtils.CreateWithdrawalParams)  external => NONDET;
+    function _.cancelWithdrawal(bytes32) external => NONDET;
+    function _.executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
+    function _.simulateExecuteWithdrawal(bytes32, OracleUtils.SimulatePricesParams) external => NONDET;
+    function _._executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
+    function _._handleWithdrawalError(bytes32, uint256, bytes memory) internal => NONDET;
 
     // ERC20
     function _.name()                                external  => DISPATCHER(true);
@@ -149,9 +154,16 @@ function solvency() returns bool {
         users_can_redeem_market_tokens() && !bank_run_scenario();
 }
 
-rule sanity(method f) {
+// rule sanity(method f) {
+//     env e;
+//     calldataarg args;
+//     f(e, args);
+//     assert false;
+// }
+
+rule sanity_cancelWithdrawal {
     env e;
-    calldataarg args;
-    f(e, args);
+    bytes32 arg;
+    cancelWithdrawal(e, arg);
     assert false;
 }
