@@ -19,13 +19,19 @@
 
 methods {
     // WithdrawalHandler
-    function _.createWithdrawal(address, WithdrawalUtils.CreateWithdrawalParams)  external => NONDET;
-    function _.cancelWithdrawal(bytes32) external => NONDET;
-    function _.executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
-    function _.simulateExecuteWithdrawal(bytes32, OracleUtils.SimulatePricesParams) external => NONDET;
-    function _._executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
-    function _._handleWithdrawalError(bytes32, uint256, bytes memory) internal => NONDET;
+    // function _.createWithdrawal(address, WithdrawalUtils.CreateWithdrawalParams)  external => NONDET;
+    function _.cancelWithdrawal(bytes32) external => CONSTANT;
+    // function _.executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
+    // function _.simulateExecuteWithdrawal(bytes32, OracleUtils.SimulatePricesParams) external => NONDET;
+    // function _._executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
+    // function _._handleWithdrawalError(bytes32, uint256, bytes memory) internal => NONDET;
 
+    // cancelWithdrawal's modifier functions. todo clearly not right.
+    function _.hasRole(address, bytes32) internal => ALWAYS(true);
+    function _._nonReentrantBefore() internal => CONSTANT;
+    function _._nonReentrantAfter() internal => CONSTANT;
+
+    /*
     // ERC20
     function _.name()                                external  => DISPATCHER(true);
     function _.symbol()                              external  => DISPATCHER(true);
@@ -125,6 +131,7 @@ methods {
     function _.hasRole(address,bytes32) external => DISPATCHER(true);
     function _.revokeRole(address,bytes32) external => DISPATCHER(true);
     function _.grantRole(address,bytes32) external => DISPATCHER(true);
+    */
 }
 
 function market_can_be_closed() returns bool {
