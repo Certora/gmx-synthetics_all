@@ -12,5 +12,9 @@ contract Receiver {
         return (randBool, randBytes);
     }
 
+    function getRandBytes() external view returns (bytes memory) {
+        return randBytes;
+    }
+
     receive() external payable { }
 }

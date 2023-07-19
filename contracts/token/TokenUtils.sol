@@ -198,7 +198,11 @@ library TokenUtils {
         // bytes memory data = abi.encodeWithSelector(token.transfer.selector, to, amount);
         // (bool success, bytes memory returndata) = address(token).call{ gas: gasLimit }(data);
 
-        (bool success, bytes memory returndata) = Receiver(payable(to)).sendToDoubleReturn{value:amount}(); // HARNESS: fix low-level call havocing
+        // (bool success, bytes memory returndata) = Receiver(payable(to)).sendToDoubleReturn{value:amount}(); // HARNESS: fix low-level call havocing
+
+        bool success = token.transfer(to, amount);
+
+        bytes memory returndata = Receiver(payable(to)).getRandBytes();
 
         if (success) {
             if (returndata.length == 0) {
