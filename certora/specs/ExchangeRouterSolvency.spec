@@ -1,4 +1,5 @@
-
+using ExchangeRouter as exchangeRouter;
+using DataStore as dataStore;
 // Solvency:
 // * The market can be fully closed
 // * All positions can be closed
@@ -49,13 +50,15 @@ methods {
 // 4) There is no bank run scenario
 //=============================================================================
 
-function closing_create_order_params_from_order(Order.Props props) returns BaseOrderParams.CreateOrderParams {
-    BaseOrderParams.CreateOrderParams close_order_params;
-    BaseOrderParams.CreateOrderParamsAddresses close_order_addresses;
-    BaseOrderParams.CreateOrderParamsNumbers close_order_numbers;
+function closing_create_order_params_from_order(Order.Props props) returns BaseOrderUtils.CreateOrderParams {
+    BaseOrderUtils.CreateOrderParams close_order_params;
+    BaseOrderUtils.CreateOrderParamsAddresses close_order_addresses;
+    BaseOrderUtils.CreateOrderParamsNumbers close_order_numbers;
 
 
+    // Pending JIRA bug: https://certora.atlassian.net/browse/CERT-2886?atlOrigin=eyJpIjoiYjRlNGM5YWFjZTNiNGVmYjhjNmUyOWFmZjhlOTZkYzIiLCJwIjoiamlyYS1zbGFjay1pbnQifQ
     // addresses
+    /*
     close_order_addresses.receiver = props.addresses.receiver;
     close_order_addresses.callbackContract = props.addresses.callbackContract;
     close_order_addresses.uiFeeReceiver = props.addresses.uiFeeReceiver;
@@ -80,11 +83,12 @@ function closing_create_order_params_from_order(Order.Props props) returns BaseO
     // Note: a close order should be in the opposite direction
     close_order_params.isLong = !props.flags.isLong;
     close_order_params.shouldUnwrapNativeToken = props.flags.shouldUnwrapNativeToken;
+    */
 
     return close_order_params;
 }
 
-rule positions_can_be_closed_cancelWithdrawal(DataStore dataStore, bytes32 some_order_key) {
+rule positions_can_be_closed_cancelWithdrawal {
     // TODO need real definition of this.
     // A position is closed when an order of the opposite direction
     // of the position but with an equal amount is created.
@@ -103,7 +107,9 @@ rule positions_can_be_closed_cancelWithdrawal(DataStore dataStore, bytes32 some_
     // "For any position that is open, it is possible to create a new
     // order in the opposite direction and same amount, and excute
     // this order."
+
     env e;
+    bytes32 withdrawlCancelKey;
 
     // Used for both precond and postcond since we assume the
     // prices do not change
@@ -113,35 +119,44 @@ rule positions_can_be_closed_cancelWithdrawal(DataStore dataStore, bytes32 some_
     // Require: positions can be closed before executing the call
     //========================================================================
     bytes32 some_order_key; 
-    bool contains_key;
     // this key is in the list of orders
-    contains_key = dataStore.containsBytes32(Keys.ORDER_LIST, some_order_key);
-    Order.Props props = OrderStoreUtils.get(dataStore, some_order_key);
-    BaseOrderParams.CreateOrderParams closing_order_params = closing_create_order_params_from_order(props);
+    bool precond_contains_key = dataStore.containsBytes32(Keys.ORDER_LIST, some_order_key);
+    Order.Props precond_props = OrderStoreUtils.get(exchangeRouter.dataStore, some_order_key);
+    BaseOrderUtils.CreateOrderParams precond_closing_order_params = closing_create_order_params_from_order(precond_props);
 
     // Require: for any key in the list of order keys, it is possible
     // to create an order, and then also execute it.
-    ExchangeRouter.createOrder@withrevert(e, closing_order_params);
+    exchangeRouter.createOrder@withrevert(e, precond_closing_order_params);
     bool createOrderReverted = lastReverted;
     // Ideally, I would like to really call OrderHandler.executeOrder
     // with a caller that has keeper permissions, but I am not
     // exactly sure how to do this without overspecifying yet... will
     // pivot back
-    ExchangeRouter.simulateExecuteOrder(e, oracle_price_params);
+    exchangeRouter.simulateExecuteOrder@withrevert(e, oracle_price_params);
     bool executeOrderReverted = lastReverted;
 
-    require (contains_key /* todo add conjunct specifying other reasonable conditions that prevent a revert */ => !createOrderReverted && !executeOrderReverted);
+    require (precond_contains_key /* todo add conjunct specifying other reasonable conditions that prevent a revert */ => !createOrderReverted && !executeOrderReverted);
     
     //========================================================================
     // Execute the call: cancelWithdrawal
     //========================================================================
+    exchangeRouter.cancelWithdrawal(e, withdrawalCancelKey);
 
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
+    bool postcond_contains_key = dataStore.containsBytes32(Keys.ORDER_LIST, some_order_key);
+    Order.Props postcond_props = OrderStoreUtils.get(exchangeRouter.dataStore, some_order_key);
+    BaseOrderUtils.CreateOrderParams postcond_closing_order_params = closing_create_order_params_from_order(props);
+    // Assert: for any key in the list of order keys, it is possible
+    // to create an order, and then also execute it.
+    exchangeRouter.createOrder@withrevert(e, postcond_closing_order_params);
+    createOrderReverted = lastReverted;
+    exchangeRouter.simulateExecuteOrder@withrevert(e, oracle_price_params);
+    executeOrderReverted = lastReverted;
+    assert postcond_contains_key == precond_contains_key;
+    assert postcond_contains_key => !createOrderReverted && !executeOrderReverted;
 
-    // just sanity check for now
-    assert false;
 }
 
 function market_can_be_closed() returns bool {

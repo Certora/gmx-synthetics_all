@@ -5,6 +5,7 @@ certoraRun  contracts/router/ExchangeRouter.sol \
 \
 --verify ExchangeRouter:certora/specs/ExchangeRouterSolvency.spec \
 --link ExchangeRouter:withdrawalHandler=WithdrawalHandler \
+       ExchangeRouter:dataStore=DataStore \
 --solc solc8.19 \
 --loop_iter 2 \
 --optimistic_loop \
@@ -14,5 +15,5 @@ certoraRun  contracts/router/ExchangeRouter.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
 --send_only \
---rule solvency_invariant_cancelWithdrawal \
---msg "solvency_invariant_cancelWithdrawal, summarizeWithdrawalHandler.cancelWithdrawal"
+--rule positions_can_be_closed_cancelWithdrawal \
+--msg "syntax check on position closing"
