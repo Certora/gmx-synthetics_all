@@ -1,6 +1,8 @@
 using DataStore as DS;
 using KeysMock as KM;
 using MarketToken as MToken;
+using WNT as WNT;
+using DummyERC20A as DummyERC20;
 
 methods {
     //AdlHandler
@@ -11,6 +13,9 @@ methods {
     
     //FeeHandler
 
+
+    // DummyERC20
+    function DummyERC20A.balanceOf(address) external returns (uint256) envfree;
 
     // ERC20
     function _.name()                                external  => DISPATCHER(true);
@@ -140,7 +145,9 @@ rule claimFeesTest() {
     assert false;
 }
 
-rule claimFeesWorkload() {
+//TODO: add invariant that checks, that MarketToken and Markets contracts always has enough to pay fees.
+
+rule claimFeesIntegrity() {
     env e;
     calldataarg args;
 
@@ -149,17 +156,35 @@ rule claimFeesWorkload() {
     uint256 i;
 
     require markets.length == 1;
+    require tokens[0] == DummyERC20;
     require tokens.length == markets.length;
     require markets[0] == MToken;
 
     bytes32 key = KM.claimableFeeAmountKey(e, markets[0], tokens[0]);
-    uint256 feeAmountBefore = DS.getUint(e, key);
-    address receiver = DS.getAddress(e, KM.FEE_RECEIVER(e));
+    address fee_receiver = DS.getAddress(e, KM.FEE_RECEIVER(e));
+    address holding_address = DS.getAddress(e, KM.HOLDING_ADDRESS(e));
+    mathint feeAmountBefore = DS.getUint(e, key);
+    mathint balanceWNTBefore = WNT.balanceOf(e, fee_receiver);
+    mathint balanceWNTHoldingBefore = WNT.balanceOf(e, holding_address);
+    mathint balanceDummyBefore = DummyERC20.balanceOf(fee_receiver);
+    mathint balanceDummyHoldingBefore = DummyERC20.balanceOf(holding_address);
 
-    uint256 balanceBefore = MToken.balanceOf(e, receiver);
+    // require, that the balance is less tham maximum
+    require feeAmountBefore + balanceWNTBefore + balanceWNTHoldingBefore + balanceDummyBefore + balanceDummyHoldingBefore < max_uint256;
+    // get MarketToken address and require it different to the holding address
+    require MToken != holding_address;
 
     claimFees(e, markets, tokens);
 
-    uint256 feeAmountAfter = DS.getUint(e, key);
+    mathint feeAmountAfter = DS.getUint(e, key);
+    mathint balanceWNTAfter = WNT.balanceOf(e, fee_receiver);
+    mathint balanceWNTHoldingAfter = WNT.balanceOf(e, holding_address);
+    mathint balanceDummyAfter = DummyERC20.balanceOf(fee_receiver);
+    mathint balanceDummyHoldingAfter = DummyERC20.balanceOf(holding_address);
+
     assert feeAmountAfter == 0;
+    assert balanceWNTAfter == balanceWNTBefore + feeAmountBefore ||
+           balanceWNTHoldingAfter == balanceWNTHoldingBefore + feeAmountBefore ||
+           balanceDummyAfter == balanceDummyBefore + feeAmountBefore ||
+           balanceDummyHoldingAfter == balanceDummyHoldingBefore + feeAmountBefore;
 }

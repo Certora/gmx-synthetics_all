@@ -2,6 +2,7 @@ certoraRun  contracts/fee/FeeHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
             certora/mocks/KeysMock.sol \
+            certora/mocks/DummyERC20A.sol \
             contracts/market/MarketToken.sol \
             contracts/mock/WNT.sol \
 \
@@ -15,11 +16,11 @@ certoraRun  contracts/fee/FeeHandler.sol \
 --solc_allow_path . \
 --server production \
 --rule_sanity \
---rule claimFeesWorkload \
+--rule claimFeesIntegrity \
 --prover_args "-optimisticFallback true" \
 \
 --send_only \
---msg "GMX FeeHandler claimFeesTest with market require 1, dispatch dataStore MarketToken WNT, no linking"
+--msg "GMX FeeHandler claimFeesIntegrity verify, use DummyERC20"
 
 # --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
 # --link  FeeHandler:roleStore=RoleStore \
