@@ -1,4 +1,6 @@
 certoraRun  contracts/router/ExchangeRouter.sol \
+            contracts/order/BaseOrderUtils.sol \
+            contracts/data/DataStore.sol \
             contracts/exchange/WithdrawalHandler.sol \
 \
 --verify ExchangeRouter:certora/specs/ExchangeRouterSolvency.spec \
