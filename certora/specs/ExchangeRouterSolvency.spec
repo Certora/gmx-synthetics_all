@@ -61,38 +61,31 @@ methods {
 
 function closing_create_order_params_from_order(Order.Props props) returns BaseOrderUtils.CreateOrderParams {
     BaseOrderUtils.CreateOrderParams close_order_params;
-    BaseOrderUtils.CreateOrderParamsAddresses close_order_addresses;
-    BaseOrderUtils.CreateOrderParamsNumbers close_order_numbers;
 
-
-    // Pending JIRA bug: https://certora.atlassian.net/browse/CERT-2886?atlOrigin=eyJpIjoiYjRlNGM5YWFjZTNiNGVmYjhjNmUyOWFmZjhlOTZkYzIiLCJwIjoiamlyYS1zbGFjay1pbnQifQ
     // addresses
-    /*
-    close_order_addresses.receiver = props.addresses.receiver;
-    close_order_addresses.callbackContract = props.addresses.callbackContract;
-    close_order_addresses.uiFeeReceiver = props.addresses.uiFeeReceiver;
-    close_order_addresses.market = props.addresses.market;
-    close_order_addresses.initialCollateralToken= props.addresses.initialCollateralToken;
-    close_order_addresses.swapPath = props.addresses.swapPath;
-    close_order_params.addresses = close_order_addresses;
+    require close_order_params.addresses.receiver == props.addresses.receiver;
+    require close_order_params.addresses.callbackContract == props.addresses.callbackContract;
+    require close_order_params.addresses.uiFeeReceiver == props.addresses.uiFeeReceiver;
+    require close_order_params.addresses.market == props.addresses.market;
+    require close_order_params.addresses.initialCollateralToken == props.addresses.initialCollateralToken;
+    // ERROR: could not type expression "close_order_params.addresses.swapPath == props.addresses.swapPath", message: type address[] is not comparable
+    // require close_order_params.addresses.swapPath == props.addresses.swapPath;
 
     // numbers
-    close_order_numbers.sizeDeltaUsd = props.numbers.sizeDeltaUsd;
-    close_order_numbers.initialCollateralDeltaAmount = props.numbers.initialCollateralDeltaAmount;
-    close_order_numbers.triggerPrice = props.numbers.triggerPrice;
-    close_order_numbers.acceptablePrice = props.numbers.acceptablePrice;
-    close_order_numbers.executionFee = props.numbers.executionFee;
-    close_order_numbers.callbackGasLimit = props.numbers.callbackGasLimit;
-    close_order_numbers.minOutputAmount = props.numbers.minOutputAmount;
-    close_order_params.numbers = close_order_numbers;
+    require close_order_params.numbers.sizeDeltaUsd == props.numbers.sizeDeltaUsd;
+    require close_order_params.numbers.initialCollateralDeltaAmount == props.numbers.initialCollateralDeltaAmount;
+    require close_order_params.numbers.triggerPrice == props.numbers.triggerPrice;
+    require close_order_params.numbers.acceptablePrice == props.numbers.acceptablePrice;
+    require close_order_params.numbers.executionFee == props.numbers.executionFee;
+    require close_order_params.numbers.callbackGasLimit == props.numbers.callbackGasLimit;
+    require close_order_params.numbers.minOutputAmount == props.numbers.minOutputAmount;
 
-    close_order_orderType = props.orderType;
-    close_order_decreasePositionSwapType = props.decreasePositionSwapType;
+    require close_order_params.orderType == props.numbers.orderType;
+    require close_order_params.decreasePositionSwapType == props.numbers.decreasePositionSwapType;
 
     // Note: a close order should be in the opposite direction
-    close_order_params.isLong = !props.flags.isLong;
-    close_order_params.shouldUnwrapNativeToken = props.flags.shouldUnwrapNativeToken;
-    */
+    require close_order_params.isLong == !props.flags.isLong;
+    require close_order_params.shouldUnwrapNativeToken == props.flags.shouldUnwrapNativeToken;
 
     return close_order_params;
 }
