@@ -269,6 +269,28 @@ const config: {
       minCollateralFactorForOpenInterestMultiplierShort: decimalToFloat(2, 10),
     },
     {
+      tokens: { indexToken: "XRP", longToken: "WETH", shortToken: "USDC" },
+      virtualTokenIdForIndexToken: hashString("PERP:XRP/USD"),
+      virtualMarketId: hashString("SPOT:XRP/USD"),
+
+      ...baseMarketConfig,
+      ...synthethicMarketConfig,
+
+      maxLongTokenPoolAmount: expandDecimals(500, 18),
+      maxShortTokenPoolAmount: expandDecimals(1_000_000, 6),
+
+      negativePositionImpactFactor: decimalToFloat(15, 10), // 0.3% for 2,000,000 USD of imbalance
+      positivePositionImpactFactor: decimalToFloat(75, 11), // 0.15% for 2,000,000 USD of imbalance
+
+      // use the swap impact factor for WETH
+      negativeSwapImpactFactor: decimalToFloat(12, 11), // 0.3% for 25,000,000 USD of imbalance
+      positiveSwapImpactFactor: decimalToFloat(12, 11), // 0.3% for 25,000,000 USD of imbalance
+
+      // minCollateralFactor of 0.01 (1%) when open interest is 5,000,000 USD
+      minCollateralFactorForOpenInterestMultiplierLong: decimalToFloat(2, 9),
+      minCollateralFactorForOpenInterestMultiplierShort: decimalToFloat(2, 9),
+    },
+    {
       tokens: { indexToken: "DOGE", longToken: "WETH", shortToken: "USDC" },
       virtualTokenIdForIndexToken: hashString("PERP:DOGE/USD"),
       virtualMarketId: hashString("SPOT:DOGE/USD"),
@@ -462,6 +484,28 @@ const config: {
       minCollateralFactorForOpenInterestMultiplierShort: decimalToFloat(2, 10),
     },
     {
+      tokens: { indexToken: "XRP", longToken: "WAVAX", shortToken: "USDC" },
+      virtualTokenIdForIndexToken: hashString("PERP:XRP/USD"),
+      virtualMarketId: hashString("SPOT:XRP/USD"),
+
+      ...baseMarketConfig,
+      ...synthethicMarketConfig,
+
+      maxLongTokenPoolAmount: expandDecimals(75_000, 18),
+      maxShortTokenPoolAmount: expandDecimals(1_000_000, 6),
+
+      negativePositionImpactFactor: decimalToFloat(15, 10), // 0.3% for 2,000,000 USD of imbalance
+      positivePositionImpactFactor: decimalToFloat(75, 11), // 0.15% for 2,000,000 USD of imbalance
+
+      // use the swap impact factor for WAVAX
+      negativeSwapImpactFactor: decimalToFloat(1, 8), // 0.3% for 300,000 USD of imbalance
+      positiveSwapImpactFactor: decimalToFloat(5, 9), // 0.15% for 300,000,000 USD of imbalance
+
+      // minCollateralFactor of 0.01 (1%) when open interest is 5,000,000 USD
+      minCollateralFactorForOpenInterestMultiplierLong: decimalToFloat(2, 9),
+      minCollateralFactorForOpenInterestMultiplierShort: decimalToFloat(2, 9),
+    },
+    {
       tokens: { indexToken: "DOGE", longToken: "WAVAX", shortToken: "USDC" },
       virtualTokenIdForIndexToken: hashString("PERP:DOGE/USD"),
       virtualMarketId: hashString("SPOT:DOGE/USD"),
@@ -638,8 +682,22 @@ const config: {
       maxShortTokenPoolAmount: expandDecimals(300_000, 6),
     },
 
-    { tokens: { indexToken: "WBTC", longToken: "USDC", shortToken: "USDT" } },
-    { tokens: { indexToken: "WETH", longToken: "USDC", shortToken: "DAI" } },
+    {
+      tokens: { indexToken: "WBTC", longToken: "USDC", shortToken: "USDT" },
+
+      borrowingFactorForLongs: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+      borrowingFactorForShorts: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+
+      fundingFactor: decimalToFloat(16, 7), // ~5000% per year for a 100% skew
+    },
+    {
+      tokens: { indexToken: "WETH", longToken: "USDC", shortToken: "DAI" },
+
+      borrowingFactorForLongs: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+      borrowingFactorForShorts: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+
+      fundingFactor: decimalToFloat(16, 7), // ~5000% per year for a 100% skew
+    },
   ],
   avalancheFuji: [
     { tokens: { indexToken: "WAVAX", longToken: "WAVAX", shortToken: "USDC" } },
@@ -704,8 +762,22 @@ const config: {
       maxShortTokenPoolAmount: expandDecimals(300_000, 6),
     },
 
-    { tokens: { indexToken: "WBTC", longToken: "USDC", shortToken: "USDT" } },
-    { tokens: { indexToken: "WETH", longToken: "USDC", shortToken: "DAI" } },
+    {
+      tokens: { indexToken: "WBTC", longToken: "USDC", shortToken: "USDT" },
+
+      borrowingFactorForLongs: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+      borrowingFactorForShorts: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+
+      fundingFactor: decimalToFloat(16, 7), // ~5000% per year for a 100% skew
+    },
+    {
+      tokens: { indexToken: "WETH", longToken: "USDC", shortToken: "DAI" },
+
+      borrowingFactorForLongs: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+      borrowingFactorForShorts: decimalToFloat(3, 7), // 0.0000003, 0.00003% / second, 946% per year if the pool is 100% utilized
+
+      fundingFactor: decimalToFloat(16, 7), // ~5000% per year for a 100% skew
+    },
   ],
   hardhat: [
     {

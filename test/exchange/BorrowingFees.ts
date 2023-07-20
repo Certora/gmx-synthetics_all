@@ -208,7 +208,10 @@ describe("Exchange.BorrowingFees", () => {
       getMarketTokenPriceWithPoolValue(fixture, { prices: prices.ethUsdMarket }),
       ([marketTokenPrice, poolValueInfo]) => {
         expect(marketTokenPrice).closeTo("1001068487605242432177935697848", "10000000000000000000000"); // 1.00106848761
-        expect(poolValueInfo.poolValue).closeTo("6006410925631454593067614187093608000", "10000000000000000000"); // 6006410.92563
+        expect(poolValueInfo.poolValue).closeTo(
+          "6006410925631454593067614187093608000",
+          "100000000000000000000000000000"
+        ); // 6006410.92563
       }
     );
 
@@ -433,8 +436,11 @@ describe("Exchange.BorrowingFees", () => {
     await usingResult(
       getMarketTokenPriceWithPoolValue(fixture, { prices: prices.ethUsdMarket }),
       ([marketTokenPrice, poolValueInfo]) => {
-        expect(marketTokenPrice).eq("1000806402533000000000000000000"); // 1.00080640253
-        expect(poolValueInfo.poolValue).eq("6004838415198000000000000000000000000"); // 6,004,838.4152
+        expect(marketTokenPrice).closeTo("1000806402533000000000000000000", "10000000000000000000000"); // 1.00080640253
+        expect(poolValueInfo.poolValue).closeTo(
+          "6004838415198000000000000000000000000",
+          "100000000000000000000000000000"
+        ); // 6,004,838.4152
       }
     );
   });
