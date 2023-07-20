@@ -1,5 +1,7 @@
 using ExchangeRouter as exchangeRouter;
 using DataStore as dataStore;
+using KeysHarness as keys;
+using OrderStoreUtils as orderStoreUtils;
 // Solvency:
 // * The market can be fully closed
 // * All positions can be closed
@@ -49,6 +51,13 @@ methods {
 // 3) Users can redeem market tokens (all fees can be collected)
 // 4) There is no bank run scenario
 //=============================================================================
+
+// function ORDER_LIST() returns bytes32 {
+//     // hex is 1c0ed28dbf4dbab6e3b05ec6984dab52b8bf44cf925b113e5c131897d38539e6
+//     // bytes32 order_list =  12690948807470286051617335600493479205455250750719689145299770941367493409254;
+//     bytes32 order_list =  0x1c0ed28dbf4dbab6e3b05ec6984dab52b8bf44cf925b113e5c131897d38539e6;
+//     return order_list;
+// }
 
 function closing_create_order_params_from_order(Order.Props props) returns BaseOrderUtils.CreateOrderParams {
     BaseOrderUtils.CreateOrderParams close_order_params;
@@ -109,7 +118,7 @@ rule positions_can_be_closed_cancelWithdrawal {
     // this order."
 
     env e;
-    bytes32 withdrawlCancelKey;
+    bytes32 withdrawalCancelKey;
 
     // Used for both precond and postcond since we assume the
     // prices do not change
@@ -120,22 +129,22 @@ rule positions_can_be_closed_cancelWithdrawal {
     //========================================================================
     bytes32 some_order_key; 
     // this key is in the list of orders
-    bool precond_contains_key = dataStore.containsBytes32(Keys.ORDER_LIST, some_order_key);
-    Order.Props precond_props = OrderStoreUtils.get(exchangeRouter.dataStore, some_order_key);
+    bool precond_contains_key = dataStore.containsBytes32(e, keys.orderList(e), some_order_key);
+    Order.Props precond_props = orderStoreUtils.get(e, dataStore, some_order_key);
     BaseOrderUtils.CreateOrderParams precond_closing_order_params = closing_create_order_params_from_order(precond_props);
 
     // Require: for any key in the list of order keys, it is possible
     // to create an order, and then also execute it.
     exchangeRouter.createOrder@withrevert(e, precond_closing_order_params);
-    bool createOrderReverted = lastReverted;
+    bool createOrderRevertedPre = lastReverted;
     // Ideally, I would like to really call OrderHandler.executeOrder
     // with a caller that has keeper permissions, but I am not
     // exactly sure how to do this without overspecifying yet... will
     // pivot back
-    exchangeRouter.simulateExecuteOrder@withrevert(e, oracle_price_params);
-    bool executeOrderReverted = lastReverted;
+    exchangeRouter.simulateExecuteOrder@withrevert(e, some_order_key, oracle_price_params);
+    bool executeOrderRevertedPre = lastReverted;
 
-    require (precond_contains_key /* todo add conjunct specifying other reasonable conditions that prevent a revert */ => !createOrderReverted && !executeOrderReverted);
+    require (precond_contains_key /* todo add conjunct specifying other reasonable conditions that prevent a revert */ => !createOrderRevertedPre && !executeOrderRevertedPre);
     
     //========================================================================
     // Execute the call: cancelWithdrawal
@@ -145,18 +154,17 @@ rule positions_can_be_closed_cancelWithdrawal {
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    bool postcond_contains_key = dataStore.containsBytes32(Keys.ORDER_LIST, some_order_key);
-    Order.Props postcond_props = OrderStoreUtils.get(exchangeRouter.dataStore, some_order_key);
-    BaseOrderUtils.CreateOrderParams postcond_closing_order_params = closing_create_order_params_from_order(props);
+    bool postcond_contains_key = dataStore.containsBytes32(e, keys.orderList(e), some_order_key);
+    Order.Props postcond_props = orderStoreUtils.get(e, dataStore, some_order_key);
+    BaseOrderUtils.CreateOrderParams postcond_closing_order_params = closing_create_order_params_from_order(postcond_props);
     // Assert: for any key in the list of order keys, it is possible
     // to create an order, and then also execute it.
     exchangeRouter.createOrder@withrevert(e, postcond_closing_order_params);
-    createOrderReverted = lastReverted;
-    exchangeRouter.simulateExecuteOrder@withrevert(e, oracle_price_params);
-    executeOrderReverted = lastReverted;
+    bool createOrderRevertedPost = lastReverted;
+    exchangeRouter.simulateExecuteOrder@withrevert(e, some_order_key, oracle_price_params);
+    bool executeOrderRevertedPost = lastReverted;
     assert postcond_contains_key == precond_contains_key;
-    assert postcond_contains_key => !createOrderReverted && !executeOrderReverted;
-
+    assert postcond_contains_key => !createOrderRevertedPost && !executeOrderRevertedPost;
 }
 
 function market_can_be_closed() returns bool {
@@ -182,23 +190,15 @@ function bank_run_scenario() returns bool {
     return false;
 }
 
-function solvency() returns bool {
-    // TODO need real definition of this.
-    return market_can_be_closed() && positions_can_be_closed() &&
-        users_can_redeem_market_tokens() && !bank_run_scenario();
-}
+// function solvency() returns bool {
+//     // TODO need real definition of this.
+//     return market_can_be_closed() && positions_can_be_closed() &&
+//         users_can_redeem_market_tokens() && !bank_run_scenario();
+// }
 
 rule sanity_cancelWithdrawal{
     env e;
     bytes32 arg;
     cancelWithdrawal(e, arg);
     assert false;
-}
-
-rule solvency_invariant_cancelWithdrawal {
-    env e;
-    bytes32 arg;
-    require solvency();
-    cancelWithdrawal(e, arg);
-    assert solvency();
 }
