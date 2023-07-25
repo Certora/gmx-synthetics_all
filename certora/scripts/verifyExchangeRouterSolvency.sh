@@ -2,8 +2,10 @@ certoraRun  contracts/router/ExchangeRouter.sol \
             contracts/order/BaseOrderUtils.sol \
             contracts/data/DataStore.sol \
             contracts/exchange/WithdrawalHandler.sol \
-            contracts/order/OrderStoreUtils.sol \
+            contracts/position/PositionStoreUtils.sol \
+            contracts/position/PositionUtils.sol \
             certora/harness/KeysHarness.sol \
+            certora/harness/GetPositionKeyHarness.sol \
 \
 --verify ExchangeRouter:certora/specs/ExchangeRouterSolvency.spec \
 --link ExchangeRouter:withdrawalHandler=WithdrawalHandler \

@@ -67,7 +67,9 @@
 using ExchangeRouter as exchangeRouter;
 using DataStore as dataStore;
 using KeysHarness as keys;
-using OrderStoreUtils as orderStoreUtils;
+using PositionUtils as positionUtils;
+using PositionStoreUtils as positionStoreUtils;
+using GetPositionKeyHarness as positionKeyHarness;
 
 methods {
     // ExchangeRouter
@@ -89,6 +91,8 @@ methods {
     function _._nonReentrantBefore() internal => CONSTANT;
     function _._nonReentrantAfter() internal => CONSTANT;
 
+
+
 }
 
 function closing_create_order_params_from_order(Order.Props props) returns BaseOrderUtils.CreateOrderParams {
@@ -100,8 +104,9 @@ function closing_create_order_params_from_order(Order.Props props) returns BaseO
     require close_order_params.addresses.uiFeeReceiver == props.addresses.uiFeeReceiver;
     require close_order_params.addresses.market == props.addresses.market;
     require close_order_params.addresses.initialCollateralToken == props.addresses.initialCollateralToken;
-    // ERROR: could not type expression "close_order_params.addresses.swapPath == props.addresses.swapPath", message: type address[] is not comparable
-    // require close_order_params.addresses.swapPath == props.addresses.swapPath;
+    // Note: It may be needed to add an extra require about the array length.
+    uint i;
+    require close_order_params.addresses.swapPath[i] == props.addresses.swapPath[i];
 
     // numbers
     require close_order_params.numbers.sizeDeltaUsd == props.numbers.sizeDeltaUsd;
@@ -122,24 +127,55 @@ function closing_create_order_params_from_order(Order.Props props) returns BaseO
     return close_order_params;
 }
 
+function closing_create_order_params_from_position(Position.Props position) returns BaseOrderUtils.CreateOrderParams {
+    BaseOrderUtils.CreateOrderParams close_order_params;
+
+    require close_order_params.orderType == Order.OrderType.MarketDecrease;
+
+    // addresses
+    require close_order_params.addresses.receiver == position.addresses.account;
+    require close_order_params.addresses.market == position.addresses.market;
+    require close_order_params.addresses.initialCollateralToken == position.addresses.collateralToken;
+
+    // numbers
+    // NOTE: price is underspecified here. This is currently
+    // just used to show that it is possible to issue a close order.
+    require close_order_params.numbers.sizeDeltaUsd == position.numbers.sizeInUsd;
+
+    require close_order_params.isLong == position.flags.isLong;
+
+    return close_order_params;
+}
+
+// this mirrors PositionUtils.validateNonEmptyPosition, but returns
+// a bool rather than reverting if the position is empty
+function isPositionEmpty(Position.Props position) returns bool {
+    return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0 && position.numbers.collateralAmount == 0;
+}
+
+// TODO need state argument ??
+function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price_params) returns bool {
+    address some_account;
+    address some_market;
+    address some_collateral_token;
+    bool some_is_long;
+    bytes32 some_position_key = positionKeyHarness.getPositionKey(e, some_account, some_market, some_collateral_token, some_is_long);
+    Position.Props position = positionStoreUtils.get(e, dataStore, some_position_key);
+    bool non_empty_position = !isPositionEmpty(position);
+    closing_create_order_params_from_position(position);
+    BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);
+
+    bytes32 closing_order_key = exchangeRouter.createOrder@withrevert(e, closing_order_params); 
+    bool createOrderReverted = lastReverted;
+    // TODO this is state-changing, so may need state argument
+    exchangeRouter.simulateExecuteOrder@withrevert(e, closing_order_key, oracle_price_params);
+    bool executeOrderReverted = lastReverted;
+
+    return non_empty_position => !createOrderReverted && !executeOrderReverted;
+}
+
 rule positions_can_be_closed_cancelWithdrawal {
-    // A position is closed when an order of the opposite direction
-    // of the position but with an equal amount is created.
-    // So for a long order, this entails selling the security,
-    // and for a short order this entails buying the security back.
-    // Technically liquidation is the same thing, but in practice
-    // these are done in different situations: closing is done
-    // by the user to realize a gain/loss, whereas liquidation
-    // is done by the protocol when limits are reached.
-
-    // Using the opposite order way of specifying is likely
-    // preferable because this
-    // is the normal way a user will interact with the system.
-
-    // Slightly closer to how this is mechanized: 
-    // "For any position that is open, it is possible to create a new
-    // order in the opposite direction and same amount, and excute
-    // this order."
+    // A position is closed by issuing a decrease order (so that it is decreased to zero)
 
     env e;
     bytes32 withdrawalCancelKey;
@@ -151,25 +187,8 @@ rule positions_can_be_closed_cancelWithdrawal {
     //========================================================================
     // Require: positions can be closed before executing the call
     //========================================================================
-    bytes32 some_order_key; 
-    // this key is in the list of orders
-    bool precond_contains_key = dataStore.containsBytes32(e, keys.orderList(e), some_order_key);
-    Order.Props precond_props = orderStoreUtils.get(e, dataStore, some_order_key);
-    BaseOrderUtils.CreateOrderParams precond_closing_order_params = closing_create_order_params_from_order(precond_props);
+    require positions_closable(e, oracle_price_params);
 
-    // Require: for any key in the list of order keys, it is possible
-    // to create an order, and then also execute it.
-    exchangeRouter.createOrder@withrevert(e, precond_closing_order_params);
-    bool createOrderRevertedPre = lastReverted;
-    // Ideally, I would like to really call OrderHandler.executeOrder
-    // with a caller that has keeper permissions, but I am not
-    // exactly sure how to do this without overspecifying yet... will
-    // pivot back
-    exchangeRouter.simulateExecuteOrder@withrevert(e, some_order_key, oracle_price_params);
-    bool executeOrderRevertedPre = lastReverted;
-
-    require (precond_contains_key /* todo add conjunct specifying other reasonable conditions that prevent a revert */ => !createOrderRevertedPre && !executeOrderRevertedPre);
-    
     //========================================================================
     // Execute the call: cancelWithdrawal
     //========================================================================
@@ -178,23 +197,13 @@ rule positions_can_be_closed_cancelWithdrawal {
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    bool postcond_contains_key = dataStore.containsBytes32(e, keys.orderList(e), some_order_key);
-    Order.Props postcond_props = orderStoreUtils.get(e, dataStore, some_order_key);
-    BaseOrderUtils.CreateOrderParams postcond_closing_order_params = closing_create_order_params_from_order(postcond_props);
-    // Assert: for any key in the list of order keys, it is possible
-    // to create an order, and then also execute it.
-    exchangeRouter.createOrder@withrevert(e, postcond_closing_order_params);
-    bool createOrderRevertedPost = lastReverted;
-    exchangeRouter.simulateExecuteOrder@withrevert(e, some_order_key, oracle_price_params);
-    bool executeOrderRevertedPost = lastReverted;
-    assert postcond_contains_key == precond_contains_key;
-    assert postcond_contains_key => !createOrderRevertedPost && !executeOrderRevertedPost;
+    assert positions_closable(e, oracle_price_params);
 }
 
 rule market_can_be_closed_cancelWithdrawal {
     // TODO: need real definition of "markets can be closed"
     // For now I think this could mean:
-    // * for all existing deposits: a withdrawals can be created
+    // * for all existing deposits: a withdrawal can be created
     // for the total amount to the right account.
     // * all the created withdrawals can be executed (by a keeper
     // with the right permissions)
