@@ -17,7 +17,9 @@ certoraRun  contracts/router/ExchangeRouter.sol \
 --solc_allow_path . \
 --server production \
 --prover_args "-optimisticFallback true" \
---prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
+--prover_args "-splitParallel true" \
+--prover_args "-splitParallelTimelimit 1000" \
 --send_only \
---rule positions_can_be_closed_cancelWithdrawal \
---msg "syntax check on position closing"
+--rule positions_can_be_closed \
+--method "simulateExecuteOrder(bytes32,(address[],(uint256,uint256)[]))" \
+--msg "positions_can_be_closed, parametric, simulateExecuteOrder"

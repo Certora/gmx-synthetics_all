@@ -52,10 +52,10 @@
 // held before the call, it should still hold after the call.
 
 // In this spec, "Solvency" is really broken into 4 invariants:
-// - closing_create_order_params_from_order
-// - market_can_be_closed_cancelWithdrawal
-// - users_can_redeem_market_tokens_cancelWithdrawal
-// - no_bank_run_scenario_cancelWithdrawal
+// - positions_can_be_closed_...
+// - market_can_be_closed_...
+// - users_can_redeem_market_tokens_...
+// - no_bank_run_scenario_...
 
 // The idea is we should write a rule that shows these invariants hold
 // for all of the calls (and in principle we could use a parametric rule)
@@ -90,7 +90,6 @@ methods {
     function _.hasRole(address, bytes32) internal => ALWAYS(true);
     function _._nonReentrantBefore() internal => CONSTANT;
     function _._nonReentrantAfter() internal => CONSTANT;
-
 
 
 }
@@ -172,7 +171,7 @@ function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price
     return non_empty_position => !createOrderReverted && !executeOrderReverted;
 }
 
-rule positions_can_be_closed_cancelWithdrawal {
+rule positions_can_be_closed(method f) {
     // A liveness property that all open positions can be closed, even
     // after arbitrary (potentially adversarial) user actions. More precisely,
     // for any public/external call, we prove an invariant that assuming
@@ -184,6 +183,7 @@ rule positions_can_be_closed_cancelWithdrawal {
 
     env e;
     bytes32 withdrawalCancelKey;
+    calldataarg args;
 
     // Used for both precond and postcond since we assume the
     // prices do not change
@@ -201,7 +201,7 @@ rule positions_can_be_closed_cancelWithdrawal {
     //========================================================================
     // Execute the call: cancelWithdrawal
     //========================================================================
-    exchangeRouter.cancelWithdrawal(e, withdrawalCancelKey) at stateBeforePrecond;
+    f(e, args) at stateBeforePrecond;
 
     //========================================================================
     // Assert: positions can be closed after executing the call
