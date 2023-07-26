@@ -153,7 +153,6 @@ function isPositionEmpty(Position.Props position) returns bool {
     return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0 && position.numbers.collateralAmount == 0;
 }
 
-// TODO need state argument ??
 function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price_params) returns bool {
     address some_account;
     address some_market;
@@ -167,7 +166,6 @@ function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price
 
     bytes32 closing_order_key = exchangeRouter.createOrder@withrevert(e, closing_order_params); 
     bool createOrderReverted = lastReverted;
-    // TODO this is state-changing, so may need state argument
     exchangeRouter.simulateExecuteOrder@withrevert(e, closing_order_key, oracle_price_params);
     bool executeOrderReverted = lastReverted;
 
@@ -175,7 +173,14 @@ function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price
 }
 
 rule positions_can_be_closed_cancelWithdrawal {
-    // A position is closed by issuing a decrease order (so that it is decreased to zero)
+    // A liveness property that all open positions can be closed, even
+    // after arbitrary (potentially adversarial) user actions. More precisely,
+    // for any public/external call, we prove an invariant that assuming
+    // it was possible to close all open positions before the call, it is still
+    // possible to close all open positions after the call.
+
+    // A position is closed by issuing a decrease order (so that it is 
+    // decreased to zero).
 
     env e;
     bytes32 withdrawalCancelKey;
@@ -183,6 +188,10 @@ rule positions_can_be_closed_cancelWithdrawal {
     // Used for both precond and postcond since we assume the
     // prices do not change
     OracleUtils.SimulatePricesParams oracle_price_params;
+
+    // We need to save the state before positions_closable because
+    // simulateExecuteOrder in positions_closable is state-changing.
+    storage stateBeforePrecond = lastStorage;
 
     //========================================================================
     // Require: positions can be closed before executing the call
@@ -192,7 +201,7 @@ rule positions_can_be_closed_cancelWithdrawal {
     //========================================================================
     // Execute the call: cancelWithdrawal
     //========================================================================
-    exchangeRouter.cancelWithdrawal(e, withdrawalCancelKey);
+    exchangeRouter.cancelWithdrawal(e, withdrawalCancelKey) at stateBeforePrecond;
 
     //========================================================================
     // Assert: positions can be closed after executing the call
