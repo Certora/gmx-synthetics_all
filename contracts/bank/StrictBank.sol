@@ -62,9 +62,4 @@ contract StrictBank is Bank {
     function _afterTransferOut(address token) internal override {
         tokenBalances[token] = IERC20(token).balanceOf(address(this));
     }
-
-    // Chandra added this
-    function afterTransferOut(address token) external {
-        _afterTransferOut(token);
-    }
 }
