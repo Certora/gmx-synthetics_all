@@ -326,3 +326,23 @@ rule double_get_signer_count {
     signer_count_two = getSignerCount(e);
     assert(signer_count_one == signer_count_two);
 }
+
+// 8. Removing a signer will not cause any other signer to be removed.
+rule remove_signer_deletes_no_others {
+    env e;
+    calldataarg args;
+    address signer_to_remove;
+    address some_other_signer;
+
+    // Assuming: The "signers" set obeys an invariant that
+    // the two data structures it uses internally are consistent.
+    requireInvariant setInvariant();
+
+    // there is some other strictly different signer in the set
+    require(oracleStore.signersContains(e, some_other_signer));
+    require(some_other_signer != signer_to_remove);
+
+    oracleStore.removeSigner(e, signer_to_remove);
+
+    assert(oracleStore.signersContains(e, some_other_signer));
+}
