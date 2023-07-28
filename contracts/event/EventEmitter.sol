@@ -3,11 +3,6 @@
 pragma solidity ^0.8.0;
 
 import "../role/RoleModule.sol";
-import "../order/Order.sol";
-import "../deposit/Deposit.sol";
-import "../withdrawal/Withdrawal.sol";
-import {SwapPricingUtils} from "../pricing/SwapPricingUtils.sol"; /// @dev RP@Certora: import only SwapPricingUtils
-import {PositionPricingUtils} from "../pricing/PositionPricingUtils.sol"; /// @dev RP@Certora: import only PositionPricingUtils
 import "./EventUtils.sol";
 
 // @title EventEmitter

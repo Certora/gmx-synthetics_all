@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 
 import { deployContract } from "../../utils/deploy";
 import { deployFixture } from "../../utils/fixture";
@@ -36,6 +37,80 @@ describe("Oracle", () => {
     expect(await oracle.oracleStore()).to.eq(oracleStore.address);
   });
 
+  it("validatePrices", async () => {
+    // use the previous block, otherwise block.hash would be zero when calling
+    // validatePrices
+    const block0 = await provider.getBlock((await provider.getBlockNumber()) - 2);
+    const block1 = await provider.getBlock((await provider.getBlockNumber()) - 1);
+
+    const signerInfo = getSignerInfo([0, 1, 2, 3, 4, 7, 9]);
+    const wntMinPrices = [4990, 4991, 4995, 5000, 5001, 5005, 5007];
+    const wntMaxPrices = [4990, 4991, 4995, 5010, 5011, 5015, 5017];
+    const wbtcMinPrices = [60100, 60101, 60102, 60110, 60200, 60300, 60500];
+    const wbtcMaxPrices = [60100, 60101, 60102, 60510, 60700, 60800, 60900];
+
+    const wntSignatures = await signPrices({
+      signers: [signer0, signer1, signer2, signer3, signer4, signer7, signer9],
+      salt: oracleSalt,
+      minOracleBlockNumber: block0.number - 10,
+      maxOracleBlockNumber: block0.number,
+      oracleTimestamp: block0.timestamp,
+      blockHash: block0.hash,
+      token: wnt.address,
+      tokenOracleType: TOKEN_ORACLE_TYPES.DEFAULT,
+      precision: 1,
+      minPrices: wntMinPrices,
+      maxPrices: wntMaxPrices,
+    });
+
+    const wbtcSignatures = await signPrices({
+      signers: [signer0, signer1, signer2, signer3, signer4, signer7, signer9],
+      salt: oracleSalt,
+      minOracleBlockNumber: block1.number - 7,
+      maxOracleBlockNumber: block1.number,
+      oracleTimestamp: block1.timestamp,
+      blockHash: block1.hash,
+      token: wbtc.address,
+      tokenOracleType: TOKEN_ORACLE_TYPES.DEFAULT,
+      precision: 2,
+      minPrices: wbtcMinPrices,
+      maxPrices: wbtcMaxPrices,
+    });
+
+    const params = {
+      priceFeedTokens: [],
+      signerInfo,
+      tokens: [wnt.address, wbtc.address],
+      compactedMinOracleBlockNumbers: getCompactedOracleBlockNumbers([block0.number - 10, block1.number - 7]),
+      compactedMaxOracleBlockNumbers: getCompactedOracleBlockNumbers([block0.number, block1.number]),
+      compactedOracleTimestamps: getCompactedOracleTimestamps([block0.timestamp, block1.timestamp]),
+      compactedDecimals: getCompactedDecimals([1, 2]),
+      compactedMinPrices: getCompactedPrices(wntMinPrices.concat(wbtcMinPrices)),
+      compactedMinPricesIndexes: getCompactedPriceIndexes([0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6]),
+      compactedMaxPrices: getCompactedPrices(wntMaxPrices.concat(wbtcMaxPrices)),
+      compactedMaxPricesIndexes: getCompactedPriceIndexes([0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6]),
+      signatures: wntSignatures.concat(wbtcSignatures),
+    };
+
+    const result = await oracle.validatePrices(dataStore.address, params);
+
+    expect(result.length).eq(2);
+
+    expect(result[0].token).eq(wnt.address);
+    expect(result[0].min).eq(50000);
+    expect(result[0].max).eq(50100);
+    expect(result[0].timestamp).eq(block0.timestamp);
+    expect(result[0].minBlockNumber).eq(block0.number - 10);
+    expect(result[0].maxBlockNumber).eq(block0.number);
+
+    expect(result[1].token).eq(wbtc.address);
+    expect(result[1].min).eq(6011000);
+    expect(result[1].max).eq(6051000);
+    expect(result[1].timestamp).eq(block1.timestamp);
+    expect(result[1].minBlockNumber).eq(block1.number - 7);
+    expect(result[1].maxBlockNumber).eq(block1.number);
+  });
+
   it("setPrices", async () => {
     await expect(
       oracle.connect(user0).setPrices(dataStore.address, eventEmitter.address, {
@@ -55,23 +130,6 @@ describe("Oracle", () => {
     )
       .to.be.revertedWithCustomError(errorsContract, "Unauthorized")
       .withArgs(user0.address, "CONTROLLER");
-
-    await expect(
-      oracle.setPrices(dataStore.address, eventEmitter.address, {
-        signerInfo: 2,
-        tokens: [],
-        compactedMinOracleBlockNumbers: [],
-        compactedMaxOracleBlockNumbers: [],
-        compactedOracleTimestamps: [],
-        compactedDecimals: [],
-        compactedMinPrices: [],
-        compactedMinPricesIndexes: [],
-        compactedMaxPrices: [],
-        compactedMaxPricesIndexes: [],
-        signatures: [],
-        priceFeedTokens: [],
-      })
-    ).to.be.revertedWithCustomError(errorsContract, "EmptyTokens");
 
     const blockNumber = (await provider.getBlock()).number;
     const blockTimestamp = (await provider.getBlock()).timestamp;
@@ -93,7 +151,7 @@ describe("Oracle", () => {
       })
     )
       .to.be.revertedWithCustomError(errorsContract, "InvalidBlockNumber")
-      .withArgs(blockNumber + 10);
+      .withArgs(blockNumber + 10, blockNumber + 1);
 
     await expect(
       oracle.setPrices(dataStore.address, eventEmitter.address, {
@@ -340,7 +398,7 @@ describe("Oracle", () => {
     const wbtcMinPrices = [60100, 60101, 60102, 60110, 60200, 60300, 60500];
     const wbtcMaxPrices = [60100, 60101, 60102, 60510, 60700, 60800, 60900];
 
-    const wntSignatures = await signPrices({
+    let wntSignatures = await signPrices({
       signers: [signer0, signer1, signer2, signer3, signer4, signer7, signer9],
       salt: oracleSalt,
       minOracleBlockNumber: blockNumber,
@@ -354,7 +412,7 @@ describe("Oracle", () => {
       maxPrices: wntMaxPrices,
     });
 
-    const wbtcSignatures = await signPrices({
+    let wbtcSignatures = await signPrices({
       signers: [signer0, signer1, signer2, signer3, signer4, signer7, signer9],
       salt: oracleSalt,
       minOracleBlockNumber: blockNumber,
@@ -423,7 +481,7 @@ describe("Oracle", () => {
       })
     ).to.be.revertedWithCustomError(errorsContract, "InvalidSignature");
 
-    const tx1 = await oracle.setPrices(dataStore.address, eventEmitter.address, {
+    const params = {
       priceFeedTokens: [],
       signerInfo,
       tokens: [wnt.address, wbtc.address],
@@ -436,7 +494,9 @@ describe("Oracle", () => {
       compactedMaxPrices: getCompactedPrices(wntMaxPrices.concat(wbtcMaxPrices)),
       compactedMaxPricesIndexes: getCompactedPriceIndexes([0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6]),
       signatures: wntSignatures.concat(wbtcSignatures),
-    });
+    };
+
+    const tx1 = await oracle.setPrices(dataStore.address, eventEmitter.address, params);
 
     await printGasUsage(provider, tx1, "oracle.setPrices tx1");
 
@@ -447,6 +507,55 @@ describe("Oracle", () => {
 
     expect(await oracle.getTokensWithPricesCount()).eq(2);
     expect(await oracle.getTokensWithPrices(0, 2)).eql([wnt.address, wbtc.address]);
+
+    await oracle.clearAllPrices();
+
+    const block1 = await provider.getBlock();
+    const block0 = await provider.getBlock(block1.number - 1);
+
+    // test set prices with a block range
+    wntSignatures = await signPrices({
+      signers: [signer0, signer1, signer2, signer3, signer4, signer7, signer9],
+      salt: oracleSalt,
+      minOracleBlockNumber: block0.number - 10,
+      maxOracleBlockNumber: block0.number,
+      oracleTimestamp: block0.timestamp,
+      blockHash: block0.hash,
+      token: wnt.address,
+      tokenOracleType: TOKEN_ORACLE_TYPES.DEFAULT,
+      precision: 1,
+      minPrices: wntMinPrices,
+      maxPrices: wntMaxPrices,
+    });
+
+    wbtcSignatures = await signPrices({
+      signers: [signer0, signer1, signer2, signer3, signer4, signer7, signer9],
+      salt: oracleSalt,
+      minOracleBlockNumber: block1.number - 5,
+      maxOracleBlockNumber: block1.number,
+      oracleTimestamp: block1.timestamp,
+      blockHash: block1.hash,
+      token: wbtc.address,
+      tokenOracleType: TOKEN_ORACLE_TYPES.DEFAULT,
+      precision: 2,
+      minPrices: wbtcMinPrices,
+      maxPrices: wbtcMaxPrices,
+    });
+
+    await oracle.setPrices(dataStore.address, eventEmitter.address, {
+      priceFeedTokens: [],
+      signerInfo,
+      tokens: [wnt.address, wbtc.address],
+      compactedMinOracleBlockNumbers: getCompactedOracleBlockNumbers([block0.number - 10, block1.number - 5]),
+      compactedMaxOracleBlockNumbers: getCompactedOracleBlockNumbers([block0.number, block1.number]),
+      compactedOracleTimestamps: getCompactedOracleTimestamps([block0.timestamp, block1.timestamp]),
+      compactedDecimals: getCompactedDecimals([1, 2]),
+      compactedMinPrices: getCompactedPrices(wntMinPrices.concat(wbtcMinPrices)),
+      compactedMinPricesIndexes: getCompactedPriceIndexes([0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6]),
+      compactedMaxPrices: getCompactedPrices(wntMaxPrices.concat(wbtcMaxPrices)),
+      compactedMaxPricesIndexes: getCompactedPriceIndexes([0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6]),
+      signatures: wntSignatures.concat(wbtcSignatures),
+    });
   });
 
   it("withOraclePrices", async () => {
@@ -524,25 +633,27 @@ describe("Oracle", () => {
 
     await printGasUsage(provider, tx1, "oracle.withOraclePrices tx1");
 
-    const tx2 = await oracleModuleTest.withOraclePricesTest(oracle.address, dataStore.address, eventEmitter.address, {
-      signerInfo,
-      tokens: [wnt.address, wnt.address, usdc.address],
-      compactedMinOracleBlockNumbers: getCompactedOracleBlockNumbers([block.number, block.number, block.number]),
-      compactedMaxOracleBlockNumbers: getCompactedOracleBlockNumbers([block.number, block.number, block.number]),
-      compactedOracleTimestamps: getCompactedOracleTimestamps([block.timestamp, block.timestamp, block.timestamp]),
-      compactedDecimals: getCompactedDecimals([1, 1, 6]),
-      compactedMinPrices: getCompactedPrices(wntPrices.concat(wntPrices).concat(usdcPrices)),
-      compactedMinPricesIndexes: getCompactedPriceIndexes([
-        0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6,
-      ]),
-      compactedMaxPrices: getCompactedPrices(wntPrices.concat(wntPrices).concat(usdcPrices)),
-      compactedMaxPricesIndexes: getCompactedPriceIndexes([
-        0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6,
-      ]),
-      signatures: wntSignatures.concat(wntSignatures).concat(usdcSignatures),
-      priceFeedTokens: [],
-    });
-
-    await printGasUsage(provider, tx2, "oracle.withOraclePrices tx2");
+    await expect(
+      oracleModuleTest.withOraclePricesTest(oracle.address, dataStore.address, eventEmitter.address, {
+        signerInfo,
+        tokens: [wnt.address, wnt.address, usdc.address],
+        compactedMinOracleBlockNumbers: getCompactedOracleBlockNumbers([block.number, block.number, block.number]),
+        compactedMaxOracleBlockNumbers: getCompactedOracleBlockNumbers([block.number, block.number, block.number]),
+        compactedOracleTimestamps: getCompactedOracleTimestamps([block.timestamp, block.timestamp, block.timestamp]),
+        compactedDecimals: getCompactedDecimals([1, 1, 6]),
+        compactedMinPrices: getCompactedPrices(wntPrices.concat(wntPrices).concat(usdcPrices)),
+        compactedMinPricesIndexes: getCompactedPriceIndexes([
+          0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6,
+        ]),
+        compactedMaxPrices: getCompactedPrices(wntPrices.concat(wntPrices).concat(usdcPrices)),
+        compactedMaxPricesIndexes: getCompactedPriceIndexes([
+          0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6,
+        ]),
+        signatures: wntSignatures.concat(wntSignatures).concat(usdcSignatures),
+        priceFeedTokens: [],
+      })
+    )
+      .to.be.revertedWithCustomError(errorsContract, "DuplicateTokenPrice")
+      .withArgs(wnt.address);
   });
 });
