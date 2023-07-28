@@ -199,6 +199,8 @@ contract DepositHandler is IDepositHandler, GlobalReentrancyGuard, RoleModule, O
 
         (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
 
+        (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
+
         DepositUtils.cancelDeposit(
             dataStore,
             eventEmitter,

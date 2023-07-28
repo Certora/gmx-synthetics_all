@@ -68,7 +68,11 @@ library OrderEventUtils {
         EventEmitter eventEmitter,
         bytes32 key,
         Order.SecondaryOrderType secondaryOrderType
+<<<<<<< HEAD
     ) external {/*
+=======
+    ) external {
+>>>>>>> e05cdbbd3276fcb607a90afc1e9080fb588f57f3
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
