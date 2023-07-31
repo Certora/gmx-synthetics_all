@@ -94,38 +94,6 @@ methods {
 
 }
 
-function closing_create_order_params_from_order(Order.Props props) returns BaseOrderUtils.CreateOrderParams {
-    BaseOrderUtils.CreateOrderParams close_order_params;
-
-    // addresses
-    require close_order_params.addresses.receiver == props.addresses.receiver;
-    require close_order_params.addresses.callbackContract == props.addresses.callbackContract;
-    require close_order_params.addresses.uiFeeReceiver == props.addresses.uiFeeReceiver;
-    require close_order_params.addresses.market == props.addresses.market;
-    require close_order_params.addresses.initialCollateralToken == props.addresses.initialCollateralToken;
-    // Note: It may be needed to add an extra require about the array length.
-    uint i;
-    require close_order_params.addresses.swapPath[i] == props.addresses.swapPath[i];
-
-    // numbers
-    require close_order_params.numbers.sizeDeltaUsd == props.numbers.sizeDeltaUsd;
-    require close_order_params.numbers.initialCollateralDeltaAmount == props.numbers.initialCollateralDeltaAmount;
-    require close_order_params.numbers.triggerPrice == props.numbers.triggerPrice;
-    require close_order_params.numbers.acceptablePrice == props.numbers.acceptablePrice;
-    require close_order_params.numbers.executionFee == props.numbers.executionFee;
-    require close_order_params.numbers.callbackGasLimit == props.numbers.callbackGasLimit;
-    require close_order_params.numbers.minOutputAmount == props.numbers.minOutputAmount;
-
-    require close_order_params.orderType == props.numbers.orderType;
-    require close_order_params.decreasePositionSwapType == props.numbers.decreasePositionSwapType;
-
-    // Note: a close order should be in the opposite direction
-    require close_order_params.isLong == !props.flags.isLong;
-    require close_order_params.shouldUnwrapNativeToken == props.flags.shouldUnwrapNativeToken;
-
-    return close_order_params;
-}
-
 function closing_create_order_params_from_position(Position.Props position) returns BaseOrderUtils.CreateOrderParams {
     BaseOrderUtils.CreateOrderParams close_order_params;
 
