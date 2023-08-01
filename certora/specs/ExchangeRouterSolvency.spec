@@ -76,7 +76,7 @@ methods {
     // function ExchangeRouter.cancelWithdrawal(/*key*/ bytes32) external => CONSTANT;
     // WithdrawalHandler
     // function _.createWithdrawal(address, WithdrawalUtils.CreateWithdrawalParams)  external => NONDET;
-    function WithdrawalHandler.cancelWithdrawal(/*key*/ bytes32) external => CONSTANT;
+    // function WithdrawalHandler.cancelWithdrawal(/*key*/ bytes32) external => CONSTANT;
     // function _.executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
     // function _.simulateExecuteWithdrawal(bytes32, OracleUtils.SimulatePricesParams) external => NONDET;
     // function _._executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
@@ -87,9 +87,9 @@ methods {
     // function WithdrawalStoreUtils.get(DataStore, /*key*/ bytes32) external => CONSTANT;
 
     // // cancelWithdrawal's modifier functions from RoleStore. todo clearly not right.
-    function _.hasRole(address, bytes32) internal => ALWAYS(true);
-    function _._nonReentrantBefore() internal => CONSTANT;
-    function _._nonReentrantAfter() internal => CONSTANT;
+    // function _.hasRole(address, bytes32) internal => ALWAYS(true);
+    // function _._nonReentrantBefore() internal => CONSTANT;
+    // function _._nonReentrantAfter() internal => CONSTANT;
 
 
 }
@@ -150,7 +150,6 @@ rule positions_can_be_closed(method f) {
     // decreased to zero).
 
     env e;
-    bytes32 withdrawalCancelKey;
     calldataarg args;
 
     // Used for both precond and postcond since we assume the
@@ -167,7 +166,7 @@ rule positions_can_be_closed(method f) {
     require positions_closable(e, oracle_price_params);
 
     //========================================================================
-    // Execute the call: cancelWithdrawal
+    // Execute the call
     //========================================================================
     f(e, args) at stateBeforePrecond;
 
@@ -177,7 +176,7 @@ rule positions_can_be_closed(method f) {
     assert positions_closable(e, oracle_price_params);
 }
 
-rule market_can_be_closed_cancelWithdrawal {
+rule market_can_be_closed {
     // TODO: need real definition of "markets can be closed"
     // For now I think this could mean:
     // * for all existing deposits: a withdrawal can be created
@@ -195,7 +194,7 @@ rule market_can_be_closed_cancelWithdrawal {
 }
 
 
-rule users_can_redeem_market_tokens_cancelWithdrawal {
+rule users_can_redeem_market_tokens {
     // TODO need real definition of "users can redeem market tokens"
     // Perhaps this is about the ability to claim all the various fees
     // and rewards.
@@ -215,7 +214,7 @@ rule users_can_redeem_market_tokens_cancelWithdrawal {
     assert true;
 }
 
-rule no_bank_run_scenario_cancelWithdrawal {
+rule no_bank_run_scenario {
     // "there is no bank run scenario, where the first to withdraw gets a 
     // higher value per market token than the last to withdraw."
 

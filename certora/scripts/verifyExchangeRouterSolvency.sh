@@ -1,15 +1,15 @@
 certoraRun  contracts/router/ExchangeRouter.sol \
-            contracts/order/BaseOrderUtils.sol \
             contracts/data/DataStore.sol \
-            contracts/exchange/WithdrawalHandler.sol \
+            contracts/order/BaseOrderUtils.sol \
+            contracts/exchange/OrderHandler.sol \
             contracts/position/PositionStoreUtils.sol \
             contracts/position/PositionUtils.sol \
             certora/harness/KeysHarness.sol \
             certora/harness/GetPositionKeyHarness.sol \
 \
 --verify ExchangeRouter:certora/specs/ExchangeRouterSolvency.spec \
---link ExchangeRouter:withdrawalHandler=WithdrawalHandler \
-       ExchangeRouter:dataStore=DataStore \
+--link ExchangeRouter:dataStore=DataStore \
+       ExchangeRouter:orderHandler=OrderHandler \
 --solc solc8.19 \
 --loop_iter 2 \
 --optimistic_loop \
@@ -23,4 +23,4 @@ certoraRun  contracts/router/ExchangeRouter.sol \
 --send_only \
 --rule positions_can_be_closed \
 --method "simulateExecuteOrder(bytes32,(address[],(uint256,uint256)[]))" \
---msg "positions_can_be_closed, parametric, simulateExecuteOrder, using naftali fix (prover_version master)"
+--msg "positions_can_be_closed, parametric, simulateExecuteOrder, using naftali fix (prover_version master), try more linking, removing WithdrawalHandler as a workaround to a zip file size error"
