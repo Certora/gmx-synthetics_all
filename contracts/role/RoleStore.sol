@@ -66,6 +66,10 @@ contract RoleStore {
         return roleCache[account][roleKey];
     }
 
+    function hasRoleV2(address account, bytes32 roleKey) public view returns (bool) {
+        return roleMembers[roleKey].contains(account);
+    }
+
     /**
      * @dev Returns the number of roles stored in the contract.
      *

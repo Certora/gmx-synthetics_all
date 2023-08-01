@@ -1,61 +1,71 @@
 using RoleMock as Role;
 
+methods {
+    // RoleStore.sol
+    function revokeRole(address, bytes32) external;
+    function grantRole(address, bytes32) external;
+    function hasRole(address, bytes32) external returns (bool)                              envfree;
+    function hasRoleV2(address, bytes32) external returns (bool)                            envfree;
+    function getRoleCount() external returns (uint256)                                      envfree;
+    function getRoles(uint256, uint256) external returns (bytes32[] memory)                 envfree;
+    function getRoleMemberCount(bytes32) external returns (uint256)                         envfree;
+    function getRoleMembers(bytes32, uint256, uint256) external returns (address[] memory)  envfree;
 
-rule sanity(method f) {
-    env e;
-    calldataarg args;
-    f(e, args);
-    assert false;
+    // RoleStoreHarness.sol
+    //function roleMembersAtRoleKeyContainsAccount(bytes32, address) external returns bool envfree;
+
+    // RoleMock
+    function RoleMock.ROLE_ADMIN() external returns bytes32 envfree;
+
 }
 
 
-
-definition UINT64_MAX() returns uint64 = 0xFFFFFFFFFFFFFFFF;
-definition UINT256_MAX() returns uint256 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+// rule sanity(method f) {
+//     env e;
+//     calldataarg args;
+//     f(e, args);
+//     assert false;
+// }
 
 
 // Adding a new role member with roleR should *increase* the count of getRoleMemberCount(roleR) by one
 rule countIncreaseByOneWhenGrantRole() {
     env e;
-    calldataarg args;
     
     bytes32 roleR;
     address accountA;
 
-    revokeRole(e,accountA,roleR); // ensure accountA does not have roleR
-
-    bool hasRoleRAccountABefore = hasRole(e,accountA,roleR);
-    uint256 countRoleRMembersBefore = getRoleMemberCount(e,roleR);
-    require countRoleRMembersBefore < UINT256_MAX();  // reasonable there are not so many role members
+    bool hasRoleRAccountABefore = hasRoleV2(accountA,roleR);
+    mathint countRoleRMembersBefore = getRoleMemberCount(roleR);
+    require countRoleRMembersBefore < max_uint256;  // reasonable there are not so many role members
 
     grantRole(e,accountA,roleR);
 
-    bool hasRoleRAccountAAfter = hasRole(e,accountA,roleR);
-    uint256 countRoleRMembersAfter = getRoleMemberCount(e,roleR);
+    mathint countRoleRMembersAfter = getRoleMemberCount(roleR);
 
-    assert to_mathint(countRoleRMembersAfter) == countRoleRMembersBefore + 1; // new
+    assert hasRoleRAccountABefore => (countRoleRMembersAfter == countRoleRMembersBefore);
+    assert !hasRoleRAccountABefore => (countRoleRMembersAfter == countRoleRMembersBefore + 1); 
+    assert hasRole(accountA,roleR) && hasRoleV2(accountA,roleR);
 }
 
 
 // Removing a roleR from a member should *decrease* the count of getRoleMemberCount(roleR) by one
-rule countDecreaseByOneWhenRenounceRole() {
+rule countDecreaseByOneWhenRevokeRole() {
     env e;
-    
+
     bytes32 roleR;
     address accountA;
 
-    grantRole(e,accountA,roleR); // ensure accountA has roleR
-
-    bool hasRoleRAccountABefore = hasRole(e,accountA,roleR);
-    uint256 countRoleRMembersBefore = getRoleMemberCount(e,roleR);
-    require countRoleRMembersBefore > 0;  // there is at least one account with roleR
+    bool hasRoleRAccountABefore = hasRoleV2(accountA,roleR);
+    mathint countRoleRMembersBefore = getRoleMemberCount(roleR);
     
     revokeRole(e,accountA,roleR);
 
-    bool hasRoleRAccountAAfter = hasRole(e,accountA,roleR);
-    uint256 countRoleRMembersAfter = getRoleMemberCount(e,roleR);
+    mathint countRoleRMembersAfter = getRoleMemberCount(roleR);
 
-    assert to_mathint(countRoleRMembersAfter) == countRoleRMembersBefore - 1;
+    assert !hasRoleRAccountABefore => (countRoleRMembersAfter == countRoleRMembersBefore);
+    assert hasRoleRAccountABefore => (countRoleRMembersAfter == countRoleRMembersBefore - 1);
+    assert !hasRole(accountA,roleR) && !hasRoleV2(accountA,roleR);
 }
 
 // GetRoleMemberCount(roleX) should not be affected by adding or removing roleR (roleR != roleX)
@@ -67,13 +77,13 @@ rule memberCountNonInterference(method f) {
     bytes32 roleX;
     require roleR != roleX;
 
-    uint256 countRoleRMembersBefore = getRoleMemberCount(e,roleR);
-    uint256 countRoleXMembersBefore = getRoleMemberCount(e,roleX);
+    uint256 countRoleRMembersBefore = getRoleMemberCount(roleR);
+    uint256 countRoleXMembersBefore = getRoleMemberCount(roleX);
 
     f(e,args);
 
-    uint256 countRoleRMembersAfter = getRoleMemberCount(e,roleR);
-    uint256 countRoleXMembersAfter = getRoleMemberCount(e,roleX);
+    uint256 countRoleRMembersAfter = getRoleMemberCount(roleR);
+    uint256 countRoleXMembersAfter = getRoleMemberCount(roleX);
 
     
     assert (countRoleRMembersAfter != countRoleRMembersBefore) =>
@@ -89,52 +99,27 @@ rule onlyAdminCanGrantOrRevokeRoles(method f){
     address accountA;
     bytes32 roleR;
 
-    bool hasAdminRole = hasRole(e,e.msg.sender,Role.ROLE_ADMIN(e)); // This must be before f because of possibility that e.smg.sender == accountA.
+    bool hasAdminRole = hasRole(e.msg.sender,Role.ROLE_ADMIN()); // This must be before f because of possibility that e.smg.sender == accountA.
 
-    bool hasRoleRBefore = hasRole(e,accountA,roleR);
+
+    bool hasRoleRBefore = hasRole(accountA,roleR);
+    bool hasRoleRBeforeV2 = hasRoleV2(accountA,roleR);
+    uint256 roleMemberCountBefore = getRoleMemberCount(roleR);
+    uint256 roleCountBefore = getRoleCount();
 
     f(e,args);
 
-    bool hasRoleRAfter = hasRole(e,accountA,roleR);
+    bool hasRoleRAfter = hasRole(accountA,roleR);
+    bool hasRoleRAfterV2 = hasRoleV2(accountA,roleR);
+    uint256 roleMemberCountAfter = getRoleMemberCount(roleR);
+    uint256 roleCountAfter = getRoleCount();
 
     assert (hasRoleRBefore != hasRoleRAfter) => hasAdminRole;
-}
-
-// Should be covered by the above rule if the data is consistent.
-rule onlyAdminCanGrantOrRevokeRolesCheckViaMemberCount(method f){
-    env e;
-    calldataarg args;
-    
-    bytes32 roleR;
-
-    bool hasAdminRole = hasRole(e,e.msg.sender,Role.ROLE_ADMIN(e));
-
-    uint256 roleMemberCountBefore = getRoleMemberCount(e,roleR);
-
-    f(e,args);
-
-    uint256 roleMemberCountAfter = getRoleMemberCount(e,roleR);
-
     assert (roleMemberCountBefore != roleMemberCountAfter) => hasAdminRole;
-}
-
-// Should be covered by the above if the data is consistent.
-rule onlyAdminCanGrantRolesCheckViaRoleCount(method f){
-    env e;
-    calldataarg args;
-    
-    bytes32 roleR;
-
-    bool hasAdminRole = hasRole(e,e.msg.sender,Role.ROLE_ADMIN(e));
-
-    uint256 roleCountBefore = getRoleCount(e);
-
-    f(e,args);
-
-    uint256 roleCountAfter = getRoleCount(e);
-
     assert (roleCountBefore != roleCountAfter) => hasAdminRole;
+    assert (hasRoleRBeforeV2 != hasRoleRAfterV2) => hasAdminRole;
 }
+
 
 // Granting or revoking roleR from accountA should not affect any accountB.
 rule nonInterferenceOfRolesAndAccounts(method f) {
@@ -144,15 +129,15 @@ rule nonInterferenceOfRolesAndAccounts(method f) {
     bytes32 roleR; address accountA;
     bytes32 roleX; address accountB;
 
-    bool hasRoleRAccountABefore = hasRole(e,accountA,roleR);
-    bool hasRoleXAccountBBefore = hasRole(e,accountB,roleX);
+    bool hasRoleRAccountABefore = hasRole(accountA,roleR);
+    bool hasRoleXAccountBBefore = hasRole(accountB,roleX);
 
     f(e,args);
 
-    bool hasRoleRAccountAAfter = hasRole(e,accountA,roleR);
-    bool hasRoleXAccountBAfter = hasRole(e,accountB,roleX);
+    bool hasRoleRAccountAAfter = hasRole(accountA,roleR);
+    bool hasRoleXAccountBAfter = hasRole(accountB,roleX);
 
-    require (roleR != roleX) && (accountA != accountB);
+    require (roleR != roleX) || (accountA != accountB);
 
     assert (hasRoleRAccountABefore != hasRoleRAccountAAfter) =>                // if AccountA roles changed
                 (hasRoleXAccountBBefore == hasRoleXAccountBAfter);             // accountB roles did not
@@ -184,23 +169,47 @@ rule onlyPredefinedRolesAreAllowed() {
     roleCache[account][roleKey] ... boolean set to true iff account has a particular role (implemented as mapping of accounts to mappings)
 */
 
-//invariant dataConsistency(bytes32 roleR, address accountA)
-//    (roleMembers[roleR].contains(accountA)) => (roleCache[roleR][accountA] == true);
+invariant dataConsistency(address accountA, bytes32 roleR)
+    hasRole(accountA,roleR) == hasRoleV2(accountA,roleR)
+    {
+        preserved {
+            require getRoleMemberCount(roleR) < max_uint256;
+        }
+    }
 
 
-/*
-rule dataConsistencyAsRule(method f) {
+rule dataConsistencyTest() {
     env e;
-    calldataarg args;
+    address accountA; bytes32 roleR;
+    address accountB; bytes32 roleQ;
+    
+    require accountA > 0xfff;
+    require !hasRoleV2(accountA, roleR);
 
-    bytes32 roleR;
-    address accountA;
+    revokeRole(e, accountB, roleQ);
 
-
-    require roleMembers[roleR].contains(accountA) == (roleCache[roleR][accountA] == true);
-
-    f(e,calldataarg);
-
-    assert roleMembers[roleR].contains(accountA) == (roleCache[roleR][accountA] == true);
+    assert !hasRoleV2(accountA, roleR);
 }
-*/
+    
+
+
+    // filtered {
+    //     f -> f.selector != revokeRole(address, bytes32).selector
+    // }
+
+
+// rule dataConsistencyAsRule(method f) {
+//     env e;
+//     calldataarg args;
+
+//     bytes32 roleR;
+//     address accountA;
+
+//     require hasRole(accountA,roleR) == hasRoleV2(accountA,roleR);
+//     mathint roleMemberCountBefore = getRoleMemberCount(roleR);
+//     require roleMemberCountBefore < max_uint256;
+
+//     f(e,args);
+
+//     assert hasRole(accountA,roleR) == hasRoleV2(accountA,roleR);
+// }

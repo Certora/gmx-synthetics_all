@@ -6,7 +6,7 @@ import "../../contracts/role/RoleStore.sol";
 contract RoleStoreHarness is RoleStore {
     constructor() RoleStore() {}
 
-    function roleMembersAtRoleKeyContainsAccount(bytes32 roleKey, address account) external {
-        return roleMembers[roleKey].contains(account);
-    }
+    // function roleMembersAtRoleKeyContainsAccount(bytes32 roleKey, address account) external view returns (bool) {
+    //     return roleMembers[roleKey].account != 0;
+    // }
 }
