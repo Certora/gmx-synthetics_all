@@ -33,15 +33,6 @@ use rule sanity;
 use rule simpleFrontRunning;
 // use builtin rule deepSanity;
 
-/*
-setPrimaryPrice
-mySignatures
-getTokensWithPrices
-clearAllPrices
-setPrices
-validatePrices
-*/
-
 definition isSetPrices(method f) returns bool = f.selector == 0xdf026811;
 
 ghost mySalt() returns bytes32;
