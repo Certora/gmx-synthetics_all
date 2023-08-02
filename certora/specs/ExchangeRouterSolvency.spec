@@ -73,6 +73,17 @@ using GetPositionKeyHarness as positionKeyHarness;
 
 methods {
     // ExchangeRouter
+
+    function ExchangeRouter.simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams) external => CONSTANT;
+
+    function ExchangeRouter.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
+
+    // DataStore
+    function _.containsBytes32(bytes32, bytes32) external => DISPATCHER;
+    function _.getAddress(bytes32) external => DISPATCHER;
+    function _.getUint(bytes32) external => DISPATCHER;
+    function _.getBool(bytes32) external => DISPATCHER;
+
     // function ExchangeRouter.cancelWithdrawal(/*key*/ bytes32) external => CONSTANT;
     // WithdrawalHandler
     // function _.createWithdrawal(address, WithdrawalUtils.CreateWithdrawalParams)  external => NONDET;
