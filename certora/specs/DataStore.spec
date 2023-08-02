@@ -1,9 +1,11 @@
-// import "../openzeppelin/specs/EnumerableSet.spec";
-
 methods {
     // RoleStore.sol
     function _.hasRole(address, bytes32) external => DISPATCHER(true);
 }
 
-use builtin rule sanity;
-use builtin rule deepSanity;
+rule sanity_satisfy(method f) {
+    env e;
+    calldataarg args;
+    f(e, args);
+    satisfy true;
+}

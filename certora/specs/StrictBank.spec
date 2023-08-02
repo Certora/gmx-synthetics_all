@@ -17,8 +17,12 @@ methods {
     function tokenBalances(address) external returns (uint256) envfree;
 }
 
-use builtin rule sanity;
-use builtin rule deepSanity;
+rule sanity_satisfy(method f) {
+    env e;
+    calldataarg args;
+    f(e, args);
+    satisfy true;
+}
 
 // syncTokenBalance, afterTransferOut, and recordTransferIn should not change tokenBalances[token1] where token1 != token2
 rule balanceIndependence(method f, env e, address token1, address token2) filtered {
@@ -39,8 +43,3 @@ rule balanceIndependence(method f, env e, address token1, address token2) filter
     uint256 balanceAfter = tokenBalances(e, token2); 
     assert (token2 != token1 => balanceBefore == balanceAfter);
 } 
-
-// Bank
-// 1. transferOut must increase the tokens for receiver by amount
-// 2. something about native tokens but not sure I know why they are special
-// 3. roles should be checked too

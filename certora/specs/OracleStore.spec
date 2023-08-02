@@ -1,5 +1,3 @@
-import "../openzeppelin/specs/EnumerableSet.spec";
-
 methods {
     // RoleStore.sol
     function _.hasRole(address, bytes32) external => DISPATCHER(true);
@@ -8,16 +6,7 @@ methods {
 use builtin rule sanity;
 use builtin rule deepSanity;
 
-// using RoleStore as roleStore;
-
 definition UINT256_MAX() returns uint256 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
-
-methods {
-    //RoleStore
-    // function _.hasRole(address,bytes32) external => DISPATCHER(true);
-    // definition CONTROLLER() returns bytes32 = 70546d1c92f8c2132ae23a23f5177aa8526356051c7510df99f50e012d221529;
-}
-
 
 //-----------------------------------------------------------------------------
 // EnumerableSet Invariant Lib (Begin)

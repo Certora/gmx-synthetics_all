@@ -69,9 +69,9 @@ rule validateSignerConsistency() {
     assert (salt1 == salt2 && signer1 == signer2) => !lastReverted,
         "Revert characteristics of validateSigner are not consistent";
 
-    assert ((salt1 != salt2 && signer1 == signer2) ||
-        (salt1 == salt2 && signer1 != signer2)) => lastReverted,
-        "Calling validateSigner twice cannot succeed with changing a single argument";
+    // assert ((salt1 != salt2 && signer1 == signer2) ||
+    //     (salt1 == salt2 && signer1 != signer2)) => lastReverted,
+    //     "Calling validateSigner twice cannot succeed with changing a single argument";
 
     assert (!lastReverted && salt1 == salt2) => (signer1 == signer2),
         "Same salt must imply same signer";

@@ -1,4 +1,6 @@
-import "../openzeppelin/specs/EnumerableSet.spec";
-
-use builtin rule sanity;
-use builtin rule deepSanity;
+rule sanity_satisfy(method f) {
+    env e;
+    calldataarg args;
+    f(e, args);
+    satisfy true;
+}

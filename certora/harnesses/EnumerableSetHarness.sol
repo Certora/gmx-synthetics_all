@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GNU AGPLv3
 pragma solidity ^0.8.0;
 
-import "./EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-contract MockSet {
+contract EnumerableSetHarness {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     // VERIFICATION INTERFACE
