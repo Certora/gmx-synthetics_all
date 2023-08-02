@@ -664,5 +664,6 @@ contract Oracle is RoleModule {
             Cast.toBytes32(token),
             eventData
         );
+        */
     }
 }

@@ -1,245 +1,219 @@
+// METHOD specification
+// all methods never access environment (msg.sender, block number, etc.)
 methods {
-    // library
-    function add(bytes32)      external returns (bool)    envfree;
-    function remove(bytes32)   external returns (bool)    envfree;
-    function contains(bytes32) external returns (bool)    envfree;
-    function length()          external returns (uint256) envfree;
-    function at_(uint256)      external returns (bytes32) envfree;
-
-    // FV
-    function _indexOf(bytes32) external returns (uint256) envfree;
+    function add(bytes32) external returns (bool) envfree;
+    function remove(bytes32) external returns (bool) envfree;
+    function contains(bytes32) external returns (bool) envfree;
+    function length() external returns (uint256) envfree;
+    function elemAt(uint256) external returns (bytes32) envfree;
 }
 
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Helpers                                                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-function sanity() returns bool {
-    return length() < max_uint256;
+// GHOST COPIES:
+// For every storage variable we add a ghost field that is kept synchronized by hooks.
+// The ghost fields can be accessed by the spec, even inside quantifiers.
+
+// ghost field for the values array
+ghost mapping(mathint => bytes32) ghostValues {
+    init_state axiom forall mathint x. ghostValues[x] == to_bytes32(0);
+}
+// ghost field for the indexes map
+ghost mapping(bytes32 => uint256) ghostIndexes {
+    init_state axiom forall bytes32 x. ghostIndexes[x] == 0;
+}
+// ghost field for the length of the values array (stored in offset 0)
+ghost uint256 ghostLength {
+    // assumption: it's infeasible to grow the list to these many elements.
+    axiom ghostLength < 0xffffffffffffffffffffffffffffffff;
 }
 
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Invariant: All indexed keys are contained                                                                           │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-invariant indexedContained(uint256 index)
-    index < length() => contains(at_(index))
-    {
-        preserved {
-            requireInvariant consistencyIndex(index);
-            requireInvariant consistencyIndex(require_uint256(length() - 1));
-        }
-    }
-
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Invariant: A value can only be stored at a single location                                                          │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-invariant atUniqueness(uint256 index1, uint256 index2)
-    index1 == index2 <=> at_(index1) == at_(index2)
-    {
-        preserved remove(bytes32 key) {
-            requireInvariant atUniqueness(index1, require_uint256(length() - 1));
-            requireInvariant atUniqueness(index2, require_uint256(length() - 1));
-        }
-    }
-
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Invariant: index <> key relationship is consistent                                                                  │
-│                                                                                                                     │
-│ Note that the two consistencyXxx invariants, put together, prove that at_ and _indexOf are inverse of one another.  │
-│ This proves that we have a bijection between indices (the enumerability part) and keys (the entries that are added  │
-│ and removed from the EnumerableSet).                                                                                │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-invariant consistencyIndex(uint256 index)
-    index < length() => _indexOf(at_(index)) == require_uint256(index + 1)
-    {
-        preserved remove(bytes32 key) {
-            requireInvariant consistencyIndex(require_uint256(length() - 1));
-        }
-    }
-
-invariant consistencyKey(bytes32 key)
-    contains(key) => (
-        _indexOf(key) > 0 &&
-        _indexOf(key) <= length() &&
-        at_(require_uint256(_indexOf(key) - 1)) == key
-    )
-    {
-        preserved remove(bytes32 otherKey) {
-            requireInvariant consistencyKey(otherKey);
-            requireInvariant atUniqueness(
-                require_uint256(_indexOf(key) - 1),
-                require_uint256(_indexOf(otherKey) - 1)
-            );
-        }
-    }
-
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Rule: state only changes by adding or removing elements                                                             │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-rule stateChange(env e, bytes32 key) {
-    require sanity();
-    requireInvariant consistencyKey(key);
-
-    uint256 lengthBefore   = length();
-    bool    containsBefore = contains(key);
-
-    method f;
-    calldataarg args;
-    f(e, args);
-
-    uint256 lengthAfter   = length();
-    bool    containsAfter = contains(key);
-
-    assert lengthBefore != lengthAfter => (
-        (f.selector == sig:add(bytes32).selector    && lengthAfter == require_uint256(lengthBefore + 1)) ||
-        (f.selector == sig:remove(bytes32).selector && lengthAfter == require_uint256(lengthBefore - 1))
-    );
-
-    assert containsBefore != containsAfter => (
-        (f.selector == sig:add(bytes32).selector    && containsAfter) ||
-        (f.selector == sig:remove(bytes32).selector && containsBefore)
-    );
+// HOOKS
+// Store hook to synchronize ghostLength with the length of the set._inner._values array. 
+// We need to use (offset 0) here, as there is no keyword yet to access the length.
+hook Sstore currentContract.set.(offset 0) uint256 newLength STORAGE {
+    ghostLength = newLength;
+}
+// Store hook to synchronize ghostValues array with set._inner._values.
+hook Sstore currentContract.set._inner._values[INDEX uint256 index] bytes32 newValue STORAGE {
+    ghostValues[index] = newValue;
+}
+// Store hook to synchronize ghostIndexes array with set._inner._indexes.
+hook Sstore currentContract.set._inner._indexes[KEY bytes32 value] uint256 newIndex STORAGE {
+    ghostIndexes[value] = newIndex;
 }
 
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Rule: check liveness of view functions.                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-rule liveness_1(bytes32 key) {
-    requireInvariant consistencyKey(key);
+// The load hooks can use require to ensure that the ghost field has the same information as the storage.
+// The require is sound, since the store hooks ensure the contents are always the same.  However we cannot
+// prove that with invariants, since this would require the invariant to read the storage for all elements
+// and neither storage access nor function calls are allowed in quantifiers.
+//
+// By following this simple pattern it is ensured that the ghost state and the storage are always the same
+// and that the solver can use this knowledge in the proofs.
 
-    // contains never revert
-    contains@withrevert(key);
-    assert !lastReverted;
+// Load hook to synchronize ghostLength with the length of the set._inner._values array. 
+// Again we use (offset 0) here, as there is no keyword yet to access the length.
+hook Sload uint256 length currentContract.set.(offset 0) STORAGE {
+    require ghostLength == length;
+}
+hook Sload bytes32 value currentContract.set._inner._values[INDEX uint256 index] STORAGE {
+    require ghostValues[index] == value;
+}
+hook Sload uint256 index currentContract.set._inner._indexes[KEY bytes32 value] STORAGE {
+    require ghostIndexes[value] == index;
 }
 
-rule liveness_2(uint256 index) {
-    requireInvariant consistencyIndex(index);
+// INVARIANTS
 
-    // length never revert
-    uint256 length = length@withrevert();
-    assert !lastReverted;
+//  This is the main invariant stating that the indexes and values always match:
+//        values[indexes[v] - 1] = v for all values v in the set
+//    and indexes[values[i]] = i+1 for all valid indexes i.
 
-    // at reverts iff the index is out of bound
-    at_@withrevert(index);
-    assert !lastReverted <=> index < length;
+invariant setInvariant()
+    (forall uint256 index. 0 <= index && index < ghostLength => to_mathint(ghostIndexes[ghostValues[index]]) == index + 1)
+    && (forall bytes32 value. ghostIndexes[value] == 0 || 
+         (ghostValues[ghostIndexes[value] - 1] == value && ghostIndexes[value] >= 1 && ghostIndexes[value] <= ghostLength));
+
+// DEFINITION
+
+// Returns, whether a value is in the set.
+definition inSet(bytes32 value) returns bool = (ghostIndexes[value] != 0);
+
+
+// RULES
+
+rule containsEqualsInSet()
+{
+    bytes32 value;
+    bool result = contains@withrevert(value);
+
+    assert !lastReverted, "contains should never revert";
+    assert result == inSet(value), "result should indicate whether value is in set";
 }
 
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Rule: add key to EnumerableSet if not already contained                                                             │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-rule add(bytes32 key, bytes32 otherKey) {
-    require sanity();
-
-    uint256 lengthBefore        = length();
-    bool    containsBefore      = contains(key);
-    bool    containsOtherBefore = contains(otherKey);
-
-    bool added = add@withrevert(key);
-    bool success = !lastReverted;
-
-    assert success && contains(key),
-        "liveness & immediate effect";
-
-    assert added <=> !containsBefore,
-        "return value: added iff not contained";
-
-    assert length() == require_uint256(lengthBefore + to_mathint(added ? 1 : 0)),
-        "effect: length increases iff added";
-
-    assert added => at_(lengthBefore) == key,
-        "effect: add at the end";
-
-    assert containsOtherBefore != contains(otherKey) => (added && key == otherKey),
-        "side effect: other keys are not affected";
+rule lengthEqualsGhost()
+{
+    uint256 len = length();
+    assert !lastReverted, "length() should never revert";
+    assert len == ghostLength, "length() should return the length of the values list";
 }
 
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Rule: remove key from EnumerableSet if already contained                                                            │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-rule remove(bytes32 key, bytes32 otherKey) {
-    requireInvariant consistencyKey(key);
-    requireInvariant consistencyKey(otherKey);
+rule addFresh()
+{
+    bytes32 value;
+    bytes32 other;
 
-    uint256 lengthBefore        = length();
-    bool    containsBefore      = contains(key);
-    bool    containsOtherBefore = contains(otherKey);
+    require other != value;
 
-    bool removed = remove@withrevert(key);
-    bool success = !lastReverted;
+    require !inSet(value);
+    bool otherInSet = inSet(other);
+    bool result = add@withrevert(value);
 
-    assert success && !contains(key),
-        "liveness & immediate effect";
-
-    assert removed <=> containsBefore,
-        "return value: removed iff contained";
-
-    assert length() == require_uint256(lengthBefore - to_mathint(removed ? 1 : 0)),
-        "effect: length decreases iff removed";
-
-    assert containsOtherBefore != contains(otherKey) => (removed && key == otherKey),
-        "side effect: other keys are not affected";
+    assert !lastReverted, "addFresh() should never revert";
+    assert result && inSet(value), "value should have been added to list";
+    assert otherInSet == inSet(other), "no other value should be added or removed";
 }
 
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Rule: when adding a new key, the other keys remain in set, at the same index.                                       │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-rule addEnumerability(bytes32 key, uint256 index) {
-    require sanity();
+rule addAlreadyIn()
+{
+    bytes32 value;
+    bytes32 other;
 
-    bytes32 atBefore = at_(index);
-    add(key);
-    bytes32 atAfter = at_@withrevert(index);
-    bool atAfterSuccess = !lastReverted;
+    require other != value;
 
-    assert atAfterSuccess;
-    assert atBefore == atAfter;
+    require inSet(value);
+    bool otherInSet = inSet(other);
+    bool result = add@withrevert(value);
+
+    assert !lastReverted, "addFresh() should never revert";
+    assert !result && inSet(value), "addFresh should return false if element in list";
+    assert otherInSet == inSet(other), "no other value should be added or removed";
 }
 
-/*
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Rule: when removing a existing key, the other keys remain in set, at the same index (except for the last one).      │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-*/
-rule removeEnumerability(bytes32 key, uint256 index) {
-    uint256 last = require_uint256(length() - 1);
+rule removeSuccess()
+{
+    bytes32 value;
+    bytes32 other;
 
-    requireInvariant consistencyKey(key);
-    requireInvariant consistencyIndex(index);
-    requireInvariant consistencyIndex(last);
+    requireInvariant setInvariant();
+    require other != value;
 
-    bytes32 atBefore = at_(index);
-    bytes32 lastBefore = at_(last);
+    require inSet(value);
+    bool otherInSet = inSet(other);
+    bool result = remove@withrevert(value);
 
-    remove(key);
+    assert !lastReverted, "remove() should never revert";
+    assert result && !inSet(value), "remove should remove element from list";
+    assert otherInSet == inSet(other), "no other value should be added or removed";
+}
 
-    // can't read last value (length decreased)
-    bytes32 atAfter = at_@withrevert(index);
-    assert lastReverted <=> index == last;
+rule removeFail()
+{
+    bytes32 value;
+    bytes32 other;
 
-    // One value that is allowed to change is if previous value was removed,
-    // in that case the last value before took its place.
-    assert (
-        index != last &&
-        atBefore != atAfter
-    ) => (
-        atBefore == key &&
-        atAfter == lastBefore
-    );
+    require other != value;
+
+    require !inSet(value);
+    bool otherInSet = inSet(other);
+    bool result = remove@withrevert(value);
+
+    assert !lastReverted, "remove() should never revert";
+    assert !result && !inSet(value), "remove should return false if element was not in list";
+    assert otherInSet == inSet(other), "no other value should be added or removed";
+}
+
+rule elemAtSuccess()
+{
+    bytes32 value;
+    uint256 index;
+
+    requireInvariant setInvariant();
+    require index < ghostLength;
+
+    value = elemAt@withrevert(index);
+
+    assert !lastReverted, "elemAt() should not revert for valid index";
+    assert inSet(value), "elemAt() should return a value from the set";
+}
+
+rule elemAtFail()
+{
+    bytes32 value;
+    uint256 index;
+
+    require index >= ghostLength;
+
+    value = elemAt@withrevert(index);
+
+    assert lastReverted, "elemAt() should revert for invalid index";
+}
+
+rule elementsUnique()
+{
+    bytes32 value1;
+    bytes32 value2;
+    uint256 index1;
+    uint256 index2;
+
+    requireInvariant setInvariant();
+    require index1 != index2;
+
+    value1 = elemAt(index1);
+    value2 = elemAt(index2);
+
+    assert value1 != value2, "all elements in the list should be different";
+}
+
+rule everyElementReachable()
+{
+    bytes32 value;
+    bytes32 result;
+    uint256 index;
+
+    requireInvariant setInvariant();
+    require inSet(value);
+    index = assert_uint256(ghostIndexes[value] - 1);
+
+    result = elemAt@withrevert(index);
+    assert !lastReverted, "elemAt should not revert for valid index";
+    assert result == value, "every value should be at its corresponding index";
 }

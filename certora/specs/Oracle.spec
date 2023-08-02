@@ -1,8 +1,14 @@
+import "./complexity.spec";
+
 methods {
     /// DataStore (to be dispatched only if the DataStore contract isn't linked to the harness Oracle)
-    // function _.getUint(bytes32) external => DISPATCHER(true);
-    // function _.getAddress(bytes32) external => DISPATCHER(true);
-    // function _.getBytes32(bytes32) external => DISPATCHER(true);
+    function _.getUint(bytes32) external => DISPATCHER(true);
+    function _.getAddress(bytes32) external => DISPATCHER(true);
+    function _.getBytes32(bytes32) external => DISPATCHER(true);
+    // RoleStore
+    function _.hasRole(address,bytes32) external => DISPATCHER(true);
+    /// OracleStore
+    function _.getSigner(uint256) external => DISPATCHER(true);
     /// PriceFeed
     function _.latestRoundData() external => DISPATCHER(true);
     /// Array (temporary summarization)
@@ -23,8 +29,18 @@ methods {
     function OracleHarness.getSignerByInfo(uint256, uint256) external returns (address);
 }
 
-use builtin rule sanity;
+use rule sanity;
+use rule simpleFrontRunning;
 // use builtin rule deepSanity;
+
+/*
+setPrimaryPrice
+mySignatures
+getTokensWithPrices
+clearAllPrices
+setPrices
+validatePrices
+*/
 
 definition isSetPrices(method f) returns bool = f.selector == 0xdf026811;
 

@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../utils/Array.sol";
 import "../utils/Bits.sol";
 import "../price/Price.sol";
-import "../utils/Printer.sol";
 
 // @title OracleUtils
 // @dev Library for oracle functions

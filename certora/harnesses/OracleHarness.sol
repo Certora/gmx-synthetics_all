@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import "../../contracts/oracle/Oracle.sol";
-import "../../contracts/data/DataStore.sol";
-import "../../contracts/event/EventEmitter.sol";
+import {Oracle, DataStore, EventEmitter, RoleStore, OracleStore} from "../../contracts/Oracle/Oracle.sol";
+import {OracleUtils} from "../../contracts/Oracle/OracleUtils.sol";
+import {Bits} from "../../contracts/utils/Bits.sol";
 
 contract OracleHarness is Oracle {
 
@@ -35,14 +35,14 @@ contract OracleHarness is Oracle {
     }
 
     function setPrices(
-        DataStore myDataStore,
-        EventEmitter myEventEmitter,
-        OracleUtils.SetPricesParams memory params
+        DataStore,
+        EventEmitter,
+        OracleUtils.SetPricesParams memory
     ) public override {
-        super.setPrices(myDataStore, myEventEmitter, params);
+        super.setPrices(myDataStore, myEventEmitter, _prepareParams());
     }
 
-    function prepareParams() public returns (OracleUtils.SetPricesParams memory params) {
+    function _prepareParams() internal view returns (OracleUtils.SetPricesParams memory params) {
         require(mySignerInfo & Bits.BITMASK_16 > 0);
         //require(myTokens.length > 0);
         params = 
