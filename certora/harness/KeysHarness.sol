@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import { Keys } from "../../contracts/data/Keys.sol";
 
-contract KeysMock {
+contract KeysHarness {
 
     function FEE_RECEIVER() external pure returns (bytes32) { return Keys.FEE_RECEIVER; }
     function HOLDING_ADDRESS() external pure returns (bytes32) { return Keys.HOLDING_ADDRESS; }

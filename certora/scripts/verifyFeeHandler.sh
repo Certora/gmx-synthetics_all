@@ -1,10 +1,10 @@
 certoraRun  contracts/fee/FeeHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
-            certora/mocks/KeysMock.sol \
-            certora/mocks/DummyERC20A.sol \
             contracts/market/MarketToken.sol \
             contracts/mock/WNT.sol \
+            certora/harness/KeysHarness.sol \
+            certora/mocks/DummyERC20A.sol \
 \
 --verify FeeHandler:certora/specs/FeeHandler.spec \
 --link  FeeHandler:dataStore=DataStore \
