@@ -64,7 +64,7 @@
 // since these include the user behaviors the client referenced explicitly)
 
 
-using ExchangeRouter as exchangeRouter;
+using ExchangeRouterMunged as exchangeRouter;
 using DataStore as dataStore;
 using KeysHarness as keys;
 using PositionUtils as positionUtils;
@@ -74,9 +74,12 @@ using GetPositionKeyHarness as positionKeyHarness;
 methods {
     // ExchangeRouter
 
-    function ExchangeRouter.simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams) external => CONSTANT;
+    function ExchangeRouterMunged.simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams) external => CONSTANT;
 
-    function ExchangeRouter.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
+    function ExchangeRouterMunged.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
+
+    // PositionStoreUtils
+    function PositionStoreUtils.get(DataStore, bytes32) external returns (Position.Props) => CONSTANT;
 
     // DataStore
     function _.containsBytes32(bytes32, bytes32) external => DISPATCHER;
@@ -84,25 +87,7 @@ methods {
     function _.getUint(bytes32) external => DISPATCHER;
     function _.getBool(bytes32) external => DISPATCHER;
 
-    // function ExchangeRouter.cancelWithdrawal(/*key*/ bytes32) external => CONSTANT;
-    // WithdrawalHandler
-    // function _.createWithdrawal(address, WithdrawalUtils.CreateWithdrawalParams)  external => NONDET;
-    // function WithdrawalHandler.cancelWithdrawal(/*key*/ bytes32) external => CONSTANT;
-    // function _.executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
-    // function _.simulateExecuteWithdrawal(bytes32, OracleUtils.SimulatePricesParams) external => NONDET;
-    // function _._executeWithdrawal(bytes32, OracleUtils.SetPricesParams) external => NONDET;
-    // function _._handleWithdrawalError(bytes32, uint256, bytes memory) internal => NONDET;
-
-    // // WithdrawalStoreUtils
-    // // TODO clearly not right
-    // function WithdrawalStoreUtils.get(DataStore, /*key*/ bytes32) external => CONSTANT;
-
-    // // cancelWithdrawal's modifier functions from RoleStore. todo clearly not right.
-    // function _.hasRole(address, bytes32) internal => ALWAYS(true);
-    // function _._nonReentrantBefore() internal => CONSTANT;
-    // function _._nonReentrantAfter() internal => CONSTANT;
-
-
+     
 }
 
 function closing_create_order_params_from_position(Position.Props position) returns BaseOrderUtils.CreateOrderParams {
@@ -259,11 +244,4 @@ rule no_bank_run_scenario {
     // in each system
 
     assert true;
-}
-
-rule sanity_cancelWithdrawal{
-    env e;
-    bytes32 arg;
-    cancelWithdrawal(e, arg);
-    assert false;
 }

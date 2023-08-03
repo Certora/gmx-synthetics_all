@@ -19,7 +19,8 @@ certoraRun  contracts/router/ExchangeRouter.sol \
 --server staging \
 --prover_version master \
 --prover_args "-optimisticFallback true" \
+--prover_args "-dumpCodeSizeAnalysis true" \
 --send_only \
 --rule positions_can_be_closed \
 --method "simulateExecuteOrder(bytes32,(address[],(uint256,uint256)[]))" \
---msg "remove splitParallel, summarize simulateExecuteOrder / createOrder as CONSTANT, summarize DataStore fucntions with DISAPATCHER"
+--msg "dumpCodeSizeAnalysis true. remove splitParallel, summarize simulateExecuteOrder / createOrder as CONSTANT, summarize DataStore functions with DISAPATCHER"
