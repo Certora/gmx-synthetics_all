@@ -1,4 +1,6 @@
 // using MockSwapUtils as MSU;
+using Market as M;
+using EventEmitter as EE;
 using DataStore as DS;
 using KeysHarness as KH;
 using DummyERC20A as DummyERC20In;
@@ -35,7 +37,25 @@ methods {
     function _.revokeRole(address,bytes32) external => DISPATCHER(true);
     function _.grantRole(address,bytes32) external => DISPATCHER(true);
 
+    // function _.applyDeltaToPoolAmount(address, address, Market.Props, address, int256) external => DISPATCHER(true);
+    function _.applyDeltaToPoolAmount(address, address, Market.Props, address, int256) external => NONDET;
+
+    // function incrementClaimableFeeAmount(
+    //     address dataStore, address eventEmitter, address market, address token, uint256 delta, bytes32 feeType
+    // ) external => setClaimableFees(delta);
+    // EventEmitter
+    // function EventEmitter._ external => NONDET;
+
 }
+
+// ghost uint256 claimableFees;
+
+// function setClaimableFees(uint256 x) {
+//     claimableFees = claimableFees + x;
+// }
+
+
+
 
 
 // function applyDeltaToPoolAmount(

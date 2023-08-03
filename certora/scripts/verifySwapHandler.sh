@@ -6,6 +6,7 @@ certoraRun  contracts/swap/SwapHandler.sol \
             contracts/bank/Bank.sol \
             contracts/market/MarketToken.sol \
             contracts/mock/WNT.sol \
+            contracts/market/Market.sol \
             certora/harness/KeysHarness.sol \
             certora/mocks/DummyERC20A.sol \
 \
@@ -21,6 +22,6 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --server production \
 --rule_sanity \
 --rule swapIntegrity \
---prover_args "-optimisticFallback true -depth 30 -dontStopAtFirstSplitTimeout true -mediumTimeout 5 -dumpCodeSizeAnalysis true" \
+--prover_args "-optimisticFallback true  -dumpCodeSizeAnalysis true -depth 30 -dontStopAtFirstSplitTimeout true -mediumTimeout 5" \
 --send_only \
---msg "GMX SwapHandler verify swapIntegrity with requirements making it tautology"
+--msg "GMX SwapHandler verify swapIntegrity"
