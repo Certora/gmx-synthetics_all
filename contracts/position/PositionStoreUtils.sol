@@ -235,6 +235,7 @@ library PositionStoreUtils {
             keccak256(abi.encode(key, IS_LONG))
         );
     }
+/*
 
     function getPositionCount(DataStore dataStore) internal view returns (uint256) {
         return dataStore.getBytes32Count(Keys.POSITION_LIST);
@@ -251,4 +252,5 @@ library PositionStoreUtils {
     function getAccountPositionKeys(DataStore dataStore, address account, uint256 start, uint256 end) internal view returns (bytes32[] memory) {
         return dataStore.getBytes32ValuesAt(Keys.accountPositionListKey(account), start, end);
     }
+    */
 }

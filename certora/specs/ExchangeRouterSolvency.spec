@@ -64,7 +64,7 @@
 // since these include the user behaviors the client referenced explicitly)
 
 
-using ExchangeRouterMunged as exchangeRouter;
+using ExchangeRouter as exchangeRouter;
 using DataStore as dataStore;
 using KeysHarness as keys;
 using PositionUtils as positionUtils;
@@ -74,12 +74,12 @@ using GetPositionKeyHarness as positionKeyHarness;
 methods {
     // ExchangeRouter
 
-    function ExchangeRouterMunged.simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams) external => CONSTANT;
+    function ExchangeRouter.simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams) external => CONSTANT;
 
-    function ExchangeRouterMunged.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
+    function ExchangeRouter.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
 
     // PositionStoreUtils
-    function PositionStoreUtils.get(DataStore, bytes32) external returns (Position.Props) => CONSTANT;
+    // function PositionStoreUtils.get(address, bytes32) external returns (Position.Props) => CONSTANT;
 
     // DataStore
     function _.containsBytes32(bytes32, bytes32) external => DISPATCHER;

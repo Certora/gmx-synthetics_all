@@ -89,17 +89,21 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
     }
 
     // @dev Wraps the specified amount of native tokens into WNT then sends the WNT to the specified address
+    /*
     function sendWnt(address receiver, uint256 amount) external payable nonReentrant {
         AccountUtils.validateReceiver(receiver);
         TokenUtils.depositAndSendWrappedNativeToken(dataStore, receiver, amount);
     }
+    */
 
     // @dev Sends the given amount of tokens to the given address
+    /*
     function sendTokens(address token, address receiver, uint256 amount) external payable nonReentrant {
         AccountUtils.validateReceiver(receiver);
         address account = msg.sender;
         router.pluginTransfer(token, account, receiver, amount);
     }
+    */
 
     /**
      * @dev Creates a new deposit with the given long token, short token, long token amount, short token
@@ -110,6 +114,7 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
      * @param params The deposit parameters, as specified in the `DepositUtils.CreateDepositParams` struct
      * @return The unique ID of the newly created deposit
      */
+     /*
     function createDeposit(
         DepositUtils.CreateDepositParams calldata params
     ) external payable nonReentrant returns (bytes32) {
@@ -120,7 +125,9 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
             params
         );
     }
+    */
 
+     /*
     function cancelDeposit(bytes32 key) external payable nonReentrant {
         Deposit.Props memory deposit = DepositStoreUtils.get(dataStore, key);
         if (deposit.account() == address(0)) {
@@ -133,6 +140,7 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
 
         depositHandler.cancelDeposit(key);
     }
+    */
 
     /**
      * @dev Creates a new withdrawal with the given withdrawal parameters. The withdrawal is created by
@@ -141,6 +149,7 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
      * @param params The withdrawal parameters, as specified in the `WithdrawalUtils.CreateWithdrawalParams` struct
      * @return The unique ID of the newly created withdrawal
      */
+     /*
     function createWithdrawal(
         WithdrawalUtils.CreateWithdrawalParams calldata params
     ) external payable nonReentrant returns (bytes32) {
@@ -151,7 +160,9 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
             params
         );
     }
+    */
 
+     /*
     function cancelWithdrawal(bytes32 key) external payable nonReentrant {
         Withdrawal.Props memory withdrawal = WithdrawalStoreUtils.get(dataStore, key);
         if (withdrawal.account() != msg.sender) {
@@ -160,6 +171,7 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
 
         withdrawalHandler.cancelWithdrawal(key);
     }
+    */
 
     /**
      * @dev Creates a new order with the given amount, order parameters. The order is
@@ -178,19 +190,19 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
         );
     }
 
-    function simulateExecuteDeposit(
-        bytes32 key,
-        OracleUtils.SimulatePricesParams memory simulatedOracleParams
-    ) external payable nonReentrant {
-        depositHandler.simulateExecuteDeposit(key, simulatedOracleParams);
-    }
+    // function simulateExecuteDeposit(
+    //     bytes32 key,
+    //     OracleUtils.SimulatePricesParams memory simulatedOracleParams
+    // ) external payable nonReentrant {
+    //     depositHandler.simulateExecuteDeposit(key, simulatedOracleParams);
+    // }
 
-    function simulateExecuteWithdrawal(
-        bytes32 key,
-        OracleUtils.SimulatePricesParams memory simulatedOracleParams
-    ) external payable nonReentrant {
-        withdrawalHandler.simulateExecuteWithdrawal(key, simulatedOracleParams);
-    }
+    // function simulateExecuteWithdrawal(
+    //     bytes32 key,
+    //     OracleUtils.SimulatePricesParams memory simulatedOracleParams
+    // ) external payable nonReentrant {
+    //     withdrawalHandler.simulateExecuteWithdrawal(key, simulatedOracleParams);
+    // }
 
     function simulateExecuteOrder(
         bytes32 key,
@@ -212,27 +224,27 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
      * @param acceptablePrice The new acceptable price for the order
      * @param triggerPrice The new trigger price for the order
      */
-    function updateOrder(
-        bytes32 key,
-        uint256 sizeDeltaUsd,
-        uint256 acceptablePrice,
-        uint256 triggerPrice,
-        uint256 minOutputAmount
-    ) external payable nonReentrant {
-        Order.Props memory order = OrderStoreUtils.get(dataStore, key);
-        if (order.account() != msg.sender) {
-            revert Errors.Unauthorized(msg.sender, "account for updateOrder");
-        }
+    // function updateOrder(
+    //     bytes32 key,
+    //     uint256 sizeDeltaUsd,
+    //     uint256 acceptablePrice,
+    //     uint256 triggerPrice,
+    //     uint256 minOutputAmount
+    // ) external payable nonReentrant {
+    //     Order.Props memory order = OrderStoreUtils.get(dataStore, key);
+    //     if (order.account() != msg.sender) {
+    //         revert Errors.Unauthorized(msg.sender, "account for updateOrder");
+    //     }
 
-        orderHandler.updateOrder(
-            key,
-            sizeDeltaUsd,
-            acceptablePrice,
-            triggerPrice,
-            minOutputAmount,
-            order
-        );
-    }
+    //     orderHandler.updateOrder(
+    //         key,
+    //         sizeDeltaUsd,
+    //         acceptablePrice,
+    //         triggerPrice,
+    //         minOutputAmount,
+    //         order
+    //     );
+    // }
 
     /**
      * @dev Cancels the given order. The `cancelOrder()` feature must be enabled for the given order
@@ -243,18 +255,18 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
      *
      * @param key The unique ID of the order to be cancelled
      */
-    function cancelOrder(bytes32 key) external payable nonReentrant {
-        Order.Props memory order = OrderStoreUtils.get(dataStore, key);
-        if (order.account() == address(0)) {
-            revert Errors.EmptyOrder();
-        }
+    // function cancelOrder(bytes32 key) external payable nonReentrant {
+    //     Order.Props memory order = OrderStoreUtils.get(dataStore, key);
+    //     if (order.account() == address(0)) {
+    //         revert Errors.EmptyOrder();
+    //     }
 
-        if (order.account() != msg.sender) {
-            revert Errors.Unauthorized(msg.sender, "account for cancelOrder");
-        }
+    //     if (order.account() != msg.sender) {
+    //         revert Errors.Unauthorized(msg.sender, "account for cancelOrder");
+    //     }
 
-        orderHandler.cancelOrder(key);
-    }
+    //     orderHandler.cancelOrder(key);
+    // }
 
     /**
      * @dev Claims funding fees for the given markets and tokens on behalf of the caller, and sends the
@@ -266,69 +278,69 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
      * @param tokens An array of token addresses, corresponding to the given markets
      * @param receiver The address to which the claimed fees should be sent
      */
-    function claimFundingFees(
-        address[] memory markets,
-        address[] memory tokens,
-        address receiver
-    ) external payable nonReentrant returns (uint256[] memory) {
-        if (markets.length != tokens.length) {
-            revert Errors.InvalidClaimFundingFeesInput(markets.length, tokens.length);
-        }
+    // function claimFundingFees(
+    //     address[] memory markets,
+    //     address[] memory tokens,
+    //     address receiver
+    // ) external payable nonReentrant returns (uint256[] memory) {
+    //     if (markets.length != tokens.length) {
+    //         revert Errors.InvalidClaimFundingFeesInput(markets.length, tokens.length);
+    //     }
 
-        FeatureUtils.validateFeature(dataStore, Keys.claimFundingFeesFeatureDisabledKey(address(this)));
+    //     FeatureUtils.validateFeature(dataStore, Keys.claimFundingFeesFeatureDisabledKey(address(this)));
 
-        AccountUtils.validateReceiver(receiver);
+    //     AccountUtils.validateReceiver(receiver);
 
-        address account = msg.sender;
+    //     address account = msg.sender;
 
-        uint256[] memory claimedAmounts = new uint256[](markets.length);
+    //     uint256[] memory claimedAmounts = new uint256[](markets.length);
 
-        for (uint256 i; i < markets.length; i++) {
-            claimedAmounts[i] = MarketUtils.claimFundingFees(
-                dataStore,
-                eventEmitter,
-                markets[i],
-                tokens[i],
-                account,
-                receiver
-            );
-        }
+    //     for (uint256 i; i < markets.length; i++) {
+    //         claimedAmounts[i] = MarketUtils.claimFundingFees(
+    //             dataStore,
+    //             eventEmitter,
+    //             markets[i],
+    //             tokens[i],
+    //             account,
+    //             receiver
+    //         );
+    //     }
 
-        return claimedAmounts;
-    }
+    //     return claimedAmounts;
+    // }
 
-    function claimCollateral(
-        address[] memory markets,
-        address[] memory tokens,
-        uint256[] memory timeKeys,
-        address receiver
-    ) external payable nonReentrant returns (uint256[] memory) {
-        if (markets.length != tokens.length || tokens.length != timeKeys.length) {
-            revert Errors.InvalidClaimCollateralInput(markets.length, tokens.length, timeKeys.length);
-        }
+    // function claimCollateral(
+    //     address[] memory markets,
+    //     address[] memory tokens,
+    //     uint256[] memory timeKeys,
+    //     address receiver
+    // ) external payable nonReentrant returns (uint256[] memory) {
+    //     if (markets.length != tokens.length || tokens.length != timeKeys.length) {
+    //         revert Errors.InvalidClaimCollateralInput(markets.length, tokens.length, timeKeys.length);
+    //     }
 
-        FeatureUtils.validateFeature(dataStore, Keys.claimCollateralFeatureDisabledKey(address(this)));
+    //     FeatureUtils.validateFeature(dataStore, Keys.claimCollateralFeatureDisabledKey(address(this)));
 
-        AccountUtils.validateReceiver(receiver);
+    //     AccountUtils.validateReceiver(receiver);
 
-        address account = msg.sender;
+    //     address account = msg.sender;
 
-        uint256[] memory claimedAmounts = new uint256[](markets.length);
+    //     uint256[] memory claimedAmounts = new uint256[](markets.length);
 
-        for (uint256 i; i < markets.length; i++) {
-            claimedAmounts[i] = MarketUtils.claimCollateral(
-                dataStore,
-                eventEmitter,
-                markets[i],
-                tokens[i],
-                timeKeys[i],
-                account,
-                receiver
-            );
-        }
+    //     for (uint256 i; i < markets.length; i++) {
+    //         claimedAmounts[i] = MarketUtils.claimCollateral(
+    //             dataStore,
+    //             eventEmitter,
+    //             markets[i],
+    //             tokens[i],
+    //             timeKeys[i],
+    //             account,
+    //             receiver
+    //         );
+    //     }
 
-        return claimedAmounts;
-    }
+    //     return claimedAmounts;
+    // }
 
     /**
      * @dev Claims affiliate rewards for the given markets and tokens on behalf of the caller, and sends
@@ -340,66 +352,66 @@ contract ExchangeRouter is ReentrancyGuard, PayableMulticall, RoleModule {
      * @param tokens An array of token addresses, corresponding to the given markets
      * @param receiver The address to which the claimed rewards should be sent
      */
-    function claimAffiliateRewards(
-        address[] memory markets,
-        address[] memory tokens,
-        address receiver
-    ) external payable nonReentrant returns (uint256[] memory) {
-        if (markets.length != tokens.length) {
-            revert Errors.InvalidClaimAffiliateRewardsInput(markets.length, tokens.length);
-        }
+    // function claimAffiliateRewards(
+    //     address[] memory markets,
+    //     address[] memory tokens,
+    //     address receiver
+    // ) external payable nonReentrant returns (uint256[] memory) {
+    //     if (markets.length != tokens.length) {
+    //         revert Errors.InvalidClaimAffiliateRewardsInput(markets.length, tokens.length);
+    //     }
 
-        FeatureUtils.validateFeature(dataStore, Keys.claimAffiliateRewardsFeatureDisabledKey(address(this)));
+    //     FeatureUtils.validateFeature(dataStore, Keys.claimAffiliateRewardsFeatureDisabledKey(address(this)));
 
-        address account = msg.sender;
+    //     address account = msg.sender;
 
-        uint256[] memory claimedAmounts = new uint256[](markets.length);
+    //     uint256[] memory claimedAmounts = new uint256[](markets.length);
 
-        for (uint256 i; i < markets.length; i++) {
-            claimedAmounts[i] = ReferralUtils.claimAffiliateReward(
-                dataStore,
-                eventEmitter,
-                markets[i],
-                tokens[i],
-                account,
-                receiver
-            );
-        }
+    //     for (uint256 i; i < markets.length; i++) {
+    //         claimedAmounts[i] = ReferralUtils.claimAffiliateReward(
+    //             dataStore,
+    //             eventEmitter,
+    //             markets[i],
+    //             tokens[i],
+    //             account,
+    //             receiver
+    //         );
+    //     }
 
-        return claimedAmounts;
-    }
+    //     return claimedAmounts;
+    // }
 
-    function setUiFeeFactor(uint256 uiFeeFactor) external payable nonReentrant {
-        address account = msg.sender;
-        MarketUtils.setUiFeeFactor(dataStore, eventEmitter, account, uiFeeFactor);
-    }
+    // function setUiFeeFactor(uint256 uiFeeFactor) external payable nonReentrant {
+    //     address account = msg.sender;
+    //     MarketUtils.setUiFeeFactor(dataStore, eventEmitter, account, uiFeeFactor);
+    // }
 
-    function claimUiFees(
-        address[] memory markets,
-        address[] memory tokens,
-        address receiver
-    ) external payable nonReentrant returns (uint256[] memory) {
-        if (markets.length != tokens.length) {
-            revert Errors.InvalidClaimUiFeesInput(markets.length, tokens.length);
-        }
+    // function claimUiFees(
+    //     address[] memory markets,
+    //     address[] memory tokens,
+    //     address receiver
+    // ) external payable nonReentrant returns (uint256[] memory) {
+    //     if (markets.length != tokens.length) {
+    //         revert Errors.InvalidClaimUiFeesInput(markets.length, tokens.length);
+    //     }
 
-        FeatureUtils.validateFeature(dataStore, Keys.claimUiFeesFeatureDisabledKey(address(this)));
+    //     FeatureUtils.validateFeature(dataStore, Keys.claimUiFeesFeatureDisabledKey(address(this)));
 
-        address uiFeeReceiver = msg.sender;
+    //     address uiFeeReceiver = msg.sender;
 
-        uint256[] memory claimedAmounts = new uint256[](markets.length);
+    //     uint256[] memory claimedAmounts = new uint256[](markets.length);
 
-        for (uint256 i; i < markets.length; i++) {
-            claimedAmounts[i] = FeeUtils.claimUiFees(
-                dataStore,
-                eventEmitter,
-                uiFeeReceiver,
-                markets[i],
-                tokens[i],
-                receiver
-            );
-        }
+    //     for (uint256 i; i < markets.length; i++) {
+    //         claimedAmounts[i] = FeeUtils.claimUiFees(
+    //             dataStore,
+    //             eventEmitter,
+    //             uiFeeReceiver,
+    //             markets[i],
+    //             tokens[i],
+    //             receiver
+    //         );
+    //     }
 
-        return claimedAmounts;
-    }
+    //     return claimedAmounts;
+    // }
 }
