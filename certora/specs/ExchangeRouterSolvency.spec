@@ -79,7 +79,7 @@ methods {
     function ExchangeRouter.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
 
     // PositionStoreUtils
-    // function PositionStoreUtils.get(address, bytes32) external returns (Position.Props) => CONSTANT;
+    function _.get(address, bytes32) external => DISPATCHER;
 
     // DataStore
     function _.containsBytes32(bytes32, bytes32) external => DISPATCHER;
