@@ -118,8 +118,9 @@ library SwapUtils {
 
             return (params.tokenIn, params.amountIn);
         }
+        return (params.tokenIn, params.amountIn); // munged by Tadeas
 
-        if (address(params.bank) != params.swapPathMarkets[0].marketToken) {
+        if (address(params.bank) != params.swapPathMarkets[0].marketToken) { // The bank sends tokenIn to first market
             params.bank.transferOut(
                 params.tokenIn,
                 params.swapPathMarkets[0].marketToken,
@@ -131,7 +132,7 @@ library SwapUtils {
         address tokenOut = params.tokenIn;
         uint256 outputAmount = params.amountIn;
 
-        for (uint256 i; i < params.swapPathMarkets.length; i++) {
+        for (uint256 i; i < params.swapPathMarkets.length; i++) { // i=0,...,length-1; market0->market1, ... market_{length-2}->market_{length-1}, market_{length-1} -> receiver
             Market.Props memory market = params.swapPathMarkets[i];
 
             bool flagExists = params.dataStore.getBool(Keys.swapPathMarketFlagKey(market.marketToken));
@@ -191,6 +192,8 @@ library SwapUtils {
         cache.tokenOut = MarketUtils.getOppositeToken(_params.tokenIn, _params.market);
         cache.tokenInPrice = params.oracle.getPrimaryPrice(_params.tokenIn);
         cache.tokenOutPrice = params.oracle.getPrimaryPrice(cache.tokenOut);
+        // cache.tokenInPrice = params.oracle.getPrimaryPrice(_params.tokenIn); // certora munged
+        // cache.tokenOutPrice = params.oracle.getPrimaryPrice(cache.tokenOut); // certora munged
 
         SwapPricingUtils.SwapFees memory fees = SwapPricingUtils.getSwapFees(
             params.dataStore,

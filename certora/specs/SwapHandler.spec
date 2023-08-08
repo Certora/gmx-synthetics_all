@@ -33,12 +33,18 @@ methods {
     function _.getPrimaryPrice(address) external => DISPATCHER(true);
 
     //RoleStore
-    function _.hasRole(address,bytes32) external => DISPATCHER(true);
-    function _.revokeRole(address,bytes32) external => DISPATCHER(true);
-    function _.grantRole(address,bytes32) external => DISPATCHER(true);
+    function _.hasRole(address,bytes32) external => NONDET;
+   // function _.revokeRole(address,bytes32) external => NONDET;
+   // function _.grantRole(address,bytes32) external => NONDET;
+   // function _.getRoleCount() external => NONDET;
 
     // function _.applyDeltaToPoolAmount(address, address, Market.Props, address, int256) external => DISPATCHER(true);
     function _.applyDeltaToPoolAmount(address, address, Market.Props, address, int256) external => NONDET;
+    function _.applyImpactFactor(uint256, uint256, uint256) external => NONDET;
+    function _.getPriceImpactUsd(SwapPricingUtils.GetPriceImpactUsdParams memory) internal => NONDET;
+    function _.incrementClaimableFeeAmount(address, address, address, address, address, uint256, bytes32) external => NONDET;
+    function _.getSwapFees(address, address, uint256, address) internal => NONDET;
+    function _.applySwapImpactWithCap(address, address, address, address, Price.Props memory, int256) internal => NONDET;
 
     // function incrementClaimableFeeAmount(
     //     address dataStore, address eventEmitter, address market, address token, uint256 delta, bytes32 feeType
@@ -53,6 +59,9 @@ methods {
 // function setClaimableFees(uint256 x) {
 //     claimableFees = claimableFees + x;
 // }
+
+// ghost bool hasRoleGhost;
+// function (address)
 
 
 
@@ -124,25 +133,32 @@ rule swapIntegrity(env e) {
     // assert
 }
 
+// verified when commented out code in SwapUtils::swap after the return when zero markets
+// https://prover.certora.com/output/40577/cd2e7f7b1b104cc9af49eb1c05821263/?anonymousKey=d626f3bccdf98b218cdf3906031de178ff617ea2
 rule swapIntegrityZeroMarkets(env e) {
     SwapUtils.SwapParams params;
+    address tokenOut;
+    mathint amountReceived;
+
     require params.amountIn == 1000;
     require params.shouldUnwrapNativeToken == false;
     require params.tokenIn == DummyERC20In;
-    // require params.receiver != 
-    //      in:
-    // address tokenIn;
-    // mathint amountIn;
-    // address receiver;
-    // bool unwrapNative;
-    // returns (received token address, amount received)
     require params.swapPathMarkets.length == 0;
-    address tokenOut;
-    mathint amountReceived;
+
+    mathint balanceSenderBefore = DummyERC20In.balanceOf(e, e.msg.sender);
+    mathint balanceReceiverBefore = DummyERC20In.balanceOf(e, params.receiver);
+
     tokenOut, amountReceived = swap(e, params);
-    // balanceInBefore = params.bank.balanceOf(e.msg.sender)
+    
+    mathint balanceSenderAfter = DummyERC20In.balanceOf(e, e.msg.sender);
+    mathint balanceReceiverAfter = DummyERC20In.balanceOf(e, params.receiver);
+
+    require balanceSenderBefore + balanceReceiverBefore + balanceSenderAfter + balanceReceiverAfter < max_uint256; 
+
+    // assert tokenOut == params.tokenIn;
     assert amountReceived >= to_mathint(params.minOutputAmount);
-    // assert
+    // assert params.receiver != params.bank => balanceSenderBefore == balanceSenderAfter + params.amountIn;
+    // assert params.receiver != params.bank => balanceReceiverAfter == balanceReceiverBefore + params.amountIn;
 }
 
 rule swapIntegrityOneMarket(env e) {
