@@ -16,6 +16,8 @@ contract OracleStoreHarness is OracleStore {
     }
 
     function hasControllerRole() public view returns (bool) {
+        // test for a potential false positive in unsat core analysis
+        // return hasRoleWrapper(keccak256(abi.encode("something_else")));
         return hasRoleWrapper(Role.CONTROLLER);
     }
 

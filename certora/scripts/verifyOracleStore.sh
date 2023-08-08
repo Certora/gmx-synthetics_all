@@ -15,4 +15,4 @@ certoraRun  certora/harness/OracleStoreHarness.sol \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --send_only \
---msg "rerun oracleStore verif on all rules after rebase"
+--msg "remove UINT256_MAX requires to ensure not really needed"

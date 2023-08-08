@@ -266,7 +266,6 @@ rule add_signer_valid_liveness {
     require (oracleStore.hasControllerRole(e));
 
     signer_count_before = oracleStore.getSignerCount(e);
-    require(signer_count_before < UINT256_MAX()); // reasonable: not many signers
 
     oracleStore.addSigner(e, new_signer_address);
 
