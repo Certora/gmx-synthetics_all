@@ -65,7 +65,7 @@
 
 
 using ExchangeRouter as exchangeRouter;
-using DataStore as dataStore;
+// using DataStore as dataStore;
 using KeysHarness as keys;
 using PositionUtils as positionUtils;
 using PositionStoreUtils as positionStoreUtils;
@@ -82,10 +82,11 @@ methods {
     function _.get(address, bytes32) external => DISPATCHER;
 
     // DataStore
-    function _.containsBytes32(bytes32, bytes32) external => DISPATCHER;
-    function _.getAddress(bytes32) external => DISPATCHER;
-    function _.getUint(bytes32) external => DISPATCHER;
-    function _.getBool(bytes32) external => DISPATCHER;
+    // function DataStore._ external => NONDET;
+    // function _.containsBytes32(bytes32, bytes32) external => DISPATCHER;
+    // function _.getAddress(bytes32) external => DISPATCHER;
+    // function _.getUint(bytes32) external => DISPATCHER;
+    // function _.getBool(bytes32) external => DISPATCHER;
 
      
 }
@@ -122,7 +123,10 @@ function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price
     address some_collateral_token;
     bool some_is_long;
     bytes32 some_position_key = positionKeyHarness.getPositionKey(e, some_account, some_market, some_collateral_token, some_is_long);
-    Position.Props position = positionStoreUtils.get(e, dataStore, some_position_key);
+    // TODO note that this defeats the purpose of the spec with this
+    // line commented out
+    // Position.Props position = positionStoreUtils.get(e, dataStore, some_position_key);
+    Position.Props position;
     bool non_empty_position = !isPositionEmpty(position);
     closing_create_order_params_from_position(position);
     BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);

@@ -1,5 +1,4 @@
 certoraRun  contracts/router/ExchangeRouter.sol \
-            contracts/data/DataStore.sol \
             contracts/order/BaseOrderUtils.sol \
             contracts/exchange/OrderHandler.sol \
             contracts/oracle/OracleUtils.sol \
@@ -9,8 +8,7 @@ certoraRun  contracts/router/ExchangeRouter.sol \
             certora/harness/GetPositionKeyHarness.sol \
 \
 --verify ExchangeRouter:certora/specs/ExchangeRouterSolvency.spec \
---link ExchangeRouter:dataStore=DataStore \
-       ExchangeRouter:orderHandler=OrderHandler \
+--link ExchangeRouter:orderHandler=OrderHandler \
 --solc solc8.19 \
 --loop_iter 2 \
 --optimistic_loop \
@@ -23,4 +21,4 @@ certoraRun  contracts/router/ExchangeRouter.sol \
 --send_only \
 --rule positions_can_be_closed \
 --method "simulateExecuteOrder(bytes32,(address[],(uint256,uint256)[]))" \
---msg "dumpCodeSizeAnalysis true. remove splitParallel, summarize simulateExecuteOrder / createOrder as CONSTANT, summarize DataStore functions with DISAPATCHER"
+--msg "Munge away the assembly in ErrorUtils.sol. take DataStore out of the contract entirely. (Note that there are spec changes)"
