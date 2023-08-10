@@ -11,16 +11,11 @@ methods {
     function _.getSigner(uint256) external => DISPATCHER(true);
     /// PriceFeed
     function _.latestRoundData() external => DISPATCHER(true);
-    /// Array (temporary summarization)
-    function _.getMedian(uint256[] memory) internal => NONDET;
     /// Chain
     function _.arbBlockNumber() external => ghostBlockNumber() expect uint256 ALL;
     function _.arbBlockHash(uint256 blockNumber) external => ghostBlockHash(blockNumber) expect bytes32 ALL;
     /// Oracle summaries
     function Oracle._getSalt() internal returns bytes32 => mySalt();
-    /// @notice : the following summaries aren't applied (issue)
-    function _._getPriceFeedPrice(address,address) internal => NONDET;
-    function _._setPrices(address,address,address[] memory, OracleUtils.SetPricesParams memory) internal => NONDET;
 
     /// Getters:
     function OracleHarness.primaryPrices(address) external returns (uint256,uint256);
@@ -28,12 +23,6 @@ methods {
     function OracleHarness.customPrices(address) external returns (uint256,uint256);
     function OracleHarness.getSignerByInfo(uint256, uint256) external returns (address);
 }
-
-use rule sanity;
-use rule simpleFrontRunning;
-// use builtin rule deepSanity;
-
-definition isSetPrices(method f) returns bool = f.selector == 0xdf026811;
 
 ghost mySalt() returns bytes32;
 
@@ -53,6 +42,15 @@ function ghostMedian(uint256[] array) returns uint256 {
     return med;
 }
 
+rule sanity_satisfy(method f) {
+    env e;
+    calldataarg args;
+    f(e, args);
+    satisfy true;
+}
+
+use rule simpleFrontRunning;
+
 rule validateSignerConsistency() {
     env e1; env e2;
     require e1.msg.value == e2.msg.value;
@@ -68,10 +66,6 @@ rule validateSignerConsistency() {
 
     assert (salt1 == salt2 && signer1 == signer2) => !lastReverted,
         "Revert characteristics of validateSigner are not consistent";
-
-    // assert ((salt1 != salt2 && signer1 == signer2) ||
-    //     (salt1 == salt2 && signer1 != signer2)) => lastReverted,
-    //     "Calling validateSigner twice cannot succeed with changing a single argument";
 
     assert (!lastReverted && salt1 == salt2) => (signer1 == signer2),
         "Same salt must imply same signer";
