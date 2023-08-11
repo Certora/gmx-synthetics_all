@@ -1,70 +1,22 @@
-// The goal of this spec is to mechanize the properties requested by GMX
-// which are quoted here:
+// The goal of this spec is to mechanize a property requested by GMX
+// which is quoted here:
 //=============================================================================
 // GMX Request
 //=============================================================================
 // 1. if the price value is the same, no sequence of actions should result in a net profit, or another way to phrase it would be that markets should always be solvent if price does not change
 
-// e.g. if the price of a token remains at $5000, then a user could increase position / swap / deposit / decrease position / withdraw / collect funding fees / collect borrowing fees, but the total input into the market should not exceed the total output
-
-
-// 2. if the market has a long token that is the same as the index token and the reserveFactor is less than 1, then the market should always be solvent regardless of the price of the index token
-
-
-// 3. if the market has a long token that is not the same as the index token and the max pnl factor for traders is less than 1, then the market should always be solvent regardless of the price of the index token
-
-// solvent meaning the market can be fully closed, all positions can be closed and all users can redeem market tokens, and there is no bank run scenario, where the first to withdraw gets a higher value per market token than the last to withdrawn
-
-
-// 4. if price does not change no sequence of actions should lead to a decrease in the market pool value, all funding fees  and protocol fees can be claimed and all market tokens can be redeemed
-
-//=============================================================================
-// Strategy
-//=============================================================================
-// Property 1 asks to ensure that no sequence of user actions can violate 
-// solvency, and GMX also clarifies the meaning of solvency.
-// Solvency:
-// * The market can be fully closed
-// * All positions can be closed
-// * All users can redeem market tokens
-// * There is no bank run scenario
-//         meaning the first to withdraw gets a higher value per market token
-//         than last to withdraw
-//
-// Properties 2 and 3 seem to be special cases of ensuring solvency holds.
-// So we we may be able to prove a general property about solvency holding,
-// and then show 2 and 3 as specific instances of the general property.
-//
-// Propery 4 is about ensuring fees can be collected. Since this is similarly
-// a liveness condition, we can potentially fold fee collection into the def
-// of solvency.
-
-// Solvency appears to be a collection of liveness properties. We can define
-// it by showing that the implied functions can be executed (i.e. with the right
-// parameters and without reverting).
-
-// We want to show that "Solvency" holds despite arbitrary (potentially 
-// adversarial) user interactions. Users can interact with the system by
-// making external calls. So we can specify Solvency is maintained despite
-// arbitrary sequences of user calls as a proof by induction over an arbitrary 
-// sequence. This should be possible so long as we prove an invariant over
-// each of the individual public calls stating that: assuming "solvency"
-// held before the call, it should still hold after the call.
-
-// In this spec, "Solvency" is really broken into 4 invariants:
-// - positions_can_be_closed_...
-// - market_can_be_closed_...
-// - users_can_redeem_market_tokens_...
-// - no_bank_run_scenario_...
-
-// The idea is we should write a rule that shows these invariants hold
-// for all of the calls. (And probably
-// the highest priority calls are really createOrder/executeOrder,
-// since these include the user behaviors the client referenced explicitly)
-
+/*
+* Idea for implementation:
+* a. assume oracle prices stay the same
+* b. close arbitrary position anc check how much value you get (store this value)
+* c. go back to the state before you closed the position above
+* d. perform any arbitrary action (swap/withdraw/etc)
+* e. close again the same position in b. and check the value you get
+* f. assert that the end value in b. =< end value in e.
+*/
 
 using ExchangeRouter as exchangeRouter;
-// using DataStore as dataStore;
+using DataStore as dataStore;
 using KeysHarness as keys;
 using PositionUtils as positionUtils;
 using PositionStoreUtils as positionStoreUtils;
@@ -72,11 +24,6 @@ using GetPositionKeyHarness as positionKeyHarness;
 
 methods {
     // ExchangeRouter
-
-    function ExchangeRouter.simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams) external => CONSTANT;
-
-    function ExchangeRouter.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
-
 
     // ALL the libraries...
     // With these all summarized Sanity can be proved in 20 minutes
@@ -172,24 +119,31 @@ function isPositionEmpty(Position.Props position) returns bool {
     return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0 && position.numbers.collateralAmount == 0;
 }
 
-function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price_params) returns bool {
+function positions_closable(env e, OracleUtils.SimulatePricesParams oracle_price_params, uint256 close_value) returns bool {
     address some_account;
     address some_market;
     address some_collateral_token;
     bool some_is_long;
     bytes32 some_position_key = positionKeyHarness.getPositionKey(e, some_account, some_market, some_collateral_token, some_is_long);
-    // TODO note that this defeats the purpose of the spec with this
-    // line commented out
-    // Position.Props position = positionStoreUtils.get(e, dataStore, some_position_key);
-    Position.Props position;
+    Position.Props position = positionStoreUtils.get(e, dataStore, some_position_key);
     bool non_empty_position = !isPositionEmpty(position);
-    closing_create_order_params_from_position(position);
     BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);
 
     bytes32 closing_order_key = exchangeRouter.createOrder@withrevert(e, closing_order_params); 
     bool createOrderReverted = lastReverted;
     exchangeRouter.simulateExecuteOrder@withrevert(e, closing_order_key, oracle_price_params);
     bool executeOrderReverted = lastReverted;
+
+    // Assuming the created order goes through, the close_value is the
+    // value returned.
+    // NOTE: There are two prices in CreateOrderParams -- triggerPrice and 
+    // acceptablePrice. I am not exactly sure which one is right for this.
+    // It could also be that the price used depends on whether it is long 
+    // or short?
+    // The argument close_value is used to track the value returned from
+    // closing the position before and after an order is made.
+    require close_value == assert_uint256(closing_order_params.numbers.sizeDeltaUsd * 
+        closing_order_params.numbers.triggerPrice);
 
     return non_empty_position => !createOrderReverted && !executeOrderReverted;
 }
@@ -206,6 +160,9 @@ rule positions_can_be_closed(method f) {
 
     env e;
     calldataarg args;
+    // This value is used to enforce that the value from closing a position
+    // is the same before and after issuing the user command.
+    uint256 position_close_value;
 
     // Used for both precond and postcond since we assume the
     // prices do not change
@@ -218,7 +175,7 @@ rule positions_can_be_closed(method f) {
     //========================================================================
     // Require: positions can be closed before executing the call
     //========================================================================
-    require positions_closable(e, oracle_price_params);
+    require positions_closable(e, oracle_price_params, position_close_value);
 
     //========================================================================
     // Execute the call
@@ -228,84 +185,10 @@ rule positions_can_be_closed(method f) {
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    assert positions_closable(e, oracle_price_params);
+    assert positions_closable(e, oracle_price_params, position_close_value);
 }
 
 
-
-rule market_can_be_closed {
-    // TODO: need real definition of "markets can be closed"
-    // For now I think this could mean:
-    // * for all existing deposits: a withdrawal can be created
-    // for the total amount to the right account.
-    // * all the created withdrawals can be executed (by a keeper
-    // with the right permissions)
-
-    // Rule structure:
-    // Require: market can be closed before executing the call
-    // Execute the call
-    // Assert: market can be closed after executing the call
-
-    // TODO WIP
-    assert true;
-}
-
-
-rule users_can_redeem_market_tokens {
-    // TODO need real definition of "users can redeem market tokens"
-    // Perhaps this is about the ability to claim all the various fees
-    // and rewards.
-    // Slightly more concretely "users can redeem market tokens"
-    // could mean, each of the following calls can be succesfully made
-    // with the total amounts and towards the appropriate accounts based
-    // on the state of the system:
-    // * claimFundingFeeds
-    // * claimCollateral
-    // * claimAffiliateRewards
-    // * claimUiFees
-
-    // Rule Structure: 
-    // Require: users can redeem market tokens before the call
-    // Execute the call
-    // Assert: market can be closed after the call
-    assert true;
-}
-
-rule no_bank_run_scenario {
-    // "there is no bank run scenario, where the first to withdraw gets a 
-    // higher value per market token than the last to withdraw."
-
-    // This may be the first one that we really need to specify as hypersafety
-    // https://www.cs.cornell.edu/fbs/publications/HyperpropertiesCSFW.pdf
-    // meaning that we need two executions to model the two different orderings
-    // of withdrawal
-
-    // First we need to define "Bank Run Freedom":
-    // * To do so we create two systems (instances of ExchangeRouter)
-    // with two different dataStores and all the other data structures
-    // * Then, we want to model two different orderings of withdrawals:
-    // - We instantiate two addresses.
-    // - On instance 1 we call withdraw(address1); withdraw(address2).
-    // - On instance 2 we call withdraw(address2); withdraw(address1).
-    // - We assert that afterwards the value per market token for both
-    // instances is the same
-    // Ideally, we define "Bank Run Freedom" as a function that
-    // takes 2 instances of ExchangeRouter and returns a bool
-
-    // We then follow the same invariant pattern as with all the
-    // other parts of the Solvency definition. However, now
-    // we need to do this for two instances of the system
-
-    // Rule Structure:
-    // Make 2 instances of ExchangeRouter
-    // Require BankRunFreedom(ER1, ER2)
-    // Call the method under proof on each of ER1, ER2 
-        // (e.g. call ER1.cancelWithdrawal(...), ER2.cancelWithdrawal(...)) 
-    // Assert BankRunFreedom(ER1, ER2) on the post-states after executing
-    // in each system
-
-    assert true;
-}
 rule sanity_parametric(method f) {
     env e;
     calldataarg args;
