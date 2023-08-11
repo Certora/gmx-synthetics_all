@@ -19,6 +19,6 @@ certoraRun  contracts/router/ExchangeRouter.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args "-dumpCodeSizeAnalysis true" \
 --send_only \
---rule positions_can_be_closed \
+--rule sanity_parametric \
 --method "simulateExecuteOrder(bytes32,(address[],(uint256,uint256)[]))" \
---msg "Munge away the assembly in ErrorUtils.sol. take DataStore out of the contract entirely. (Note that there are spec changes)"
+--msg "(fix) summarize: TokenUtils, DecreaseOrderUtils. These were in the bad eight and TokenUtils has assembly, DecreaseOrderUtils have control flow."

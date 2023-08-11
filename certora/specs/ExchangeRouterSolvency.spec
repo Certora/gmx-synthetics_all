@@ -58,8 +58,7 @@
 // - no_bank_run_scenario_...
 
 // The idea is we should write a rule that shows these invariants hold
-// for all of the calls (and in principle we could use a parametric rule)
-// but for now this is just done for cancelWithdrawal. (And probably
+// for all of the calls. (And probably
 // the highest priority calls are really createOrder/executeOrder,
 // since these include the user behaviors the client referenced explicitly)
 
@@ -78,8 +77,64 @@ methods {
 
     function ExchangeRouter.createOrder(BaseOrderUtils.CreateOrderParams) external returns (bytes32) => CONSTANT;
 
-    // PositionStoreUtils
-    function _.get(address, bytes32) external => DISPATCHER;
+
+    // ALL the libraries...
+    // With these all summarized Sanity can be proved in 20 minutes
+    function TokenUtils._ external => NONDET;
+    function OrderUtils._ external => NONDET;
+    function Order._ external => NONDET;
+    function OrderStoreUtils._ external => NONDET;
+    function DecreaseOrderUtils._ external => NONDET;
+    function OrderEventUtils._ external => NONDET;
+
+    // function BaseOrderUtils._ external => NONDET;
+    // function SwapOrderUtils._ external => NONDET;
+    // function IncreaseOrderUtils._ external => NONDET;
+    // function ReferralEventUtils._ external => NONDET;
+    // function ReferralTier._ external => NONDET;
+    // function ReferralUtils._ external => NONDET;
+
+    // function GasUtils._ external => NONDET;
+    // function DepositUtils._ external => NONDET;
+    // function Deposit._ external => NONDET;
+    // function NonceUtils._ external => NONDET;
+    // function FeeUtils._ external => NONDET;
+    // function Position._ external => NONDET;
+    // function DecreasePositionSwapUtils._ external => NONDET;
+    // function PositionUtils._ external => NONDET;
+    // function DecreasePositionUtils._ external => NONDET;
+    // function PositionStoreUtils._ external => NONDET;
+    // function DecreasePositionCollateralUtils._ external => NONDET;
+    // function PositionEventUtils._ external => NONDET;
+    
+    // function IncreasePositionUtils._ external => NONDET;
+    // function Withdrawal._ external => NONDET;
+    // function WithdrawalUtils._ external => NONDET;
+    // function OracleUtils._ external => NONDET;
+    // function SwapUtils._ external => NONDET;
+    // function Uint256Mask._ external => NONDET;
+    // function AccountUtils._ external => NONDET;
+    // function Array._ external => NONDET;
+    // function Calc._ external => NONDET;
+    // function Precision._ external => NONDET;
+    // function EnumerableValues._ external => NONDET;
+    // function Chain._ external => NONDET;
+    
+    // function AdlUtils._ external => NONDET;
+    // function Price._ external => NONDET;
+    // function MarketPoolValueInfo._ external => NONDET;
+    // function MarketUtils._ external => NONDET;
+    // function MarketEventUtils._ external => NONDET;
+    // function MarketStoreUtils._ external => NONDET;
+    // function Market._ external => NONDET;
+    // function FeatureUtils._ external => NONDET;
+    // function CallbackUtils._ external => NONDET;
+    // function Keys._ external => NONDET;
+    // function ErrorUtils._ external => NONDET;
+    // function PositionPricingUtils._ external => NONDET;
+    // function PricingUtils._ external => NONDET;
+    // function SwapPricingUtils._ external => NONDET;
+    // function EventUtils._ external => NONDET;
 
     // DataStore
     // function DataStore._ external => NONDET;
@@ -176,6 +231,8 @@ rule positions_can_be_closed(method f) {
     assert positions_closable(e, oracle_price_params);
 }
 
+
+
 rule market_can_be_closed {
     // TODO: need real definition of "markets can be closed"
     // For now I think this could mean:
@@ -248,4 +305,10 @@ rule no_bank_run_scenario {
     // in each system
 
     assert true;
+}
+rule sanity_parametric(method f) {
+    env e;
+    calldataarg args;
+    f(e, args);
+    assert false;
 }
