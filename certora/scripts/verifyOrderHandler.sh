@@ -7,6 +7,8 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/swap/SwapHandler.sol \
             contracts/mock/ReferralStorage.sol \
             contracts/mock/WNT.sol \
+            certora/mocks/DummyERC20A.sol \
+            certora/mocks/DummyERC20B.sol \
 \
 --verify OrderHandler:certora/specs/OrderHandler.spec \
 \

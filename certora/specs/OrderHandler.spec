@@ -1,4 +1,6 @@
 using WNT as wnt;
+using DummyERC20A as DummyERC20Long;
+using DummyERC20B as DummyERC20Short;
 
 methods {  
     //OrderHandler - createOrder
@@ -24,12 +26,12 @@ methods {
     //OrderHandler - executeOrder
     function _.getExecutionGas(address,uint256) internal => NONDET;
     function _handleOrderError(bytes32,uint256,bytes memory) internal => NONDET;
-    function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal => NONDET;
+    //function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal => NONDET;
     function _.executeOrderFeatureDisabledKey(address,uint256) internal => NONDET;
     function _.getErrorSelectorFromData(bytes memory) internal => NONDET;
     function _.isOracleError(bytes4) internal => NONDET;
     function _.revertWithCustomError(bytes memory) internal => NONDET;
-    function _.getRevertMessage(bytes memory) internal => NONDET;
+    //function _.getRevertMessage(bytes memory) internal => NONDET;
 
 
     // ERC20
@@ -237,6 +239,68 @@ ghost myWNT() returns address {
     assert false;
 }*/
 
+rule GMXMarketAlwaysSolventReserveFactor() { // the second property requested by GMX
+    env e;
+    address account;
+    address market;
+    address uiFeeReceiver;
+    address initialCollateralToken;
+
+    uint256 sizeDeltaUsd;
+    uint256 initialCollateralDeltaAmount;
+    uint256 triggerPrice;
+    uint256 acceptablePrice;
+    uint256 executionFee;
+    uint256 callbackGasLimit;
+    uint256 minOutputAmount;
+
+    BaseOrderUtils.CreateOrderParams params;    // for createOrder()
+    OracleUtils.SetPricesParams oracleParams;   // for executeOrder()
+
+    bytes32 key; bytes32 key2;
+
+    require params.orderType == Order.OrderType.MarketDecrease;
+    require params.decreasePositionSwapType == Order.DecreasePositionSwapType.NoSwap;
+
+    require params.addresses.receiver == account;
+    require params.addresses.callbackContract == 0;
+    require params.addresses.uiFeeReceiver == uiFeeReceiver;
+    require params.addresses.market == market;  // we have to verify in separate rule
+                                                // no interference between markets
+    require params.addresses.initialCollateralToken == initialCollateralToken;
+    //require params.addresses.swapPath == [0]; // doesn't work
+
+    require params.numbers.sizeDeltaUsd == sizeDeltaUsd;
+    require params.numbers.initialCollateralDeltaAmount == initialCollateralDeltaAmount;
+    require params.numbers.triggerPrice == triggerPrice;
+    require params.numbers.acceptablePrice == acceptablePrice;
+    require params.numbers.executionFee == executionFee;
+    require params.numbers.callbackGasLimit == callbackGasLimit;
+    require params.numbers.minOutputAmount == minOutputAmount;
+
+
+    // require indexToken
+    // require longToken
+    // require reserveFactor < 1
+
+    // Save this state
+    storage initState = lastStorage;
+
+    // create order (decrease order type) and get its key
+    // execute the order with the key above - if it passed it means solvent
+    key = createOrder(e, account, params);
+    executeOrder(e, key, oracleParams);
+
+    // Go back to state above and create order (decrease order type) and get its key
+    key2 = createOrder(e, account, params) at initState;
+
+    // change oracle prices
+
+    // execute the order with the key above - if it passed it means solvent    
+    executeOrder@withrevert(e, key2, oracleParams);
+    assert !lastReverted;
+}
+
 rule createOrderOnly() {
     env e;
     calldataarg args;
@@ -265,6 +329,7 @@ rule updateOrderOnly() {
 
     require order.numbers.orderType == Order.OrderType.MarketSwap; //MarketSwap; //not working
     //require order.numbers.decreasePositionSwapType == NoSwap; //not working
+    require order.numbers.decreasePositionSwapType == Order.DecreasePositionSwapType.NoSwap;
     require order.numbers.sizeDeltaUsd != 0;
     require order.numbers.initialCollateralDeltaAmount != 0;
     require order.numbers.triggerPrice != 0;
