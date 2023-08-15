@@ -21,7 +21,7 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --solc_allow_path . \
 --server production \
 --rule_sanity \
---rule swapIntegrity \
---prover_args "-optimisticFallback true  -dumpCodeSizeAnalysis true -depth 30 -dontStopAtFirstSplitTimeout true -mediumTimeout 5" \
+--rule swapPayedByBankMultipleMarkets \
+--prover_args "-optimisticFallback true -dumpCodeSizeAnalysis true -depth 30 -dontStopAtFirstSplitTimeout true" \
 --send_only \
---msg "GMX SwapHandler verify swapIntegrity"
+--msg "swapPayedByBankMultipleMarkets enable multiple markets, with NONDET: getPriceImpactUsd comment bankBalance assert"

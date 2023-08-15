@@ -34,17 +34,21 @@ methods {
 
     //RoleStore
     function _.hasRole(address,bytes32) external => NONDET;
-   // function _.revokeRole(address,bytes32) external => NONDET;
-   // function _.grantRole(address,bytes32) external => NONDET;
-   // function _.getRoleCount() external => NONDET;
+    function _.revokeRole(address,bytes32) external => NONDET;
+    function _.grantRole(address,bytes32) external => NONDET;
+    function _.getRoleCount() external => NONDET;
 
+    //MarketUtils
     // function _.applyDeltaToPoolAmount(address, address, Market.Props, address, int256) external => DISPATCHER(true);
-    function _.applyDeltaToPoolAmount(address, address, Market.Props, address, int256) external => NONDET;
-    function _.applyImpactFactor(uint256, uint256, uint256) external => NONDET;
+    // function _.applyDeltaToPoolAmount(address, address, Market.Props, address, int256) external => NONDET;
+    // function _.applySwapImpactWithCap(address, address, address, address, Price.Props memory, int256) internal => NONDET;
+    //PricingUtils
+    // function _.applyImpactFactor(uint256, uint256, uint256) external => NONDET;
+    //SwapPritingUtils
     function _.getPriceImpactUsd(SwapPricingUtils.GetPriceImpactUsdParams memory) internal => NONDET;
-    function _.incrementClaimableFeeAmount(address, address, address, address, address, uint256, bytes32) external => NONDET;
-    function _.getSwapFees(address, address, uint256, address) internal => NONDET;
-    function _.applySwapImpactWithCap(address, address, address, address, Price.Props memory, int256) internal => NONDET;
+    // function _.getSwapFees(address, address, uint256, address) internal => NONDET;
+    //FeeUtils
+    // function _.incrementClaimableFeeAmount(address, address, address, address, address, uint256, bytes32) external => NONDET;
 
     // function incrementClaimableFeeAmount(
     //     address dataStore, address eventEmitter, address market, address token, uint256 delta, bytes32 feeType
@@ -108,122 +112,92 @@ rule sanity(method f) {
     assert false;
 }
 
-// require params.receiver != 
-//      in:
-//          address tokenIn;
-//          mathint amountIn;
-//          address receiver;
-//          bool unwrapNative;
-// out:
-//          returns (received token address, amount received)
-rule swapIntegrity(env e) {
+
+// Verified here:
+// https://prover.certora.com/output/40577/78edc6a11f71416dac589acb947806ba/?anonymousKey=714823af94cf93f37fa604eabd27c1921c65263a
+// With this NONDET:
+// hasRole, revokeRole, grantRole, getRoleCount,
+// applyDeltaToPoolAmount, applySwapImpactWithCap, applyImpactFactor, getPriceImpactUsd, getSwapFees, incrementClaimableFeeAmount
+rule swapPayedByBankZeroMarkets(env e) {
     SwapUtils.SwapParams params;
     require params.amountIn == 1000;
     require params.shouldUnwrapNativeToken == false;
     require params.tokenIn == DummyERC20In;
+
     require params.swapPathMarkets.length == 0;
 
     address tokenOut;
     mathint amountReceived;
 
-    tokenOut, amountReceived = swap(e, params);
-
-    // balanceInBefore = params.bank.balanceOf(e.msg.sender)
-    assert amountReceived >= to_mathint(params.minOutputAmount);
-    // assert
-}
-
-// verified when commented out code in SwapUtils::swap after the return when zero markets
-// https://prover.certora.com/output/40577/cd2e7f7b1b104cc9af49eb1c05821263/?anonymousKey=d626f3bccdf98b218cdf3906031de178ff617ea2
-rule swapIntegrityZeroMarkets(env e) {
-    SwapUtils.SwapParams params;
-    address tokenOut;
-    mathint amountReceived;
-
-    require params.amountIn == 1000;
-    require params.shouldUnwrapNativeToken == false;
-    require params.tokenIn == DummyERC20In;
-    require params.swapPathMarkets.length == 0;
-
-    mathint balanceSenderBefore = DummyERC20In.balanceOf(e, e.msg.sender);
+    mathint balanceBankBefore = DummyERC20In.balanceOf(e, params.bank);
     mathint balanceReceiverBefore = DummyERC20In.balanceOf(e, params.receiver);
 
     tokenOut, amountReceived = swap(e, params);
-    
-    mathint balanceSenderAfter = DummyERC20In.balanceOf(e, e.msg.sender);
+
+    mathint balanceBankAfter = DummyERC20In.balanceOf(e, params.bank);
     mathint balanceReceiverAfter = DummyERC20In.balanceOf(e, params.receiver);
 
-    require balanceSenderBefore + balanceReceiverBefore + balanceSenderAfter + balanceReceiverAfter < max_uint256; 
+    require balanceBankBefore + balanceReceiverBefore + balanceBankAfter + balanceReceiverAfter < max_uint256; 
 
-    // assert tokenOut == params.tokenIn;
+    assert tokenOut == params.tokenIn;
     assert amountReceived >= to_mathint(params.minOutputAmount);
-    // assert params.receiver != params.bank => balanceSenderBefore == balanceSenderAfter + params.amountIn;
-    // assert params.receiver != params.bank => balanceReceiverAfter == balanceReceiverBefore + params.amountIn;
+    assert params.receiver != params.bank => balanceBankBefore == balanceBankAfter + params.amountIn;
+    assert params.receiver != params.bank => balanceReceiverAfter == balanceReceiverBefore + params.amountIn;
 }
 
-rule swapIntegrityOneMarket(env e) {
+// Verified here:
+// https://prover.certora.com/output/40577/20d981338f3841eaa73489a1401f1315/?anonymousKey=ab2a729aa9c406af03f97820e765e8549c830bd7
+// With Role NONDET:
+// hasRole, revokeRole, grantRole, getRoleCount and
+// With NONDET:
+// getPriceImpactUsd
+rule swapPayedByBankOneMarket(env e) {
     SwapUtils.SwapParams params;
     require params.amountIn == 1000;
     require params.shouldUnwrapNativeToken == false;
     require params.tokenIn == DummyERC20In;
-    // require params.receiver != 
-    //      in:
-    // address tokenIn;
-    // mathint amountIn;
-    // address receiver;
-    // bool unwrapNative;
-    // returns (received token address, amount received)
-    require params.swapPathMarkets.length == 1;
+
+    require params.swapPathMarkets.length == 0;
+
     address tokenOut;
     mathint amountReceived;
+
+    mathint balanceBankBefore = DummyERC20In.balanceOf(e, params.bank);
+    mathint balanceReceiverBefore = DummyERC20In.balanceOf(e, params.receiver);
+
     tokenOut, amountReceived = swap(e, params);
-    // balanceInBefore = params.bank.balanceOf(e.msg.sender)
+
+    mathint balanceBankAfter = DummyERC20In.balanceOf(e, params.bank);
+    mathint balanceReceiverAfter = DummyERC20In.balanceOf(e, params.receiver);
+
+    require balanceBankBefore + balanceReceiverBefore + balanceBankAfter + balanceReceiverAfter < max_uint256; 
+
+    assert tokenOut == params.tokenIn;
     assert amountReceived >= to_mathint(params.minOutputAmount);
-    // assert
+    assert params.receiver != params.bank => balanceBankBefore == balanceBankAfter + params.amountIn;
+    assert params.receiver != params.bank => balanceReceiverAfter == balanceReceiverBefore + params.amountIn;
 }
 
-rule swapIntegrityTwoMarkets(env e) {
+rule swapPayedByBankMultipleMarkets(env e) {
     SwapUtils.SwapParams params;
     require params.amountIn == 1000;
     require params.shouldUnwrapNativeToken == false;
     require params.tokenIn == DummyERC20In;
-    // require params.receiver != 
-    //      in:
-    // address tokenIn;
-    // mathint amountIn;
-    // address receiver;
-    // bool unwrapNative;
-    // returns (received token address, amount received)
-    require params.swapPathMarkets.length == 2;
+
     address tokenOut;
     mathint amountReceived;
-    tokenOut, amountReceived = swap(e, params);
-    // balanceInBefore = params.bank.balanceOf(e.msg.sender)
-    assert amountReceived >= to_mathint(params.minOutputAmount);
-    // assert
-}
 
-rule swapIntegrityThreeMarkets(env e) {
-    SwapUtils.SwapParams params;
-    require params.amountIn == 1000;
-    require params.shouldUnwrapNativeToken == false;
-    require params.tokenIn == DummyERC20In;
-    // require params.receiver != 
-    //      in:
-    // address tokenIn;
-    // mathint amountIn;
-    // address receiver;
-    // bool unwrapNative;
-    // returns (received token address, amount received)
-    require params.swapPathMarkets.length == 3;
-    address tokenOut;
-    mathint amountReceived;
-    tokenOut, amountReceived = swap(e, params);
-    // balanceInBefore = params.bank.balanceOf(e.msg.sender)
-    assert amountReceived >= to_mathint(params.minOutputAmount);
-    // assert
-}
+    mathint balanceBankBefore = DummyERC20In.balanceOf(e, params.bank);
+    mathint balanceReceiverBefore = DummyERC20In.balanceOf(e, params.receiver);
 
-// rule swapUtilsCheck(env e) {
-//     MSU.swap(...) // TODO: check these functions
-// }
+    tokenOut, amountReceived = swap(e, params);
+
+    mathint balanceBankAfter = DummyERC20In.balanceOf(e, params.bank);
+    mathint balanceReceiverAfter = DummyERC20In.balanceOf(e, params.receiver);
+
+    require balanceBankBefore + balanceReceiverBefore + balanceBankAfter + balanceReceiverAfter < max_uint256; 
+
+    assert amountReceived >= to_mathint(params.minOutputAmount);
+    // assert params.receiver != params.bank => balanceBankBefore == balanceBankAfter + params.amountIn;
+    assert params.receiver != params.bank => balanceReceiverAfter == balanceReceiverBefore + amountReceived;
+}

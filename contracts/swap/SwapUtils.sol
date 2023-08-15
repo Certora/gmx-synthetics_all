@@ -118,8 +118,9 @@ library SwapUtils {
 
             return (params.tokenIn, params.amountIn);
         }
-        return (params.tokenIn, params.amountIn); // munged by Tadeas
 
+
+        // return (params.tokenIn, params.amountIn); // munged by Tadeas
         if (address(params.bank) != params.swapPathMarkets[0].marketToken) { // The bank sends tokenIn to first market
             params.bank.transferOut(
                 params.tokenIn,
