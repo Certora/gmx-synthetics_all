@@ -21,7 +21,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
         OrderHandler:referralStorage=ReferralStorage \
 \
 --solc solc8.19 \
---loop_iter 2 \
+--loop_iter 1 \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
@@ -30,13 +30,13 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --server production \
---prover_version gmx/1 \
 \
 --send_only \
---msg "GMX OrderHandler full, shellys branch, myWNT, all, with linking" #\
+--msg "GMX OrderHandler full, 2 steps, myWNT, all, with linking, keys.sol UNIQUE simplified keccaks, execute no modifiers, no try-catch" #\
 # --rule createDepositOnly
 
 # contracts/data/DataStore.sol \
 # --prover_args "-splitParallel true -dontStopAtFirstSplitTimeout true" \
 # --link  FeeHandler:roleStore=RoleStore \
 #         FeeHandler:dataStore=DataStore \
+# --prover_version gmx/1 \ # shellys branch

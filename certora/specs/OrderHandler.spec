@@ -55,127 +55,127 @@ methods {
 
     //Datastore
 
-    // function _.getUint(bytes32 key) external => DISPATCHER(true);
-    // function _.setUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    // function _.removeUint(bytes32 key) external => DISPATCHER(true);
-    // function _.applyDeltaToUint(bytes32 key, int256 value, string) external => DISPATCHER(true);
-    // function _.applyDeltaToUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    // function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => DISPATCHER(true);
-    // function _.incrementUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    // function _.decrementUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    // function _.getInt(bytes32 key) external => DISPATCHER(true);
-    // function _.setInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    // function _.removeInt(bytes32 key) external => DISPATCHER(true);
-    // function _.applyDeltaToInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    // function _.incrementInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    // function _.decrementInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    // function _.getAddress(bytes32 key) external => DISPATCHER(true);
-    // function _.setAddress(bytes32 key, address value) external => DISPATCHER(true);
-    // function _.removeAddress(bytes32 key) external => DISPATCHER(true);
-    // function _.getBool(bytes32 key) external => DISPATCHER(true);
-    // function _.setBool(bytes32 key, bool value) external => DISPATCHER(true);
-    // function _.removeBool(bytes32 key) external => DISPATCHER(true);
-    // function _.getString(bytes32 key) external => DISPATCHER(true);
-    // function _.setString(bytes32 key, string) external => DISPATCHER(true);
-    // function _.removeString(bytes32 key) external => DISPATCHER(true);
-    // function _.getBytes32(bytes32 key) external => DISPATCHER(true);
-    // function _.setBytes32(bytes32 key, bytes32 value) external => DISPATCHER(true);
-    // function _.removeBytes32(bytes32 key) external => DISPATCHER(true);
-    // function _.getUintArray(bytes32 key) external => DISPATCHER(true);
-    // function _.setUintArray(bytes32 key, uint256[]) external => DISPATCHER(true);
-    // function _.removeUintArray(bytes32 key) external => DISPATCHER(true);
-    // function _.getIntArray(bytes32 key) external => DISPATCHER(true);
-    // function _.setIntArray(bytes32 key, int256[]) external => DISPATCHER(true);
-    // function _.removeIntArray(bytes32 key) external => DISPATCHER(true);
-    // function _.getAddressArray(bytes32 key) external => DISPATCHER(true);
-    // function _.setAddressArray(bytes32 key, address[]) external => DISPATCHER(true);
-    // function _.removeAddressArray(bytes32 key) external => DISPATCHER(true);
-    // function _.getBoolArray(bytes32 key) external => DISPATCHER(true);
-    // function _.setBoolArray(bytes32 key, bool[]) external => DISPATCHER(true);
-    // function _.removeBoolArray(bytes32 key) external => DISPATCHER(true);
-    // function _.getStringArray(bytes32 key) external => DISPATCHER(true);
-    // function _.setStringArray(bytes32 key, string[]) external => DISPATCHER(true);
-    // function _.removeStringArray(bytes32 key) external => DISPATCHER(true);
-    // function _.getBytes32Array(bytes32 key) external => DISPATCHER(true);
-    // function _.setBytes32Array(bytes32 key, bytes32[]) external => DISPATCHER(true);
-    // function _.removeBytes32Array(bytes32 key) external => DISPATCHER(true);
-    // function _.containsBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
-    // function _.getBytes32Count(bytes32 setKey) external => DISPATCHER(true);
-    // function _.getBytes32ValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
-    // function _.addBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
-    // function _.removeBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
-    // function _.containsAddress(bytes32 setKey, address value) external => DISPATCHER(true);
-    // function _.getAddressCount(bytes32 setKey) external => DISPATCHER(true);
-    // function _.getAddressValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
-    // function _.addAddress(bytes32 setKey, address value) external => DISPATCHER(true);
-    // function _.removeAddress(bytes32 setKey, address value) external => DISPATCHER(true);
-    // function _.containsUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
-    // function _.getUintCount(bytes32 setKey) external => DISPATCHER(true);
-    // function _.getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
-    // function _.addUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
-    // function _.removeUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
+    function _.getUint(bytes32 key) external => DISPATCHER(true);
+    function _.setUint(bytes32 key, uint256 value) external => DISPATCHER(true);
+    function _.removeUint(bytes32 key) external => DISPATCHER(true);
+    function _.applyDeltaToUint(bytes32 key, int256 value, string) external => DISPATCHER(true);
+    function _.applyDeltaToUint(bytes32 key, uint256 value) external => DISPATCHER(true);
+    function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => DISPATCHER(true);
+    function _.incrementUint(bytes32 key, uint256 value) external => DISPATCHER(true);
+    function _.decrementUint(bytes32 key, uint256 value) external => DISPATCHER(true);
+    function _.getInt(bytes32 key) external => DISPATCHER(true);
+    function _.setInt(bytes32 key, int256 value) external => DISPATCHER(true);
+    function _.removeInt(bytes32 key) external => DISPATCHER(true);
+    function _.applyDeltaToInt(bytes32 key, int256 value) external => DISPATCHER(true);
+    function _.incrementInt(bytes32 key, int256 value) external => DISPATCHER(true);
+    function _.decrementInt(bytes32 key, int256 value) external => DISPATCHER(true);
+    function _.getAddress(bytes32 key) external => DISPATCHER(true);
+    function _.setAddress(bytes32 key, address value) external => DISPATCHER(true);
+    function _.removeAddress(bytes32 key) external => DISPATCHER(true);
+    function _.getBool(bytes32 key) external => DISPATCHER(true);
+    function _.setBool(bytes32 key, bool value) external => DISPATCHER(true);
+    function _.removeBool(bytes32 key) external => DISPATCHER(true);
+    function _.getString(bytes32 key) external => DISPATCHER(true);
+    function _.setString(bytes32 key, string) external => DISPATCHER(true);
+    function _.removeString(bytes32 key) external => DISPATCHER(true);
+    function _.getBytes32(bytes32 key) external => DISPATCHER(true);
+    function _.setBytes32(bytes32 key, bytes32 value) external => DISPATCHER(true);
+    function _.removeBytes32(bytes32 key) external => DISPATCHER(true);
+    function _.getUintArray(bytes32 key) external => DISPATCHER(true);
+    function _.setUintArray(bytes32 key, uint256[]) external => DISPATCHER(true);
+    function _.removeUintArray(bytes32 key) external => DISPATCHER(true);
+    function _.getIntArray(bytes32 key) external => DISPATCHER(true);
+    function _.setIntArray(bytes32 key, int256[]) external => DISPATCHER(true);
+    function _.removeIntArray(bytes32 key) external => DISPATCHER(true);
+    function _.getAddressArray(bytes32 key) external => DISPATCHER(true);
+    function _.setAddressArray(bytes32 key, address[]) external => DISPATCHER(true);
+    function _.removeAddressArray(bytes32 key) external => DISPATCHER(true);
+    function _.getBoolArray(bytes32 key) external => DISPATCHER(true);
+    function _.setBoolArray(bytes32 key, bool[]) external => DISPATCHER(true);
+    function _.removeBoolArray(bytes32 key) external => DISPATCHER(true);
+    function _.getStringArray(bytes32 key) external => DISPATCHER(true);
+    function _.setStringArray(bytes32 key, string[]) external => DISPATCHER(true);
+    function _.removeStringArray(bytes32 key) external => DISPATCHER(true);
+    function _.getBytes32Array(bytes32 key) external => DISPATCHER(true);
+    function _.setBytes32Array(bytes32 key, bytes32[]) external => DISPATCHER(true);
+    function _.removeBytes32Array(bytes32 key) external => DISPATCHER(true);
+    function _.containsBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
+    function _.getBytes32Count(bytes32 setKey) external => DISPATCHER(true);
+    function _.getBytes32ValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
+    function _.addBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
+    function _.removeBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
+    function _.containsAddress(bytes32 setKey, address value) external => DISPATCHER(true);
+    function _.getAddressCount(bytes32 setKey) external => DISPATCHER(true);
+    function _.getAddressValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
+    function _.addAddress(bytes32 setKey, address value) external => DISPATCHER(true);
+    function _.removeAddress(bytes32 setKey, address value) external => DISPATCHER(true);
+    function _.containsUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
+    function _.getUintCount(bytes32 setKey) external => DISPATCHER(true);
+    function _.getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
+    function _.addUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
+    function _.removeUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
 
 
 
-    function _.getUint(bytes32 key) external => NONDET;
-    function _.setUint(bytes32 key, uint256 value) external => NONDET;
-    function _.removeUint(bytes32 key) external => NONDET;
-    function _.applyDeltaToUint(bytes32 key, int256 value, string) external => NONDET;
-    function _.applyDeltaToUint(bytes32 key, uint256 value) external => NONDET;
-    function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => NONDET;
-    function _.incrementUint(bytes32 key, uint256 value) external => NONDET;
-    function _.decrementUint(bytes32 key, uint256 value) external => NONDET;
-    function _.getInt(bytes32 key) external => NONDET;
-    function _.setInt(bytes32 key, int256 value) external => NONDET;
-    function _.removeInt(bytes32 key) external => NONDET;
-    function _.applyDeltaToInt(bytes32 key, int256 value) external => NONDET;
-    function _.incrementInt(bytes32 key, int256 value) external => NONDET;
-    function _.decrementInt(bytes32 key, int256 value) external => NONDET;
-    function _.getAddress(bytes32 key) external => NONDET;
-    function _.setAddress(bytes32 key, address value) external => NONDET;
-    function _.removeAddress(bytes32 key) external => NONDET;
-    function _.getBool(bytes32 key) external => NONDET;
-    function _.setBool(bytes32 key, bool value) external => NONDET;
-    function _.removeBool(bytes32 key) external => NONDET;
-    function _.getString(bytes32 key) external => NONDET;
-    function _.setString(bytes32 key, string) external => NONDET;
-    function _.removeString(bytes32 key) external => NONDET;
-    function _.getBytes32(bytes32 key) external => NONDET;
-    function _.setBytes32(bytes32 key, bytes32 value) external => NONDET;
-    function _.removeBytes32(bytes32 key) external => NONDET;
-    function _.getUintArray(bytes32 key) external => NONDET;
-    function _.setUintArray(bytes32 key, uint256[]) external => NONDET;
-    function _.removeUintArray(bytes32 key) external => NONDET;
-    function _.getIntArray(bytes32 key) external => NONDET;
-    function _.setIntArray(bytes32 key, int256[]) external => NONDET;
-    function _.removeIntArray(bytes32 key) external => NONDET;
-    function _.getAddressArray(bytes32 key) external => NONDET;
-    function _.setAddressArray(bytes32 key, address[]) external => NONDET;
-    function _.removeAddressArray(bytes32 key) external => NONDET;
-    function _.getBoolArray(bytes32 key) external => NONDET;
-    function _.setBoolArray(bytes32 key, bool[]) external => NONDET;
-    function _.removeBoolArray(bytes32 key) external => NONDET;
-    function _.getStringArray(bytes32 key) external => NONDET;
-    function _.setStringArray(bytes32 key, string[]) external => NONDET;
-    function _.removeStringArray(bytes32 key) external => NONDET;
-    function _.getBytes32Array(bytes32 key) external => NONDET;
-    function _.setBytes32Array(bytes32 key, bytes32[]) external => NONDET;
-    function _.removeBytes32Array(bytes32 key) external => NONDET;
-    function _.containsBytes32(bytes32 setKey, bytes32 value) external => NONDET;
-    function _.getBytes32Count(bytes32 setKey) external => NONDET;
-    function _.getBytes32ValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
-    function _.addBytes32(bytes32 setKey, bytes32 value) external => NONDET;
-    function _.removeBytes32(bytes32 setKey, bytes32 value) external => NONDET;
-    function _.containsAddress(bytes32 setKey, address value) external => NONDET;
-    function _.getAddressCount(bytes32 setKey) external => NONDET;
-    function _.getAddressValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
-    function _.addAddress(bytes32 setKey, address value) external => NONDET;
-    function _.removeAddress(bytes32 setKey, address value) external => NONDET;
-    function _.containsUint(bytes32 setKey, uint256 value) external => NONDET;
-    function _.getUintCount(bytes32 setKey) external => NONDET;
-    function _.getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
-    function _.addUint(bytes32 setKey, uint256 value) external => NONDET;
-    function _.removeUint(bytes32 setKey, uint256 value) external => NONDET;
+    // function _.getUint(bytes32 key) external => NONDET;
+    // function _.setUint(bytes32 key, uint256 value) external => NONDET;
+    // function _.removeUint(bytes32 key) external => NONDET;
+    // function _.applyDeltaToUint(bytes32 key, int256 value, string) external => NONDET;
+    // function _.applyDeltaToUint(bytes32 key, uint256 value) external => NONDET;
+    // function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => NONDET;
+    // function _.incrementUint(bytes32 key, uint256 value) external => NONDET;
+    // function _.decrementUint(bytes32 key, uint256 value) external => NONDET;
+    // function _.getInt(bytes32 key) external => NONDET;
+    // function _.setInt(bytes32 key, int256 value) external => NONDET;
+    // function _.removeInt(bytes32 key) external => NONDET;
+    // function _.applyDeltaToInt(bytes32 key, int256 value) external => NONDET;
+    // function _.incrementInt(bytes32 key, int256 value) external => NONDET;
+    // function _.decrementInt(bytes32 key, int256 value) external => NONDET;
+    // function _.getAddress(bytes32 key) external => NONDET;
+    // function _.setAddress(bytes32 key, address value) external => NONDET;
+    // function _.removeAddress(bytes32 key) external => NONDET;
+    // function _.getBool(bytes32 key) external => NONDET;
+    // function _.setBool(bytes32 key, bool value) external => NONDET;
+    // function _.removeBool(bytes32 key) external => NONDET;
+    // function _.getString(bytes32 key) external => NONDET;
+    // function _.setString(bytes32 key, string) external => NONDET;
+    // function _.removeString(bytes32 key) external => NONDET;
+    // function _.getBytes32(bytes32 key) external => NONDET;
+    // function _.setBytes32(bytes32 key, bytes32 value) external => NONDET;
+    // function _.removeBytes32(bytes32 key) external => NONDET;
+    // function _.getUintArray(bytes32 key) external => NONDET;
+    // function _.setUintArray(bytes32 key, uint256[]) external => NONDET;
+    // function _.removeUintArray(bytes32 key) external => NONDET;
+    // function _.getIntArray(bytes32 key) external => NONDET;
+    // function _.setIntArray(bytes32 key, int256[]) external => NONDET;
+    // function _.removeIntArray(bytes32 key) external => NONDET;
+    // function _.getAddressArray(bytes32 key) external => NONDET;
+    // function _.setAddressArray(bytes32 key, address[]) external => NONDET;
+    // function _.removeAddressArray(bytes32 key) external => NONDET;
+    // function _.getBoolArray(bytes32 key) external => NONDET;
+    // function _.setBoolArray(bytes32 key, bool[]) external => NONDET;
+    // function _.removeBoolArray(bytes32 key) external => NONDET;
+    // function _.getStringArray(bytes32 key) external => NONDET;
+    // function _.setStringArray(bytes32 key, string[]) external => NONDET;
+    // function _.removeStringArray(bytes32 key) external => NONDET;
+    // function _.getBytes32Array(bytes32 key) external => NONDET;
+    // function _.setBytes32Array(bytes32 key, bytes32[]) external => NONDET;
+    // function _.removeBytes32Array(bytes32 key) external => NONDET;
+    // function _.containsBytes32(bytes32 setKey, bytes32 value) external => NONDET;
+    // function _.getBytes32Count(bytes32 setKey) external => NONDET;
+    // function _.getBytes32ValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
+    // function _.addBytes32(bytes32 setKey, bytes32 value) external => NONDET;
+    // function _.removeBytes32(bytes32 setKey, bytes32 value) external => NONDET;
+    // function _.containsAddress(bytes32 setKey, address value) external => NONDET;
+    // function _.getAddressCount(bytes32 setKey) external => NONDET;
+    // function _.getAddressValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
+    // function _.addAddress(bytes32 setKey, address value) external => NONDET;
+    // function _.removeAddress(bytes32 setKey, address value) external => NONDET;
+    // function _.containsUint(bytes32 setKey, uint256 value) external => NONDET;
+    // function _.getUintCount(bytes32 setKey) external => NONDET;
+    // function _.getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
+    // function _.addUint(bytes32 setKey, uint256 value) external => NONDET;
+    // function _.removeUint(bytes32 setKey, uint256 value) external => NONDET;
 
 
 
@@ -257,7 +257,8 @@ rule GMXMarketAlwaysSolventReserveFactor() { // the second property requested by
     BaseOrderUtils.CreateOrderParams params;    // for createOrder()
     OracleUtils.SetPricesParams oracleParams;   // for executeOrder()
 
-    bytes32 key; bytes32 key2;
+    bytes32 key; // for the first createOrder()
+    bytes32 key2; // for the second createOrder()
 
     require params.orderType == Order.OrderType.MarketDecrease;
     require params.decreasePositionSwapType == Order.DecreasePositionSwapType.NoSwap;
@@ -290,6 +291,9 @@ rule GMXMarketAlwaysSolventReserveFactor() { // the second property requested by
     // execute the order with the key above - if it passed it means solvent
     key = createOrder(e, account, params);
     executeOrder(e, key, oracleParams);
+    //assert false;
+
+    
 
     // Go back to state above and create order (decrease order type) and get its key
     key2 = createOrder(e, account, params) at initState;
@@ -299,6 +303,7 @@ rule GMXMarketAlwaysSolventReserveFactor() { // the second property requested by
     // execute the order with the key above - if it passed it means solvent    
     executeOrder@withrevert(e, key2, oracleParams);
     assert !lastReverted;
+
 }
 
 rule createOrderOnly() {

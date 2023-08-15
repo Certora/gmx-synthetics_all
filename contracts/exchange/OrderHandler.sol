@@ -173,21 +173,26 @@ contract OrderHandler is BaseOrderHandler {
         bytes32 key,
         OracleUtils.SetPricesParams calldata oracleParams
     ) external
-        globalNonReentrant
-        onlyOrderKeeper
-        withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
+        //globalNonReentrant
+        //onlyOrderKeeper
+        //withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
     {
-        uint256 startingGas = gasleft();
-        uint256 executionGas = GasUtils.getExecutionGas(dataStore, startingGas);
+        //uint256 startingGas = gasleft();
+        //uint256 executionGas = GasUtils.getExecutionGas(dataStore, startingGas);
 
-        try this._executeOrder{ gas: executionGas }(
+        this._executeOrder(  // munging: no try-catch
             key,
             oracleParams,
             msg.sender
-        ) {
-        } catch (bytes memory reasonBytes) {
-            _handleOrderError(key, startingGas, reasonBytes);
-        }
+        );
+        // try this._executeOrder/*{ gas: executionGas }*/(
+        //     key,
+        //     oracleParams,
+        //     msg.sender
+        // ) {
+        // } catch (bytes memory reasonBytes) {
+        //     _handleOrderError(key, startingGas, reasonBytes);
+        // }
     }
 
     // @dev executes an order
