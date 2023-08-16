@@ -21,4 +21,4 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-dumpCodeSizeAnalysis true" \
 --send_only \
 --rule positions_can_be_closed \
---msg "positions_can_be_closed removing error cases and frozen order cases by munging"
+--msg "positions_can_be_closed. munge away boolArray. removing error cases and frozen order cases by munging"

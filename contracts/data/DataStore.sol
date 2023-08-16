@@ -38,7 +38,7 @@ contract DataStore is RoleModule {
     // store for address[] values
     mapping(bytes32 => address[]) public addressArrayValues;
     // store for bool[] values
-    mapping(bytes32 => bool[]) public boolArrayValues;
+    // mapping(bytes32 => bool[]) public boolArrayValues;
     // store for string[] values
     mapping(bytes32 => string[]) public stringArrayValues;
     // store for bytes32[] values
@@ -342,21 +342,21 @@ contract DataStore is RoleModule {
     // @param key the key of the bool array
     // @return the bool array for the key
     function getBoolArray(bytes32 key) external view returns (bool[] memory) {
-        return boolArrayValues[key];
+        // return boolArrayValues[key];
     }
 
     // @dev set the bool array for the given key
     // @param key the key of the bool array
     // @param value the value of the bool array
     function setBoolArray(bytes32 key, bool[] memory value) external onlyController {
-        boolArrayValues[key] = value;
+        // boolArrayValues[key] = value;
     }
 
     // @dev delete the bool array for the given key
     // @param key the key of the bool array
     // @param value the value of the bool array
     function removeBoolArray(bytes32 key) external onlyController {
-        delete boolArrayValues[key];
+        // delete boolArrayValues[key];
     }
 
     // @dev get the string array for the given key
