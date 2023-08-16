@@ -16,8 +16,9 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --solc_allow_path . \
 --server staging \
 --prover_version master \
+--smt_timeout 2400 \
 --prover_args "-optimisticFallback true" \
 --prover_args "-dumpCodeSizeAnalysis true" \
 --send_only \
---rule sanity_execute_order \
---msg "sanity_execute_order after moving to OrderHandler, un-munging much of order handler"
+--rule positions_can_be_closed \
+--msg "positions_can_be_closed removing error cases and frozen order cases by munging"
