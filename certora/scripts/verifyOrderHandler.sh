@@ -3,6 +3,9 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/data/DataStore.sol \
             contracts/event/EventEmitter.sol \
             contracts/order/OrderVault.sol \
+            contracts/order/OrderStoreUtils.sol \
+            contracts/order/Order.sol \
+            contracts/position/Position.sol \
             contracts/oracle/Oracle.sol \
             contracts/swap/SwapHandler.sol \
             contracts/mock/ReferralStorage.sol \
@@ -31,8 +34,8 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --server production \
 \
---send_only \
---msg "GMX OrderHandler full, 2 steps, myWNT, all, with linking, keys.sol UNIQUE simplified keccaks, execute no modifiers, no try-catch" #\
+--send_only --rule GMXMarketAlwaysSolventReserveFactor \
+--msg "GMX OrderHandler full, 2 steps, myWNT, all, with linking, keys.sol UNIQUE simplified keccaks, execute no modifiers, no try-catch, with OrderStoreUtils, GMXMarketAlwaysSolventReserveFactor" #\
 # --rule createDepositOnly
 
 # contracts/data/DataStore.sol \

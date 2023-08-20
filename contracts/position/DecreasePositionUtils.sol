@@ -135,13 +135,6 @@ library DecreasePositionUtils {
                     revert Errors.UnableToWithdrawCollateral(estimatedRemainingCollateralUsd);
                 }
 
-                OrderEventUtils.emitOrderCollateralDeltaAmountAutoUpdated(
-                    params.contracts.eventEmitter,
-                    params.orderKey,
-                    params.order.initialCollateralDeltaAmount(),
-                    0
-                );
-
                 // the estimatedRemainingCollateralUsd subtracts the initialCollateralDeltaAmount
                 // since the initialCollateralDeltaAmount will be set to zero, the initialCollateralDeltaAmount
                 // should be added back to the estimatedRemainingCollateralUsd

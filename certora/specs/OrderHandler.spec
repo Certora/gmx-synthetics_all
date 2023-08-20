@@ -1,6 +1,9 @@
 using WNT as wnt;
 using DummyERC20A as DummyERC20Long;
 using DummyERC20B as DummyERC20Short;
+using OrderStoreUtils as OrderStoreUtils;
+// using Position as Position;
+using Order as Order;
 
 methods {  
     //OrderHandler - createOrder
@@ -205,15 +208,165 @@ methods {
     function _.emitDepositCreated(address,bytes32,Deposit.Props) external => NONDET;
 
     //MarketStoreUtils
-    function _.get(address, address) external => NONDET;
+    // function _.get(address, address) external => NONDET;
 
     //StrictBank
     function _.recordTransferIn(address) external => NONDET;
 
     //DepositStoreUtils
-    function _.set(address,bytes32,Deposit.Props) external => NONDET;
+    // function _.set(address,bytes32,Deposit.Props) external => NONDET;
+
+    // OrderStoreUtils.sol
+    function OrderStoreUtils.get(address dataStore, bytes32 key) external returns (Order.Props memory) optional => getOrder(key);
+    function OrderStoreUtils.set(address dataStore, bytes32 key, Order.Props memory order) external optional => setOrder(key, order);
+
+    // PositionStoreUtils.sol
+    // function PositionStoreUtils.get(address, bytes32 key) external returns (Position.Props memory) => getPosition(key);
+    // function PositionStoreUtils.set(address, bytes32 key, Position.Props position) external => setPosition(key, position);
 
 }
+
+// OrderStoreUtils Ghosts:
+// struct Props {
+//     Addresses addresses;
+//     Numbers numbers;
+//     Flags flags;
+// }
+
+// struct Addresses {
+//     address account;
+//     address receiver;
+//     address callbackContract;
+//     address uiFeeReceiver;
+//     address market;
+//     address initialCollateralToken;
+//     address[] swapPath;
+// }
+ghost mapping(bytes32 => address) AddressesAccounts;
+ghost mapping(bytes32 => address) AddressesReceivers;
+ghost mapping(bytes32 => address) AddressesCallbackContract;
+ghost mapping(bytes32 => address) AddressesUiFeeReceivers;
+ghost mapping(bytes32 => address) AddressesMarkets;
+ghost mapping(bytes32 => address) AddressesInitialCollateralTokens;
+ghost mapping(bytes32 => mapping(uint256 => address)) AddressesSwapPaths;
+
+function setAddresses(bytes32 key, Order.Addresses addresses) {
+    AddressesAccounts[key] = addresses.account;
+    AddressesReceivers[key] = addresses.receiver;
+    AddressesCallbackContract[key] = addresses.callbackContract;
+    AddressesUiFeeReceivers[key] = addresses.uiFeeReceiver;
+    AddressesMarkets[key] = addresses.market;
+    AddressesInitialCollateralTokens[key] = addresses.initialCollateralToken;
+    AddressesSwapPaths[key] = addresses.swapPath;
+}
+
+function getAddresses(bytes32 key) returns Order.Addresses {
+    Order.Addresses addresses = Order.Addresses(
+        AddressesAccounts[key],
+        AddressesReceivers[key],
+        AddressesCallbackContract[key],
+        AddressesUiFeeReceivers[key],
+        AddressesMarkets[key],
+        AddressesInitialCollateralTokens[key],
+        AddressesSwapPaths[key]
+    );
+
+    return addresses;
+}
+
+// struct Numbers {
+//     OrderType orderType;
+//     DecreasePositionSwapType decreasePositionSwapType;
+//     uint256 sizeDeltaUsd;
+//     uint256 initialCollateralDeltaAmount;
+//     uint256 triggerPrice;
+//     uint256 acceptablePrice;
+//     uint256 executionFee;
+//     uint256 callbackGasLimit;
+//     uint256 minOutputAmount;
+//     uint256 updatedAtBlock;
+// }
+ghost mapping(bytes32 => uint256) NumbersOrderType;
+ghost mapping(bytes32 => uint256) NumbersDecreasePositionSwapType;
+ghost mapping(bytes32 => uint256) NumbersSizeDeltaUsd;
+ghost mapping(bytes32 => uint256) NumbersInitialCollateralDeltaAmount;
+ghost mapping(bytes32 => uint256) NumbersTriggerPrice;
+ghost mapping(bytes32 => uint256) NumbersAcceptablePrice;
+ghost mapping(bytes32 => uint256) NumbersExecutionFee;
+ghost mapping(bytes32 => uint256) NumbersCallbackGasLimit;
+ghost mapping(bytes32 => uint256) NumbersMinOutputAmount;
+ghost mapping(bytes32 => uint256) NumbersUpdatedAtBlock;
+
+function setNumbers(bytes32 key, Order.Numbers numbers) {
+    NumbersOrderType[key] = numbers.orderType;
+    NumbersDecreasePositionSwapType[key] = numbers.decreasePositionSwapType;
+    NumbersSizeDeltaUsd[key] = numbers.sizeDeltaUsd;
+    NumbersInitialCollateralDeltaAmount[key] = numbers.initialCollateralDeltaAmount;
+    NumbersTriggerPrice[key] = numbers.triggerPrice;
+    NumbersAcceptablePrice[key] = numbers.acceptablePrice;
+    NumbersExecutionFee[key] = numbers.executionFee;
+    NumbersCallbackGasLimit[key] = numbers.callbackGasLimit;
+    NumbersMinOutputAmount[key] = numbers.minOutputAmount;
+    NumbersUpdatedAtBlock[key] = numbers.updatedAtBlock;
+}
+
+function getNumbers(bytes32 key) returns Order.Numbers {
+    Order.Numbers numbers = Order.Numbers(
+        NumbersOrderType[key],
+        NumbersDecreasePositionSwapType[key],
+        NumbersSizeDeltaUsd[key],
+        NumbersInitialCollateralDeltaAmount[key],
+        NumbersTriggerPrice[key],
+        NumbersAcceptablePrice[key],
+        NumbersExecutionFee[key],
+        NumbersCallbackGasLimit[key],
+        NumbersMinOutputAmount[key],
+        NumbersUpdatedAtBlock[key]
+    );
+
+    return numbers;
+}
+
+// struct Flags {
+//     bool isLong;
+//     bool shouldUnwrapNativeToken;
+//     bool isFrozen;
+// }
+ghost mapping(bytes32 => bool) FlagsIsLong;
+ghost mapping(bytes32 => bool) FlagsShouldUnwrapNativeToken;
+ghost mapping(bytes32 => bool) FlagsIsFrozen;
+
+function setFlags(bytes32 key, Order.Flags flags) {
+    FlagsIsLong[key] = flags.isLong;
+    FlagsShouldUnwrapNativeToken[key] = flags.shouldUnwrapNativeToken;
+    FlagsIsFrozen[key] = flags.isFrozen;
+}
+
+function getFlags(bytes32 key) returns Order.Flags {
+    Order.Flags flags = Order.Flags(
+        FlagsIsLong[key],
+        FlagsShouldUnwrapNativeToken[key],
+        FlagsIsFrozen[key]
+    );
+
+    return flags;
+}
+
+function setOrder(bytes32 key, Order.Props order) {
+    setAddresses(key, order.Addresses);
+    setNumbers(key, order.Numbers);
+    setFlags(key, order,Flags);
+} 
+
+function getOrder(bytes32 key) returns Order.Props {
+    Order.Props props = Order.Props(
+        getAddress(key),
+        getNumbers(key),
+        getFlags(key)
+    );
+
+    return props;
+} 
 
 ghost myWNT() returns address {
 	init_state axiom myWNT() == wnt;
@@ -243,6 +396,7 @@ rule GMXMarketAlwaysSolventReserveFactor() { // the second property requested by
     env e;
     address account;
     address market;
+    // require market.longToken == market.indexToken;
     address uiFeeReceiver;
     address initialCollateralToken;
 
