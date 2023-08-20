@@ -249,6 +249,7 @@ ghost mapping(bytes32 => address) AddressesUiFeeReceivers;
 ghost mapping(bytes32 => address) AddressesMarkets;
 ghost mapping(bytes32 => address) AddressesInitialCollateralTokens;
 ghost mapping(bytes32 => mapping(uint256 => address)) AddressesSwapPaths;
+// ghost mapping(bytes32 => address[]) AddressesSwapPaths;
 
 function setAddresses(bytes32 key, Order.Addresses addresses) {
     AddressesAccounts[key] = addresses.account;
@@ -257,21 +258,24 @@ function setAddresses(bytes32 key, Order.Addresses addresses) {
     AddressesUiFeeReceivers[key] = addresses.uiFeeReceiver;
     AddressesMarkets[key] = addresses.market;
     AddressesInitialCollateralTokens[key] = addresses.initialCollateralToken;
-    AddressesSwapPaths[key] = addresses.swapPath;
+    AddressesSwapPaths[key][0] = addresses.swapPath[0];
+    AddressesSwapPaths[key][1] = addresses.swapPath[1];
+    AddressesSwapPaths[key][2] = addresses.swapPath[2];
 }
 
-function getAddresses(bytes32 key) returns Order.Addresses {
-    Order.Addresses addresses = Order.Addresses(
-        AddressesAccounts[key],
-        AddressesReceivers[key],
-        AddressesCallbackContract[key],
-        AddressesUiFeeReceivers[key],
-        AddressesMarkets[key],
-        AddressesInitialCollateralTokens[key],
-        AddressesSwapPaths[key]
-    );
-
-    return addresses;
+function getAddresses(bytes32 key, Order.Props props) {
+    // Order.Addresses addresses;
+    require props.addresses.account == AddressesAccounts[key];
+    require props.addresses.receiver == AddressesReceivers[key];
+    require props.addresses.callbackContract == AddressesCallbackContract[key];
+    require props.addresses.uiFeeReceiver == AddressesUiFeeReceivers[key];
+    require props.addresses.market == AddressesMarkets[key];
+    require props.addresses.initialCollateralToken == AddressesInitialCollateralTokens[key];
+    require props.addresses.swapPath[0] == AddressesSwapPaths[key][0];
+    require props.addresses.swapPath[1] == AddressesSwapPaths[key][1];
+    require props.addresses.swapPath[2] == AddressesSwapPaths[key][2];
+    
+    // return addresses;
 }
 
 // struct Numbers {
@@ -298,8 +302,8 @@ ghost mapping(bytes32 => uint256) NumbersMinOutputAmount;
 ghost mapping(bytes32 => uint256) NumbersUpdatedAtBlock;
 
 function setNumbers(bytes32 key, Order.Numbers numbers) {
-    NumbersOrderType[key] = numbers.orderType;
-    NumbersDecreasePositionSwapType[key] = numbers.decreasePositionSwapType;
+    NumbersOrderType[key] = assert_uint256(numbers.orderType);
+    NumbersDecreasePositionSwapType[key] = assert_uint256(numbers.decreasePositionSwapType);
     NumbersSizeDeltaUsd[key] = numbers.sizeDeltaUsd;
     NumbersInitialCollateralDeltaAmount[key] = numbers.initialCollateralDeltaAmount;
     NumbersTriggerPrice[key] = numbers.triggerPrice;
@@ -310,21 +314,20 @@ function setNumbers(bytes32 key, Order.Numbers numbers) {
     NumbersUpdatedAtBlock[key] = numbers.updatedAtBlock;
 }
 
-function getNumbers(bytes32 key) returns Order.Numbers {
-    Order.Numbers numbers = Order.Numbers(
-        NumbersOrderType[key],
-        NumbersDecreasePositionSwapType[key],
-        NumbersSizeDeltaUsd[key],
-        NumbersInitialCollateralDeltaAmount[key],
-        NumbersTriggerPrice[key],
-        NumbersAcceptablePrice[key],
-        NumbersExecutionFee[key],
-        NumbersCallbackGasLimit[key],
-        NumbersMinOutputAmount[key],
-        NumbersUpdatedAtBlock[key]
-    );
+function getNumbers(bytes32 key, Order.Props props) {
+    // Order.Numbers numbers;
+    require assert_uint256(props.numbers.orderType) == NumbersOrderType[key];
+    require assert_uint256(props.numbers.decreasePositionSwapType) == NumbersDecreasePositionSwapType[key];
+    require props.numbers.sizeDeltaUsd == NumbersSizeDeltaUsd[key];
+    require props.numbers.initialCollateralDeltaAmount == NumbersInitialCollateralDeltaAmount[key];
+    require props.numbers.triggerPrice == NumbersTriggerPrice[key];
+    require props.numbers.acceptablePrice == NumbersAcceptablePrice[key];
+    require props.numbers.executionFee == NumbersExecutionFee[key];
+    require props.numbers.callbackGasLimit == NumbersCallbackGasLimit[key];
+    require props.numbers.minOutputAmount == NumbersMinOutputAmount[key];
+    require props.numbers.updatedAtBlock == NumbersUpdatedAtBlock[key];
 
-    return numbers;
+    // return numbers;
 }
 
 // struct Flags {
@@ -342,28 +345,26 @@ function setFlags(bytes32 key, Order.Flags flags) {
     FlagsIsFrozen[key] = flags.isFrozen;
 }
 
-function getFlags(bytes32 key) returns Order.Flags {
-    Order.Flags flags = Order.Flags(
-        FlagsIsLong[key],
-        FlagsShouldUnwrapNativeToken[key],
-        FlagsIsFrozen[key]
-    );
+function getFlags(bytes32 key, Order.Props props) {
+    // Order.Flags flags;
+    require props.flags.isLong == FlagsIsLong[key];
+    require props.flags.shouldUnwrapNativeToken == FlagsShouldUnwrapNativeToken[key];
+    require props.flags.isFrozen == FlagsIsFrozen[key];
 
-    return flags;
+    // return flags;
 }
 
 function setOrder(bytes32 key, Order.Props order) {
-    setAddresses(key, order.Addresses);
-    setNumbers(key, order.Numbers);
-    setFlags(key, order,Flags);
+    setAddresses(key, order.addresses);
+    setNumbers(key, order.numbers);
+    setFlags(key, order.flags);
 } 
 
 function getOrder(bytes32 key) returns Order.Props {
-    Order.Props props = Order.Props(
-        getAddress(key),
-        getNumbers(key),
-        getFlags(key)
-    );
+    Order.Props props;
+    getAddresses(key, props);
+    getNumbers(key, props);
+    getFlags(key, props);
 
     return props;
 } 
