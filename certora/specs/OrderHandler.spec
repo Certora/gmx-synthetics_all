@@ -23,7 +23,7 @@ methods {
     function _.cancelOrder(address,address,address,bytes32,address,uint256,string,bytes) external => NONDET;
 
     //OrderHandler - simulateExecuteOrder
-    function _._executeOrder(bytes32,OracleUtils.SetPricesParams,address) external => NONDET;
+    // function _._executeOrder(bytes32,OracleUtils.SetPricesParams,address) external => NONDET;
     // Oracle.setPrimaryPrice => NONDET (see below)
 
     //OrderHandler - executeOrder
@@ -501,7 +501,7 @@ function setPositionFlags(bytes32 key, Position.Flags positionFlags) {
     PositionFlagsIsLong[key] = positionFlags.isLong;
 }
 
-function getPositionNumbers(bytes32 key, Position.Props positionProps) {
+function getPositionFlags(bytes32 key, Position.Props positionProps) {
     require positionProps.flags.isLong == PositionFlagsIsLong[key];
 }
 
