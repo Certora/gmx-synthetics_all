@@ -219,10 +219,14 @@ methods {
     // OrderStoreUtils.sol
     function OrderStoreUtils.get(address dataStore, bytes32 key) external returns (Order.Props memory) optional => getOrder(key);
     function OrderStoreUtils.set(address dataStore, bytes32 key, Order.Props memory order) external optional => setOrder(key, order);
+    function OrderStoreUtils.remove(address dataStore, bytes32 key, address account) external optional => removeOrder(key);
 
     // PositionStoreUtils.sol
     // function PositionStoreUtils.get(address, bytes32 key) external returns (Position.Props memory) => getPosition(key);
     // function PositionStoreUtils.set(address, bytes32 key, Position.Props position) external => setPosition(key, position);
+
+    // PositionUtils.sol
+    // PositionUtils.getPositionKey
 
 }
 
@@ -249,7 +253,6 @@ ghost mapping(bytes32 => address) AddressesUiFeeReceivers;
 ghost mapping(bytes32 => address) AddressesMarkets;
 ghost mapping(bytes32 => address) AddressesInitialCollateralTokens;
 ghost mapping(bytes32 => mapping(uint256 => address)) AddressesSwapPaths;
-// ghost mapping(bytes32 => address[]) AddressesSwapPaths;
 
 function setAddresses(bytes32 key, Order.Addresses addresses) {
     AddressesAccounts[key] = addresses.account;
@@ -276,6 +279,18 @@ function getAddresses(bytes32 key, Order.Props props) {
     require props.addresses.swapPath[2] == AddressesSwapPaths[key][2];
     
     // return addresses;
+}
+
+function removeAddresses(bytes32 key) {
+    AddressesAccounts[key] = 0;
+    AddressesReceivers[key] = 0;
+    AddressesCallbackContract[key] = 0;
+    AddressesUiFeeReceivers[key] = 0;
+    AddressesMarkets[key] = 0;
+    AddressesInitialCollateralTokens[key] = 0;
+    AddressesSwapPaths[key][0] = 0;
+    AddressesSwapPaths[key][1] = 0;
+    AddressesSwapPaths[key][2] = 0;
 }
 
 // struct Numbers {
@@ -330,6 +345,19 @@ function getNumbers(bytes32 key, Order.Props props) {
     // return numbers;
 }
 
+function removeNumbers(bytes32 key) {
+    NumbersOrderType[key] = 0;
+    NumbersDecreasePositionSwapType[key] = 0;
+    NumbersSizeDeltaUsd[key] = 0;
+    NumbersInitialCollateralDeltaAmount[key] = 0;
+    NumbersTriggerPrice[key] = 0;
+    NumbersAcceptablePrice[key] = 0;
+    NumbersExecutionFee[key] = 0;
+    NumbersCallbackGasLimit[key] = 0;
+    NumbersMinOutputAmount[key] = 0;
+    NumbersUpdatedAtBlock[key] = 0;
+}
+
 // struct Flags {
 //     bool isLong;
 //     bool shouldUnwrapNativeToken;
@@ -368,6 +396,135 @@ function getOrder(bytes32 key) returns Order.Props {
 
     return props;
 } 
+
+function removeOrder(bytes32 key) {
+    removeAddresses(key);
+    removeNumbers(key);
+} 
+
+// struct Props {
+//     Addresses addresses;
+//     Numbers numbers;
+//     Flags flags;
+// }
+
+// struct Addresses {
+//     address account;
+//     address market;
+//     address collateralToken;
+// }
+ghost mapping(bytes32 => address) PositionAddressesAccounts;
+ghost mapping(bytes32 => address) PositionAddressesMarkets;
+ghost mapping(bytes32 => address) PositionAddressesCollateralToken;
+
+function setPositionAddresses(bytes32 key, Position.Addresses positionAddresses) {
+    PositionAddressesAccounts[key] = positionAddresses.account;
+    PositionAddressesMarkets[key] = positionAddresses.market;
+    PositionAddressesCollateralToken[key] = positionAddresses.collateralToken;
+}
+
+function getPositionAddresses(bytes32 key, Position.Props positionProps) {
+    require positionProps.addresses.account == PositionAddressesAccounts[key];
+    require positionProps.addresses.market == PositionAddressesMarkets[key];
+    require positionProps.addresses.collateralToken == PositionAddressesCollateralToken[key];
+}
+
+function removePositionAddresses(bytes32 key) {
+    PositionAddressesAccounts[key] = 0;
+    PositionAddressesMarkets[key] = 0;
+    PositionAddressesCollateralToken[key] = 0;
+}
+
+// struct Numbers {
+//     uint256 sizeInUsd;
+//     uint256 sizeInTokens;
+//     uint256 collateralAmount;
+//     uint256 borrowingFactor;
+//     uint256 fundingFeeAmountPerSize;
+//     uint256 longTokenClaimableFundingAmountPerSize;
+//     uint256 shortTokenClaimableFundingAmountPerSize;
+//     uint256 increasedAtBlock;
+//     uint256 decreasedAtBlock;
+// }
+ghost mapping(bytes32 => uint256) PositionNumbersSizeInUsd;
+ghost mapping(bytes32 => uint256) PositionNumbersSizeInTokens;
+ghost mapping(bytes32 => uint256) PositionNumbersCollateralAmount;
+ghost mapping(bytes32 => uint256) PositionNumbersBorrowingFactor;
+ghost mapping(bytes32 => uint256) PositionNumbersFundingFeeAmountPerSize;
+ghost mapping(bytes32 => uint256) PositionNumbersLongTokenClaimableFundingAmountPerSize;
+ghost mapping(bytes32 => uint256) PositionNumbersShortTokenClaimableFundingAmountPerSize;
+ghost mapping(bytes32 => uint256) PositionNumbersIncreasedAtBlock;
+ghost mapping(bytes32 => uint256) PositionNumbersDecreasedAtBlock;
+
+function setPositionNumbers(bytes32 key, Position.Numbers positionNumbers) {
+    PositionNumbersSizeInUsd[key] = positionNumbers.sizeInUsd;
+    PositionNumbersSizeInTokens[key] = positionNumbers.sizeInTokens;
+    PositionNumbersCollateralAmount[key] = positionNumbers.collateralAmount;
+    PositionNumbersBorrowingFactor[key] = positionNumbers.borrowingFactor;
+    PositionNumbersFundingFeeAmountPerSize[key] = positionNumbers.fundingFeeAmountPerSize;
+    PositionNumbersLongTokenClaimableFundingAmountPerSize[key] = positionNumbers.longTokenClaimableFundingAmountPerSize;
+    PositionNumbersShortTokenClaimableFundingAmountPerSize[key] = positionNumbers.shortTokenClaimableFundingAmountPerSize;
+    PositionNumbersIncreasedAtBlock[key] = positionNumbers.increasedAtBlock;
+    PositionNumbersDecreasedAtBlock[key] = positionNumbers.decreasedAtBlock;
+}
+
+function getPositionNumbers(bytes32 key, Position.Props positionProps) {
+    require positionProps.numbers.sizeInUsd == PositionNumbersSizeInUsd[key];
+    require positionProps.numbers.sizeInTokens == PositionNumbersSizeInTokens[key];
+    require positionProps.numbers.collateralAmount == PositionNumbersCollateralAmount[key];
+    require positionProps.numbers.borrowingFactor == PositionNumbersBorrowingFactor[key];
+    require positionProps.numbers.fundingFeeAmountPerSize == PositionNumbersFundingFeeAmountPerSize[key];
+    require positionProps.numbers.longTokenClaimableFundingAmountPerSize == PositionNumbersLongTokenClaimableFundingAmountPerSize[key];
+    require positionProps.numbers.shortTokenClaimableFundingAmountPerSize == PositionNumbersShortTokenClaimableFundingAmountPerSize[key];
+    require positionProps.numbers.increasedAtBlock == PositionNumbersIncreasedAtBlock[key];
+    require positionProps.numbers.decreasedAtBlock == PositionNumbersDecreasedAtBlock[key];
+}
+
+function removePositionNumbers(bytes32 key) {
+    PositionNumbersSizeInUsd[key] = 0;
+    PositionNumbersSizeInTokens[key] = 0;
+    PositionNumbersCollateralAmount[key] = 0;
+    PositionNumbersBorrowingFactor[key] = 0;
+    PositionNumbersFundingFeeAmountPerSize[key] = 0;
+    PositionNumbersLongTokenClaimableFundingAmountPerSize[key] = 0;
+    PositionNumbersShortTokenClaimableFundingAmountPerSize[key] = 0;
+    PositionNumbersIncreasedAtBlock[key] = 0;
+    PositionNumbersDecreasedAtBlock[key] = 0;
+}
+
+// struct Flags {
+//     bool isLong;
+// }
+ghost mapping(bytes32 => bool) PositionFlagsIsLong;
+
+function setPositionFlags(bytes32 key, Position.Flags positionFlags) {
+    PositionFlagsIsLong[key] = positionFlags.isLong;
+}
+
+function getPositionNumbers(bytes32 key, Position.Props positionProps) {
+    require positionProps.flags.isLong == PositionFlagsIsLong[key];
+}
+
+function setPosition(bytes32 key, Position.Props position) {
+    setPositionAddresses(key, position.addresses);
+    setPositionNumbers(key, position.numbers);
+    setPositionFlags(key, position.flags);
+} 
+
+function getPosition(bytes32 key) returns Position.Props {
+    Position.Props props;
+    getPositionAddresses(key, props);
+    getPositionNumbers(key, props);
+    getPositionFlags(key, props);
+
+    return props;
+} 
+
+function removePosition(bytes32 key) {
+    removePositionAddresses(key);
+    removePositionNumbers(key);
+} 
+
 
 ghost myWNT() returns address {
 	init_state axiom myWNT() == wnt;
