@@ -22,4 +22,4 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-copyLoopUnroll 1" \
 --send_only \
 --rule positions_can_be_closed \
---msg "positions_can_be_closed. no summarizing orderhandler. copyLoopUnroll 1. replace keys with constants. comment createOrder. Summarize orderhandler. munge boolArray, try-catch. SMT_TIMEOUT 2400. Summarize libs and datastore."
+--msg "positions_can_be_closed. copyLoopUnroll 1. replace keys with constants. comment createOrder. Summarize orderhandler. munge boolArray, try-catch. SMT_TIMEOUT 2400. Summarize libs and datastore."

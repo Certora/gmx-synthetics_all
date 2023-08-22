@@ -185,6 +185,9 @@ contract OrderHandler is IOrderHandler, BaseOrderHandler {
         onlyOrderKeeper
         withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
     {
+        // NOTE: this was added as part of munging. If you want
+        // to put this back the way it was. Delete the following
+        // call and uncomment the rest.
         this._executeOrder(
             key,
             oracleParams,
