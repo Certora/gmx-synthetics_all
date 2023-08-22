@@ -6,279 +6,280 @@ pragma solidity ^0.8.0;
 // @dev Keys for values in the DataStore
 library Keys {
     // @dev key for the address of the wrapped native token
-    bytes32 public constant WNT = keccak256(abi.encode("WNT"));
+    bytes32 public constant WNT = 0x0000000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("WNT"));
     // @dev key for the nonce value used in NonceUtils
-    bytes32 public constant NONCE = keccak256(abi.encode("NONCE"));
+    bytes32 public constant NONCE = 0x0010000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("NONCE"));
 
     // @dev for sending received fees
-    bytes32 public constant FEE_RECEIVER = keccak256(abi.encode("FEE_RECEIVER"));
+    bytes32 public constant FEE_RECEIVER = 0x0020000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("FEE_RECEIVER"));
 
     // @dev for holding tokens that could not be sent out
-    bytes32 public constant HOLDING_ADDRESS = keccak256(abi.encode("HOLDING_ADDRESS"));
+    bytes32 public constant HOLDING_ADDRESS = 0x0030000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("HOLDING_ADDRESS"));
 
     // @dev key for the minimum gas that should be forwarded for execution error handling
-    bytes32 public constant MIN_HANDLE_EXECUTION_ERROR_GAS = keccak256(abi.encode("MIN_HANDLE_EXECUTION_ERROR_GAS"));
+    bytes32 public constant MIN_HANDLE_EXECUTION_ERROR_GAS = 0x0040000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_HANDLE_EXECUTION_ERROR_GAS"));
 
     // @dev for a global reentrancy guard
-    bytes32 public constant REENTRANCY_GUARD_STATUS = keccak256(abi.encode("REENTRANCY_GUARD_STATUS"));
+    bytes32 public constant REENTRANCY_GUARD_STATUS = 0x0050000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("REENTRANCY_GUARD_STATUS"));
 
     // @dev key for deposit fees
-    bytes32 public constant DEPOSIT_FEE_TYPE = keccak256(abi.encode("DEPOSIT_FEE_TYPE"));
+    bytes32 public constant DEPOSIT_FEE_TYPE = 0x0060000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("DEPOSIT_FEE_TYPE"));
     // @dev key for withdrawal fees
-    bytes32 public constant WITHDRAWAL_FEE_TYPE = keccak256(abi.encode("WITHDRAWAL_FEE_TYPE"));
+    bytes32 public constant WITHDRAWAL_FEE_TYPE = 0x0070000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("WITHDRAWAL_FEE_TYPE"));
     // @dev key for swap fees
-    bytes32 public constant SWAP_FEE_TYPE = keccak256(abi.encode("SWAP_FEE_TYPE"));
+    bytes32 public constant SWAP_FEE_TYPE = 0x0080000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_FEE_TYPE"));
     // @dev key for position fees
-    bytes32 public constant POSITION_FEE_TYPE = keccak256(abi.encode("POSITION_FEE_TYPE"));
+    bytes32 public constant POSITION_FEE_TYPE = 0x0090000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POSITION_FEE_TYPE"));
     // @dev key for ui deposit fees
-    bytes32 public constant UI_DEPOSIT_FEE_TYPE = keccak256(abi.encode("UI_DEPOSIT_FEE_TYPE"));
+    bytes32 public constant UI_DEPOSIT_FEE_TYPE = 0x0100000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("UI_DEPOSIT_FEE_TYPE"));
     // @dev key for ui withdrawal fees
-    bytes32 public constant UI_WITHDRAWAL_FEE_TYPE = keccak256(abi.encode("UI_WITHDRAWAL_FEE_TYPE"));
+    bytes32 public constant UI_WITHDRAWAL_FEE_TYPE = 0x0110000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("UI_WITHDRAWAL_FEE_TYPE"));
     // @dev key for ui swap fees
-    bytes32 public constant UI_SWAP_FEE_TYPE = keccak256(abi.encode("UI_SWAP_FEE_TYPE"));
+    bytes32 public constant UI_SWAP_FEE_TYPE = 0x0120000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("UI_SWAP_FEE_TYPE"));
     // @dev key for ui position fees
-    bytes32 public constant UI_POSITION_FEE_TYPE = keccak256(abi.encode("UI_POSITION_FEE_TYPE"));
+    bytes32 public constant UI_POSITION_FEE_TYPE = 0x0130000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("UI_POSITION_FEE_TYPE"));
 
     // @dev key for ui fee factor
-    bytes32 public constant UI_FEE_FACTOR = keccak256(abi.encode("UI_FEE_FACTOR"));
+    bytes32 public constant UI_FEE_FACTOR = 0x0140000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("UI_FEE_FACTOR"));
     // @dev key for max ui fee receiver factor
-    bytes32 public constant MAX_UI_FEE_FACTOR = keccak256(abi.encode("MAX_UI_FEE_FACTOR"));
+    bytes32 public constant MAX_UI_FEE_FACTOR = 0x0150000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_UI_FEE_FACTOR"));
 
     // @dev key for the claimable fee amount
-    bytes32 public constant CLAIMABLE_FEE_AMOUNT = keccak256(abi.encode("CLAIMABLE_FEE_AMOUNT"));
+    bytes32 public constant CLAIMABLE_FEE_AMOUNT = 0x0160000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMABLE_FEE_AMOUNT"));
     // @dev key for the claimable ui fee amount
-    bytes32 public constant CLAIMABLE_UI_FEE_AMOUNT = keccak256(abi.encode("CLAIMABLE_UI_FEE_AMOUNT"));
+    bytes32 public constant CLAIMABLE_UI_FEE_AMOUNT = 0x0170000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMABLE_UI_FEE_AMOUNT"));
 
     // @dev key for the market list
-    bytes32 public constant MARKET_LIST = keccak256(abi.encode("MARKET_LIST"));
+    bytes32 public constant MARKET_LIST = 0x0180000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MARKET_LIST"));
 
     // @dev key for the deposit list
-    bytes32 public constant DEPOSIT_LIST = keccak256(abi.encode("DEPOSIT_LIST"));
+    bytes32 public constant DEPOSIT_LIST = 0x0190000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("DEPOSIT_LIST"));
     // @dev key for the account deposit list
-    bytes32 public constant ACCOUNT_DEPOSIT_LIST = keccak256(abi.encode("ACCOUNT_DEPOSIT_LIST"));
+    bytes32 public constant ACCOUNT_DEPOSIT_LIST = 0x0200000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ACCOUNT_DEPOSIT_LIST"));
 
     // @dev key for the withdrawal list
-    bytes32 public constant WITHDRAWAL_LIST = keccak256(abi.encode("WITHDRAWAL_LIST"));
+    bytes32 public constant WITHDRAWAL_LIST = 0x0210000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("WITHDRAWAL_LIST"));
     // @dev key for the account withdrawal list
-    bytes32 public constant ACCOUNT_WITHDRAWAL_LIST = keccak256(abi.encode("ACCOUNT_WITHDRAWAL_LIST"));
+    bytes32 public constant ACCOUNT_WITHDRAWAL_LIST = 0x0220000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ACCOUNT_WITHDRAWAL_LIST"));
 
     // @dev key for the position list
-    bytes32 public constant POSITION_LIST = keccak256(abi.encode("POSITION_LIST"));
+    bytes32 public constant POSITION_LIST = 0x0230000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POSITION_LIST"));
     // @dev key for the account position list
-    bytes32 public constant ACCOUNT_POSITION_LIST = keccak256(abi.encode("ACCOUNT_POSITION_LIST"));
+    bytes32 public constant ACCOUNT_POSITION_LIST = 0x0240000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ACCOUNT_POSITION_LIST"));
 
     // @dev key for the order list
-    bytes32 public constant ORDER_LIST = keccak256(abi.encode("ORDER_LIST"));
+    bytes32 public constant ORDER_LIST = 0x0250000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ORDER_LIST"));
     // @dev key for the account order list
-    bytes32 public constant ACCOUNT_ORDER_LIST = keccak256(abi.encode("ACCOUNT_ORDER_LIST"));
+    bytes32 public constant ACCOUNT_ORDER_LIST = 0x0260000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ACCOUNT_ORDER_LIST"));
 
     // @dev key for is market disabled
-    bytes32 public constant IS_MARKET_DISABLED = keccak256(abi.encode("IS_MARKET_DISABLED"));
+    bytes32 public constant IS_MARKET_DISABLED = 0x0270000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("IS_MARKET_DISABLED"));
 
     // @dev key for the max swap path length allowed
-    bytes32 public constant MAX_SWAP_PATH_LENGTH = keccak256(abi.encode("MAX_SWAP_PATH_LENGTH"));
+    bytes32 public constant MAX_SWAP_PATH_LENGTH = 0x0280000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_SWAP_PATH_LENGTH"));
     // @dev key used to store markets observed in a swap path, to ensure that a swap path contains unique markets
-    bytes32 public constant SWAP_PATH_MARKET_FLAG = keccak256(abi.encode("SWAP_PATH_MARKET_FLAG"));
+    bytes32 public constant SWAP_PATH_MARKET_FLAG = 0x0290000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_PATH_MARKET_FLAG"));
 
     // @dev key for whether the create deposit feature is disabled
-    bytes32 public constant CREATE_DEPOSIT_FEATURE_DISABLED = keccak256(abi.encode("CREATE_DEPOSIT_FEATURE_DISABLED"));
+    bytes32 public constant CREATE_DEPOSIT_FEATURE_DISABLED = 0x0300000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CREATE_DEPOSIT_FEATURE_DISABLED"));
     // @dev key for whether the cancel deposit feature is disabled
-    bytes32 public constant CANCEL_DEPOSIT_FEATURE_DISABLED = keccak256(abi.encode("CANCEL_DEPOSIT_FEATURE_DISABLED"));
+    bytes32 public constant CANCEL_DEPOSIT_FEATURE_DISABLED = 0x0310000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CANCEL_DEPOSIT_FEATURE_DISABLED"));
     // @dev key for whether the execute deposit feature is disabled
-    bytes32 public constant EXECUTE_DEPOSIT_FEATURE_DISABLED = keccak256(abi.encode("EXECUTE_DEPOSIT_FEATURE_DISABLED"));
+    bytes32 public constant EXECUTE_DEPOSIT_FEATURE_DISABLED = 0x0320000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("EXECUTE_DEPOSIT_FEATURE_DISABLED"));
 
     // @dev key for whether the create withdrawal feature is disabled
-    bytes32 public constant CREATE_WITHDRAWAL_FEATURE_DISABLED = keccak256(abi.encode("CREATE_WITHDRAWAL_FEATURE_DISABLED"));
+    bytes32 public constant CREATE_WITHDRAWAL_FEATURE_DISABLED = 0x0330000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CREATE_WITHDRAWAL_FEATURE_DISABLED"));
     // @dev key for whether the cancel withdrawal feature is disabled
-    bytes32 public constant CANCEL_WITHDRAWAL_FEATURE_DISABLED = keccak256(abi.encode("CANCEL_WITHDRAWAL_FEATURE_DISABLED"));
+    bytes32 public constant CANCEL_WITHDRAWAL_FEATURE_DISABLED = 0x0340000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CANCEL_WITHDRAWAL_FEATURE_DISABLED"));
     // @dev key for whether the execute withdrawal feature is disabled
-    bytes32 public constant EXECUTE_WITHDRAWAL_FEATURE_DISABLED = keccak256(abi.encode("EXECUTE_WITHDRAWAL_FEATURE_DISABLED"));
+    bytes32 public constant EXECUTE_WITHDRAWAL_FEATURE_DISABLED = 0x0350000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("EXECUTE_WITHDRAWAL_FEATURE_DISABLED"));
 
     // @dev key for whether the create order feature is disabled
-    bytes32 public constant CREATE_ORDER_FEATURE_DISABLED = keccak256(abi.encode("CREATE_ORDER_FEATURE_DISABLED"));
+    bytes32 public constant CREATE_ORDER_FEATURE_DISABLED = 0x0360000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CREATE_ORDER_FEATURE_DISABLED"));
     // @dev key for whether the execute order feature is disabled
-    bytes32 public constant EXECUTE_ORDER_FEATURE_DISABLED = keccak256(abi.encode("EXECUTE_ORDER_FEATURE_DISABLED"));
+    bytes32 public constant EXECUTE_ORDER_FEATURE_DISABLED = 0x0370000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("EXECUTE_ORDER_FEATURE_DISABLED"));
     // @dev key for whether the execute adl feature is disabled
     // for liquidations, it can be disabled by using the EXECUTE_ORDER_FEATURE_DISABLED key with the Liquidation
     // order type, ADL orders have a MarketDecrease order type, so a separate key is needed to disable it
-    bytes32 public constant EXECUTE_ADL_FEATURE_DISABLED = keccak256(abi.encode("EXECUTE_ADL_FEATURE_DISABLED"));
+    bytes32 public constant EXECUTE_ADL_FEATURE_DISABLED = 0x0380000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("EXECUTE_ADL_FEATURE_DISABLED"));
     // @dev key for whether the update order feature is disabled
-    bytes32 public constant UPDATE_ORDER_FEATURE_DISABLED = keccak256(abi.encode("UPDATE_ORDER_FEATURE_DISABLED"));
+    bytes32 public constant UPDATE_ORDER_FEATURE_DISABLED = 0x0390000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("UPDATE_ORDER_FEATURE_DISABLED"));
     // @dev key for whether the cancel order feature is disabled
-    bytes32 public constant CANCEL_ORDER_FEATURE_DISABLED = keccak256(abi.encode("CANCEL_ORDER_FEATURE_DISABLED"));
+    bytes32 public constant CANCEL_ORDER_FEATURE_DISABLED = 0x0400000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CANCEL_ORDER_FEATURE_DISABLED"));
 
     // @dev key for whether the claim funding fees feature is disabled
-    bytes32 public constant CLAIM_FUNDING_FEES_FEATURE_DISABLED = keccak256(abi.encode("CLAIM_FUNDING_FEES_FEATURE_DISABLED"));
+    bytes32 public constant CLAIM_FUNDING_FEES_FEATURE_DISABLED = 0x0410000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIM_FUNDING_FEES_FEATURE_DISABLED"));
     // @dev key for whether the claim collateral feature is disabled
-    bytes32 public constant CLAIM_COLLATERAL_FEATURE_DISABLED = keccak256(abi.encode("CLAIM_COLLATERAL_FEATURE_DISABLED"));
+    bytes32 public constant CLAIM_COLLATERAL_FEATURE_DISABLED = 0x0420000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIM_COLLATERAL_FEATURE_DISABLED"));
     // @dev key for whether the claim affiliate rewards feature is disabled
-    bytes32 public constant CLAIM_AFFILIATE_REWARDS_FEATURE_DISABLED = keccak256(abi.encode("CLAIM_AFFILIATE_REWARDS_FEATURE_DISABLED"));
+    bytes32 public constant CLAIM_AFFILIATE_REWARDS_FEATURE_DISABLED = 0x0430000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIM_AFFILIATE_REWARDS_FEATURE_DISABLED"));
     // @dev key for whether the claim ui fees feature is disabled
-    bytes32 public constant CLAIM_UI_FEES_FEATURE_DISABLED = keccak256(abi.encode("CLAIM_UI_FEES_FEATURE_DISABLED"));
+    bytes32 public constant CLAIM_UI_FEES_FEATURE_DISABLED = 0x0440000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIM_UI_FEES_FEATURE_DISABLED"));
 
     // @dev key for the minimum required oracle signers for an oracle observation
-    bytes32 public constant MIN_ORACLE_SIGNERS = keccak256(abi.encode("MIN_ORACLE_SIGNERS"));
+    bytes32 public constant MIN_ORACLE_SIGNERS = 0x0450000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_ORACLE_SIGNERS"));
     // @dev key for the minimum block confirmations before blockhash can be excluded for oracle signature validation
-    bytes32 public constant MIN_ORACLE_BLOCK_CONFIRMATIONS = keccak256(abi.encode("MIN_ORACLE_BLOCK_CONFIRMATIONS"));
+    bytes32 public constant MIN_ORACLE_BLOCK_CONFIRMATIONS = 0x0460000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_ORACLE_BLOCK_CONFIRMATIONS"));
     // @dev key for the maximum usable oracle price age in seconds
-    bytes32 public constant MAX_ORACLE_PRICE_AGE = keccak256(abi.encode("MAX_ORACLE_PRICE_AGE"));
+    bytes32 public constant MAX_ORACLE_PRICE_AGE = 0x0470000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_ORACLE_PRICE_AGE"));
     // @dev key for the maximum oracle price deviation factor from the ref price
-    bytes32 public constant MAX_ORACLE_REF_PRICE_DEVIATION_FACTOR = keccak256(abi.encode("MAX_ORACLE_REF_PRICE_DEVIATION_FACTOR"));
+    bytes32 public constant MAX_ORACLE_REF_PRICE_DEVIATION_FACTOR = 0x0480000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_ORACLE_REF_PRICE_DEVIATION_FACTOR"));
     // @dev key for the percentage amount of position fees to be received
-    bytes32 public constant POSITION_FEE_RECEIVER_FACTOR = keccak256(abi.encode("POSITION_FEE_RECEIVER_FACTOR"));
+    bytes32 public constant POSITION_FEE_RECEIVER_FACTOR = 0x0490000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POSITION_FEE_RECEIVER_FACTOR"));
     // @dev key for the percentage amount of swap fees to be received
-    bytes32 public constant SWAP_FEE_RECEIVER_FACTOR = keccak256(abi.encode("SWAP_FEE_RECEIVER_FACTOR"));
+    bytes32 public constant SWAP_FEE_RECEIVER_FACTOR = 0x0500000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_FEE_RECEIVER_FACTOR"));
     // @dev key for the percentage amount of borrowing fees to be received
-    bytes32 public constant BORROWING_FEE_RECEIVER_FACTOR = keccak256(abi.encode("BORROWING_FEE_RECEIVER_FACTOR"));
+    bytes32 public constant BORROWING_FEE_RECEIVER_FACTOR = 0x0510000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("BORROWING_FEE_RECEIVER_FACTOR"));
 
     // @dev key for the base gas limit used when estimating execution fee
-    bytes32 public constant ESTIMATED_GAS_FEE_BASE_AMOUNT = keccak256(abi.encode("ESTIMATED_GAS_FEE_BASE_AMOUNT"));
+    bytes32 public constant ESTIMATED_GAS_FEE_BASE_AMOUNT = 0x0520000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ESTIMATED_GAS_FEE_BASE_AMOUNT"));
     // @dev key for the multiplier used when estimating execution fee
-    bytes32 public constant ESTIMATED_GAS_FEE_MULTIPLIER_FACTOR = keccak256(abi.encode("ESTIMATED_GAS_FEE_MULTIPLIER_FACTOR"));
+    bytes32 public constant ESTIMATED_GAS_FEE_MULTIPLIER_FACTOR = 0x0530000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ESTIMATED_GAS_FEE_MULTIPLIER_FACTOR"));
 
     // @dev key for the base gas limit used when calculating execution fee
-    bytes32 public constant EXECUTION_GAS_FEE_BASE_AMOUNT = keccak256(abi.encode("EXECUTION_GAS_FEE_BASE_AMOUNT"));
+    bytes32 public constant EXECUTION_GAS_FEE_BASE_AMOUNT = 0x0540000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("EXECUTION_GAS_FEE_BASE_AMOUNT"));
     // @dev key for the multiplier used when calculating execution fee
-    bytes32 public constant EXECUTION_GAS_FEE_MULTIPLIER_FACTOR = keccak256(abi.encode("EXECUTION_GAS_FEE_MULTIPLIER_FACTOR"));
+    bytes32 public constant EXECUTION_GAS_FEE_MULTIPLIER_FACTOR = 0x0550000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("EXECUTION_GAS_FEE_MULTIPLIER_FACTOR"));
 
     // @dev key for the estimated gas limit for deposits
-    bytes32 public constant DEPOSIT_GAS_LIMIT = keccak256(abi.encode("DEPOSIT_GAS_LIMIT"));
+    bytes32 public constant DEPOSIT_GAS_LIMIT = 0x0560000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("DEPOSIT_GAS_LIMIT"));
     // @dev key for the estimated gas limit for withdrawals
-    bytes32 public constant WITHDRAWAL_GAS_LIMIT = keccak256(abi.encode("WITHDRAWAL_GAS_LIMIT"));
+    bytes32 public constant WITHDRAWAL_GAS_LIMIT = 0x0570000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("WITHDRAWAL_GAS_LIMIT"));
     // @dev key for the estimated gas limit for single swaps
-    bytes32 public constant SINGLE_SWAP_GAS_LIMIT = keccak256(abi.encode("SINGLE_SWAP_GAS_LIMIT"));
+    bytes32 public constant SINGLE_SWAP_GAS_LIMIT = 0x0580000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SINGLE_SWAP_GAS_LIMIT"));
     // @dev key for the estimated gas limit for increase orders
-    bytes32 public constant INCREASE_ORDER_GAS_LIMIT = keccak256(abi.encode("INCREASE_ORDER_GAS_LIMIT"));
+    bytes32 public constant INCREASE_ORDER_GAS_LIMIT = 0x0590000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("INCREASE_ORDER_GAS_LIMIT"));
     // @dev key for the estimated gas limit for decrease orders
-    bytes32 public constant DECREASE_ORDER_GAS_LIMIT = keccak256(abi.encode("DECREASE_ORDER_GAS_LIMIT"));
+    bytes32 public constant DECREASE_ORDER_GAS_LIMIT = 0x0600000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("DECREASE_ORDER_GAS_LIMIT"));
     // @dev key for the estimated gas limit for swap orders
-    bytes32 public constant SWAP_ORDER_GAS_LIMIT = keccak256(abi.encode("SWAP_ORDER_GAS_LIMIT"));
+    bytes32 public constant SWAP_ORDER_GAS_LIMIT = 0x0610000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_ORDER_GAS_LIMIT"));
     // @dev key for the amount of gas to forward for token transfers
-    bytes32 public constant TOKEN_TRANSFER_GAS_LIMIT = keccak256(abi.encode("TOKEN_TRANSFER_GAS_LIMIT"));
+    bytes32 public constant TOKEN_TRANSFER_GAS_LIMIT = 0x0620000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("TOKEN_TRANSFER_GAS_LIMIT"));
     // @dev key for the amount of gas to forward for native token transfers
-    bytes32 public constant NATIVE_TOKEN_TRANSFER_GAS_LIMIT = keccak256(abi.encode("NATIVE_TOKEN_TRANSFER_GAS_LIMIT"));
+    bytes32 public constant NATIVE_TOKEN_TRANSFER_GAS_LIMIT = 0x0630000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("NATIVE_TOKEN_TRANSFER_GAS_LIMIT"));
     // @dev key for the maximum request block age, after which the request will be considered expired
-    bytes32 public constant REQUEST_EXPIRATION_BLOCK_AGE = keccak256(abi.encode("REQUEST_EXPIRATION_BLOCK_AGE"));
+    bytes32 public constant REQUEST_EXPIRATION_BLOCK_AGE = 0x0640000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("REQUEST_EXPIRATION_BLOCK_AGE"));
 
-    bytes32 public constant MAX_CALLBACK_GAS_LIMIT = keccak256(abi.encode("MAX_CALLBACK_GAS_LIMIT"));
-    bytes32 public constant SAVED_CALLBACK_CONTRACT = keccak256(abi.encode("SAVED_CALLBACK_CONTRACT"));
+    bytes32 public constant MAX_CALLBACK_GAS_LIMIT = 0x0650000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_CALLBACK_GAS_LIMIT"));
+    bytes32 public constant SAVED_CALLBACK_CONTRACT = 0x0660000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SAVED_CALLBACK_CONTRACT"));
 
     // @dev key for the min collateral factor
-    bytes32 public constant MIN_COLLATERAL_FACTOR = keccak256(abi.encode("MIN_COLLATERAL_FACTOR"));
+    bytes32 public constant MIN_COLLATERAL_FACTOR = 0x0670000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_COLLATERAL_FACTOR"));
     // @dev key for the min collateral factor for open interest multiplier
-    bytes32 public constant MIN_COLLATERAL_FACTOR_FOR_OPEN_INTEREST_MULTIPLIER = keccak256(abi.encode("MIN_COLLATERAL_FACTOR_FOR_OPEN_INTEREST_MULTIPLIER"));
+    bytes32 public constant MIN_COLLATERAL_FACTOR_FOR_OPEN_INTEREST_MULTIPLIER = 0x0680000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_COLLATERAL_FACTOR_FOR_OPEN_INTEREST_MULTIPLIER"));
     // @dev key for the min allowed collateral in USD
-    bytes32 public constant MIN_COLLATERAL_USD = keccak256(abi.encode("MIN_COLLATERAL_USD"));
+    bytes32 public constant MIN_COLLATERAL_USD = 0x0690000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_COLLATERAL_USD"));
     // @dev key for the min allowed position size in USD
-    bytes32 public constant MIN_POSITION_SIZE_USD = keccak256(abi.encode("MIN_POSITION_SIZE_USD"));
+    bytes32 public constant MIN_POSITION_SIZE_USD = 0x0700000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_POSITION_SIZE_USD"));
 
     // @dev key for the virtual id of tokens
-    bytes32 public constant VIRTUAL_TOKEN_ID = keccak256(abi.encode("VIRTUAL_TOKEN_ID"));
+    bytes32 public constant VIRTUAL_TOKEN_ID = 0x0710000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("VIRTUAL_TOKEN_ID"));
     // @dev key for the virtual id of markets
-    bytes32 public constant VIRTUAL_MARKET_ID = keccak256(abi.encode("VIRTUAL_MARKET_ID"));
+    bytes32 public constant VIRTUAL_MARKET_ID = 0x0720000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("VIRTUAL_MARKET_ID"));
     // @dev key for the virtual inventory for swaps
-    bytes32 public constant VIRTUAL_INVENTORY_FOR_SWAPS = keccak256(abi.encode("VIRTUAL_INVENTORY_FOR_SWAPS"));
+    bytes32 public constant VIRTUAL_INVENTORY_FOR_SWAPS = 0x0730000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("VIRTUAL_INVENTORY_FOR_SWAPS"));
     // @dev key for the virtual inventory for positions
-    bytes32 public constant VIRTUAL_INVENTORY_FOR_POSITIONS = keccak256(abi.encode("VIRTUAL_INVENTORY_FOR_POSITIONS"));
+    bytes32 public constant VIRTUAL_INVENTORY_FOR_POSITIONS = 0x0740000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("VIRTUAL_INVENTORY_FOR_POSITIONS"));
 
     // @dev key for the position impact factor
-    bytes32 public constant POSITION_IMPACT_FACTOR = keccak256(abi.encode("POSITION_IMPACT_FACTOR"));
+    bytes32 public constant POSITION_IMPACT_FACTOR = 0x0750000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POSITION_IMPACT_FACTOR"));
     // @dev key for the position impact exponent factor
-    bytes32 public constant POSITION_IMPACT_EXPONENT_FACTOR = keccak256(abi.encode("POSITION_IMPACT_EXPONENT_FACTOR"));
+    bytes32 public constant POSITION_IMPACT_EXPONENT_FACTOR = 0x0760000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POSITION_IMPACT_EXPONENT_FACTOR"));
     // @dev key for the max decrease position impact factor
-    bytes32 public constant MAX_POSITION_IMPACT_FACTOR = keccak256(abi.encode("MAX_POSITION_IMPACT_FACTOR"));
+    bytes32 public constant MAX_POSITION_IMPACT_FACTOR = 0x0770000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_POSITION_IMPACT_FACTOR"));
     // @dev key for the max position impact factor for liquidations
-    bytes32 public constant MAX_POSITION_IMPACT_FACTOR_FOR_LIQUIDATIONS = keccak256(abi.encode("MAX_POSITION_IMPACT_FACTOR_FOR_LIQUIDATIONS"));
+    bytes32 public constant MAX_POSITION_IMPACT_FACTOR_FOR_LIQUIDATIONS = 0x0780000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_POSITION_IMPACT_FACTOR_FOR_LIQUIDATIONS"));
     // @dev key for the position fee factor
-    bytes32 public constant POSITION_FEE_FACTOR = keccak256(abi.encode("POSITION_FEE_FACTOR"));
+    bytes32 public constant POSITION_FEE_FACTOR = 0x0790000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POSITION_FEE_FACTOR"));
     // @dev key for the swap impact factor
-    bytes32 public constant SWAP_IMPACT_FACTOR = keccak256(abi.encode("SWAP_IMPACT_FACTOR"));
+    bytes32 public constant SWAP_IMPACT_FACTOR = 0x0800000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_IMPACT_FACTOR"));
     // @dev key for the swap impact exponent factor
-    bytes32 public constant SWAP_IMPACT_EXPONENT_FACTOR = keccak256(abi.encode("SWAP_IMPACT_EXPONENT_FACTOR"));
+    bytes32 public constant SWAP_IMPACT_EXPONENT_FACTOR = 0x0810000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_IMPACT_EXPONENT_FACTOR"));
     // @dev key for the swap fee factor
-    bytes32 public constant SWAP_FEE_FACTOR = keccak256(abi.encode("SWAP_FEE_FACTOR"));
+    bytes32 public constant SWAP_FEE_FACTOR = 0x0820000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_FEE_FACTOR"));
     // @dev key for the oracle type
-    bytes32 public constant ORACLE_TYPE = keccak256(abi.encode("ORACLE_TYPE"));
+    bytes32 public constant ORACLE_TYPE = 0x0830000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("ORACLE_TYPE"));
     // @dev key for open interest
-    bytes32 public constant OPEN_INTEREST = keccak256(abi.encode("OPEN_INTEREST"));
+    bytes32 public constant OPEN_INTEREST = 0x0840000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("OPEN_INTEREST"));
     // @dev key for open interest in tokens
-    bytes32 public constant OPEN_INTEREST_IN_TOKENS = keccak256(abi.encode("OPEN_INTEREST_IN_TOKENS"));
+    bytes32 public constant OPEN_INTEREST_IN_TOKENS = 0x0850000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("OPEN_INTEREST_IN_TOKENS"));
     // @dev key for collateral sum for a market
-    bytes32 public constant COLLATERAL_SUM = keccak256(abi.encode("COLLATERAL_SUM"));
+    bytes32 public constant COLLATERAL_SUM = 0x0860000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("COLLATERAL_SUM"));
     // @dev key for pool amount
-    bytes32 public constant POOL_AMOUNT = keccak256(abi.encode("POOL_AMOUNT"));
+    bytes32 public constant POOL_AMOUNT = 0x0870000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POOL_AMOUNT"));
     // @dev key for max pool amount
-    bytes32 public constant MAX_POOL_AMOUNT = keccak256(abi.encode("MAX_POOL_AMOUNT"));
+    bytes32 public constant MAX_POOL_AMOUNT = 0x0880000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_POOL_AMOUNT"));
     // @dev key for max open interest
-    bytes32 public constant MAX_OPEN_INTEREST = keccak256(abi.encode("MAX_OPEN_INTEREST"));
+    bytes32 public constant MAX_OPEN_INTEREST = 0x0890000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_OPEN_INTEREST"));
     // @dev key for position impact pool amount
-    bytes32 public constant POSITION_IMPACT_POOL_AMOUNT = keccak256(abi.encode("POSITION_IMPACT_POOL_AMOUNT"));
+    bytes32 public constant POSITION_IMPACT_POOL_AMOUNT = 0x0900000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("POSITION_IMPACT_POOL_AMOUNT"));
     // @dev key for swap impact pool amount
-    bytes32 public constant SWAP_IMPACT_POOL_AMOUNT = keccak256(abi.encode("SWAP_IMPACT_POOL_AMOUNT"));
+    bytes32 public constant SWAP_IMPACT_POOL_AMOUNT = 0x0910000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SWAP_IMPACT_POOL_AMOUNT"));
     // @dev key for price feed
-    bytes32 public constant PRICE_FEED = keccak256(abi.encode("PRICE_FEED"));
+    bytes32 public constant PRICE_FEED = 0x0920000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("PRICE_FEED"));
     // @dev key for price feed multiplier
-    bytes32 public constant PRICE_FEED_MULTIPLIER = keccak256(abi.encode("PRICE_FEED_MULTIPLIER"));
+    bytes32 public constant PRICE_FEED_MULTIPLIER = 0x0930000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("PRICE_FEED_MULTIPLIER"));
     // @dev key for price feed heartbeat
-    bytes32 public constant PRICE_FEED_HEARTBEAT_DURATION = keccak256(abi.encode("PRICE_FEED_HEARTBEAT_DURATION"));
+    bytes32 public constant PRICE_FEED_HEARTBEAT_DURATION = 0x0940000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("PRICE_FEED_HEARTBEAT_DURATION"));
     // @dev key for stable price
-    bytes32 public constant STABLE_PRICE = keccak256(abi.encode("STABLE_PRICE"));
+    bytes32 public constant STABLE_PRICE = 0x0950000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("STABLE_PRICE"));
     // @dev key for reserve factor
-    bytes32 public constant RESERVE_FACTOR = keccak256(abi.encode("RESERVE_FACTOR"));
-    // @dev key for open interest reserve factor
-    bytes32 public constant OPEN_INTEREST_RESERVE_FACTOR = keccak256(abi.encode("OPEN_INTEREST_RESERVE_FACTOR"));
+    bytes32 public constant RESERVE_FACTOR = 0x0960000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("RESERVE_FACTOR"));
     // @dev key for max pnl factor
-    bytes32 public constant MAX_PNL_FACTOR = keccak256(abi.encode("MAX_PNL_FACTOR"));
+    bytes32 public constant MAX_PNL_FACTOR = 0x0970000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_PNL_FACTOR"));
     // @dev key for max pnl factor
-    bytes32 public constant MAX_PNL_FACTOR_FOR_TRADERS = keccak256(abi.encode("MAX_PNL_FACTOR_FOR_TRADERS"));
+    bytes32 public constant MAX_PNL_FACTOR_FOR_TRADERS = 0x0980000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_PNL_FACTOR_FOR_TRADERS"));
     // @dev key for max pnl factor for adl
-    bytes32 public constant MAX_PNL_FACTOR_FOR_ADL = keccak256(abi.encode("MAX_PNL_FACTOR_FOR_ADL"));
+    bytes32 public constant MAX_PNL_FACTOR_FOR_ADL = 0x0990000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_PNL_FACTOR_FOR_ADL"));
     // @dev key for min pnl factor for adl
-    bytes32 public constant MIN_PNL_FACTOR_AFTER_ADL = keccak256(abi.encode("MIN_PNL_FACTOR_AFTER_ADL"));
+    bytes32 public constant MIN_PNL_FACTOR_AFTER_ADL = 0x1000000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MIN_PNL_FACTOR_AFTER_ADL"));
     // @dev key for max pnl factor
-    bytes32 public constant MAX_PNL_FACTOR_FOR_DEPOSITS = keccak256(abi.encode("MAX_PNL_FACTOR_FOR_DEPOSITS"));
+    bytes32 public constant MAX_PNL_FACTOR_FOR_DEPOSITS = 0x1010000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_PNL_FACTOR_FOR_DEPOSITS"));
     // @dev key for max pnl factor for withdrawals
-    bytes32 public constant MAX_PNL_FACTOR_FOR_WITHDRAWALS = keccak256(abi.encode("MAX_PNL_FACTOR_FOR_WITHDRAWALS"));
+    bytes32 public constant MAX_PNL_FACTOR_FOR_WITHDRAWALS = 0x1020000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("MAX_PNL_FACTOR_FOR_WITHDRAWALS"));
     // @dev key for latest ADL block
-    bytes32 public constant LATEST_ADL_BLOCK = keccak256(abi.encode("LATEST_ADL_BLOCK"));
+    bytes32 public constant LATEST_ADL_BLOCK = 0x1030000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("LATEST_ADL_BLOCK"));
     // @dev key for whether ADL is enabled
-    bytes32 public constant IS_ADL_ENABLED = keccak256(abi.encode("IS_ADL_ENABLED"));
+    bytes32 public constant IS_ADL_ENABLED = 0x1040000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("IS_ADL_ENABLED"));
     // @dev key for funding factor
-    bytes32 public constant FUNDING_FACTOR = keccak256(abi.encode("FUNDING_FACTOR"));
+    bytes32 public constant FUNDING_FACTOR = 0x1050000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("FUNDING_FACTOR"));
     // @dev key for stable funding factor
-    bytes32 public constant STABLE_FUNDING_FACTOR = keccak256(abi.encode("STABLE_FUNDING_FACTOR"));
+    bytes32 public constant STABLE_FUNDING_FACTOR = 0x1060000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("STABLE_FUNDING_FACTOR"));
     // @dev key for funding exponent factor
-    bytes32 public constant FUNDING_EXPONENT_FACTOR = keccak256(abi.encode("FUNDING_EXPONENT_FACTOR"));
+    bytes32 public constant FUNDING_EXPONENT_FACTOR = 0x1070000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("FUNDING_EXPONENT_FACTOR"));
     // @dev key for funding fee amount per size
-    bytes32 public constant FUNDING_FEE_AMOUNT_PER_SIZE = keccak256(abi.encode("FUNDING_FEE_AMOUNT_PER_SIZE"));
+    bytes32 public constant FUNDING_FEE_AMOUNT_PER_SIZE = 0x1080000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("FUNDING_FEE_AMOUNT_PER_SIZE"));
     // @dev key for claimable funding amount per size
-    bytes32 public constant CLAIMABLE_FUNDING_AMOUNT_PER_SIZE = keccak256(abi.encode("CLAIMABLE_FUNDING_AMOUNT_PER_SIZE"));
+    bytes32 public constant CLAIMABLE_FUNDING_AMOUNT_PER_SIZE = 0x1090000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMABLE_FUNDING_AMOUNT_PER_SIZE"));
     // @dev key for when funding was last updated at
-    bytes32 public constant FUNDING_UPDATED_AT = keccak256(abi.encode("FUNDING_UPDATED_AT"));
+    bytes32 public constant FUNDING_UPDATED_AT = 0x1100000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("FUNDING_UPDATED_AT"));
     // @dev key for claimable funding amount
-    bytes32 public constant CLAIMABLE_FUNDING_AMOUNT = keccak256(abi.encode("CLAIMABLE_FUNDING_AMOUNT"));
+    bytes32 public constant CLAIMABLE_FUNDING_AMOUNT = 0x1110000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMABLE_FUNDING_AMOUNT"));
     // @dev key for claimable collateral amount
-    bytes32 public constant CLAIMABLE_COLLATERAL_AMOUNT = keccak256(abi.encode("CLAIMABLE_COLLATERAL_AMOUNT"));
+    bytes32 public constant CLAIMABLE_COLLATERAL_AMOUNT = 0x1120000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMABLE_COLLATERAL_AMOUNT"));
     // @dev key for claimable collateral factor
-    bytes32 public constant CLAIMABLE_COLLATERAL_FACTOR = keccak256(abi.encode("CLAIMABLE_COLLATERAL_FACTOR"));
+    bytes32 public constant CLAIMABLE_COLLATERAL_FACTOR = 0x1130000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMABLE_COLLATERAL_FACTOR"));
     // @dev key for claimable collateral time divisor
-    bytes32 public constant CLAIMABLE_COLLATERAL_TIME_DIVISOR = keccak256(abi.encode("CLAIMABLE_COLLATERAL_TIME_DIVISOR"));
+    bytes32 public constant CLAIMABLE_COLLATERAL_TIME_DIVISOR = 0x1140000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMABLE_COLLATERAL_TIME_DIVISOR"));
     // @dev key for claimed collateral amount
-    bytes32 public constant CLAIMED_COLLATERAL_AMOUNT = keccak256(abi.encode("CLAIMED_COLLATERAL_AMOUNT"));
+    bytes32 public constant CLAIMED_COLLATERAL_AMOUNT = 0x1150000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CLAIMED_COLLATERAL_AMOUNT"));
     // @dev key for borrowing factor
-    bytes32 public constant BORROWING_FACTOR = keccak256(abi.encode("BORROWING_FACTOR"));
+    bytes32 public constant BORROWING_FACTOR = 0x1160000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("BORROWING_FACTOR"));
     // @dev key for borrowing factor
-    bytes32 public constant BORROWING_EXPONENT_FACTOR = keccak256(abi.encode("BORROWING_EXPONENT_FACTOR"));
+    bytes32 public constant BORROWING_EXPONENT_FACTOR = 0x1170000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("BORROWING_EXPONENT_FACTOR"));
     // @dev key for skipping the borrowing factor for the smaller side
-    bytes32 public constant SKIP_BORROWING_FEE_FOR_SMALLER_SIDE = keccak256(abi.encode("SKIP_BORROWING_FEE_FOR_SMALLER_SIDE"));
+    bytes32 public constant SKIP_BORROWING_FEE_FOR_SMALLER_SIDE = 0x1180000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("SKIP_BORROWING_FEE_FOR_SMALLER_SIDE"));
     // @dev key for cumulative borrowing factor
-    bytes32 public constant CUMULATIVE_BORROWING_FACTOR = keccak256(abi.encode("CUMULATIVE_BORROWING_FACTOR"));
+    bytes32 public constant CUMULATIVE_BORROWING_FACTOR = 0x1190000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CUMULATIVE_BORROWING_FACTOR"));
     // @dev key for when the cumulative borrowing factor was last updated at
-    bytes32 public constant CUMULATIVE_BORROWING_FACTOR_UPDATED_AT = keccak256(abi.encode("CUMULATIVE_BORROWING_FACTOR_UPDATED_AT"));
+    bytes32 public constant CUMULATIVE_BORROWING_FACTOR_UPDATED_AT = 0x1200000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("CUMULATIVE_BORROWING_FACTOR_UPDATED_AT"));
     // @dev key for total borrowing amount
-    bytes32 public constant TOTAL_BORROWING = keccak256(abi.encode("TOTAL_BORROWING"));
+    bytes32 public constant TOTAL_BORROWING = 0x1210000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("TOTAL_BORROWING"));
     // @dev key for affiliate reward
-    bytes32 public constant AFFILIATE_REWARD = keccak256(abi.encode("AFFILIATE_REWARD"));
+    bytes32 public constant AFFILIATE_REWARD = 0x1220000000000000000000000000000000000000000000000000000000000000; //keccak256(abi.encode("AFFILIATE_REWARD"));
+
+    bytes32 public constant OPEN_INTEREST_RESERVE_FACTOR =
+    0x1230000000000000000000000000000000000000000000000000000000000000;
 
     // @dev constant for user initiated cancel reason
     string public constant USER_INITIATED_CANCEL = "USER_INITIATED_CANCEL";

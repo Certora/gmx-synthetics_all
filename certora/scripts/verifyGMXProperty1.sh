@@ -19,6 +19,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --smt_timeout 2400 \
 --prover_args "-optimisticFallback true" \
 --prover_args "-dumpCodeSizeAnalysis true" \
+--prover_args "-copyLoopUnroll 1" \
 --send_only \
 --rule positions_can_be_closed \
---msg "positions_can_be_closed. munge away boolArray. removing error cases and frozen order cases by munging"
+--msg "positions_can_be_closed. no summarizing orderhandler. copyLoopUnroll 1. replace keys with constants. comment createOrder. Summarize orderhandler. munge boolArray, try-catch. SMT_TIMEOUT 2400. Summarize libs and datastore."

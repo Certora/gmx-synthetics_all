@@ -185,6 +185,12 @@ contract OrderHandler is IOrderHandler, BaseOrderHandler {
         onlyOrderKeeper
         withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
     {
+        this._executeOrder(
+            key,
+            oracleParams,
+            msg.sender);
+
+        /*
         uint256 startingGas = gasleft();
         uint256 executionGas = GasUtils.getExecutionGas(dataStore, startingGas);
 
@@ -196,6 +202,7 @@ contract OrderHandler is IOrderHandler, BaseOrderHandler {
         } catch (bytes memory reasonBytes) {
             // _handleOrderError(key, startingGas, reasonBytes);
         }
+        */
     }
 
     // @dev executes an order
