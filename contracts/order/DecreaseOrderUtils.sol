@@ -27,119 +27,121 @@ library DecreaseOrderUtils {
     // @dev process a decrease order
     // @param params BaseOrderUtils.ExecuteOrderParams
     function processOrder(BaseOrderUtils.ExecuteOrderParams memory params) external returns (EventUtils.EventLogData memory) {
-        Order.Props memory order = params.order;
-        MarketUtils.validatePositionMarket(params.contracts.dataStore, params.market);
+    //     Order.Props memory order = params.order;
+    //     MarketUtils.validatePositionMarket(params.contracts.dataStore, params.market);
 
-        bytes32 positionKey = PositionUtils.getPositionKey(order.account(), order.market(), order.initialCollateralToken(), order.isLong());
-        Position.Props memory position = PositionStoreUtils.get(params.contracts.dataStore, positionKey);
-        PositionUtils.validateNonEmptyPosition(position);
+    //     bytes32 positionKey = PositionUtils.getPositionKey(order.account(), order.market(), order.initialCollateralToken(), order.isLong());
+    //     Position.Props memory position = PositionStoreUtils.get(params.contracts.dataStore, positionKey);
+    //     PositionUtils.validateNonEmptyPosition(position);
 
-        validateOracleBlockNumbers(
-            params.minOracleBlockNumbers,
-            params.maxOracleBlockNumbers,
-            order.orderType(),
-            order.updatedAtBlock(),
-            position.increasedAtBlock(),
-            position.decreasedAtBlock()
-        );
+    //     validateOracleBlockNumbers(
+    //         params.minOracleBlockNumbers,
+    //         params.maxOracleBlockNumbers,
+    //         order.orderType(),
+    //         order.updatedAtBlock(),
+    //         position.increasedAtBlock(),
+    //         position.decreasedAtBlock()
+    //     );
 
-        DecreasePositionUtils.DecreasePositionResult memory result = DecreasePositionUtils.decreasePosition(
-            PositionUtils.UpdatePositionParams(
-                params.contracts,
-                params.market,
-                order,
-                params.key,
-                position,
-                positionKey,
-                params.secondaryOrderType
-            )
-        );
+    //     DecreasePositionUtils.DecreasePositionResult memory result = DecreasePositionUtils.decreasePosition(
+    //         PositionUtils.UpdatePositionParams(
+    //             params.contracts,
+    //             params.market,
+    //             order,
+    //             params.key,
+    //             position,
+    //             positionKey,
+    //             params.secondaryOrderType
+    //         )
+    //     );
 
-        // if the pnlToken and the collateralToken are different
-        // and if a swap fails or no swap was requested
-        // then it is possible to receive two separate tokens from decreasing
-        // the position
-        // transfer the two tokens to the user in this case and skip processing
-        // the swapPath
-        if (result.secondaryOutputAmount > 0) {
-            _validateOutputAmount(
-                params.contracts.oracle,
-                result.outputToken,
-                result.outputAmount,
-                result.secondaryOutputToken,
-                result.secondaryOutputAmount,
-                order.minOutputAmount()
-            );
+    //     // if the pnlToken and the collateralToken are different
+    //     // and if a swap fails or no swap was requested
+    //     // then it is possible to receive two separate tokens from decreasing
+    //     // the position
+    //     // transfer the two tokens to the user in this case and skip processing
+    //     // the swapPath
+    //     if (result.secondaryOutputAmount > 0) {
+    //         _validateOutputAmount(
+    //             params.contracts.oracle,
+    //             result.outputToken,
+    //             result.outputAmount,
+    //             result.secondaryOutputToken,
+    //             result.secondaryOutputAmount,
+    //             order.minOutputAmount()
+    //         );
 
-            MarketToken(payable(order.market())).transferOut(
-                result.outputToken,
-                order.receiver(),
-                result.outputAmount,
-                order.shouldUnwrapNativeToken()
-            );
+    //         MarketToken(payable(order.market())).transferOut(
+    //             result.outputToken,
+    //             order.receiver(),
+    //             result.outputAmount,
+    //             order.shouldUnwrapNativeToken()
+    //         );
 
-            MarketToken(payable(order.market())).transferOut(
-                result.secondaryOutputToken,
-                order.receiver(),
-                result.secondaryOutputAmount,
-                order.shouldUnwrapNativeToken()
-            );
+    //         MarketToken(payable(order.market())).transferOut(
+    //             result.secondaryOutputToken,
+    //             order.receiver(),
+    //             result.secondaryOutputAmount,
+    //             order.shouldUnwrapNativeToken()
+    //         );
 
-            return getOutputEventData(
-                result.outputToken,
-                result.outputAmount,
-                result.secondaryOutputToken,
-                result.secondaryOutputAmount
-            );
-        }
+    //         return getOutputEventData(
+    //             result.outputToken,
+    //             result.outputAmount,
+    //             result.secondaryOutputToken,
+    //             result.secondaryOutputAmount
+    //         );
+    //     }
 
-        try params.contracts.swapHandler.swap(
-            SwapUtils.SwapParams(
-                params.contracts.dataStore,
-                params.contracts.eventEmitter,
-                params.contracts.oracle,
-                Bank(payable(order.market())),
-                params.key,
-                result.outputToken,
-                result.outputAmount,
-                params.swapPathMarkets,
-                0,
-                order.receiver(),
-                order.uiFeeReceiver(),
-                order.shouldUnwrapNativeToken()
-            )
-        ) returns (address tokenOut, uint256 swapOutputAmount) {
-            _validateOutputAmount(
-                params.contracts.oracle,
-                tokenOut,
-                swapOutputAmount,
-                order.minOutputAmount()
-            );
+    //     try params.contracts.swapHandler.swap(
+    //         SwapUtils.SwapParams(
+    //             params.contracts.dataStore,
+    //             params.contracts.eventEmitter,
+    //             params.contracts.oracle,
+    //             Bank(payable(order.market())),
+    //             params.key,
+    //             result.outputToken,
+    //             result.outputAmount,
+    //             params.swapPathMarkets,
+    //             0,
+    //             order.receiver(),
+    //             order.uiFeeReceiver(),
+    //             order.shouldUnwrapNativeToken()
+    //         )
+    //     ) returns (address tokenOut, uint256 swapOutputAmount) {
+    //         _validateOutputAmount(
+    //             params.contracts.oracle,
+    //             tokenOut,
+    //             swapOutputAmount,
+    //             order.minOutputAmount()
+    //         );
 
-            return getOutputEventData(
-                tokenOut,
-                swapOutputAmount,
-                address(0),
-                0
-            );
-        } catch (bytes memory reasonBytes) {
-            (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
+    //         return getOutputEventData(
+    //             tokenOut,
+    //             swapOutputAmount,
+    //             address(0),
+    //             0
+    //         );
+    //     } catch (bytes memory reasonBytes) {
+    //         (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
 
-            _handleSwapError(
-                params.contracts.oracle,
-                order,
-                result,
-                reason,
-                reasonBytes
-            );
+    //         _handleSwapError(
+    //             params.contracts.oracle,
+    //             order,
+    //             result,
+    //             reason,
+    //             reasonBytes
+    //         );
 
-            return getOutputEventData(
-                result.outputToken,
-                result.outputAmount,
-                address(0),
-                0
-            );
-        }
+    //         return getOutputEventData(
+    //             result.outputToken,
+    //             result.outputAmount,
+    //             address(0),
+    //             0
+    //         );
+    //     }
+        EventUtils.EventLogData memory ret;
+        return ret;
     }
 
     // @dev validate the oracle block numbers used for the prices in the oracle

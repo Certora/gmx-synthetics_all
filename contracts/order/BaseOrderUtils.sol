@@ -54,7 +54,7 @@ library BaseOrderUtils {
         address uiFeeReceiver;
         address market;
         address initialCollateralToken;
-        address[] swapPath;
+        // address[] swapPath;
     }
 
     // @param sizeDeltaUsd for order.sizeDeltaUsd
@@ -90,7 +90,7 @@ library BaseOrderUtils {
         ExecuteOrderParamsContracts contracts;
         bytes32 key;
         Order.Props order;
-        Market.Props[] swapPathMarkets;
+        // Market.Props[] swapPathMarkets;
         uint256[] minOracleBlockNumbers;
         uint256[] maxOracleBlockNumbers;
         Market.Props market;

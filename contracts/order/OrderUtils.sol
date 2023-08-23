@@ -61,32 +61,33 @@ library OrderUtils {
 
         bool shouldRecordSeparateExecutionFeeTransfer = true;
 
-        if (
-            params.orderType == Order.OrderType.MarketSwap ||
-            params.orderType == Order.OrderType.LimitSwap ||
-            params.orderType == Order.OrderType.MarketIncrease ||
-            params.orderType == Order.OrderType.LimitIncrease
-        ) {
-            // for swaps and increase orders, the initialCollateralDeltaAmount is set based on the amount of tokens
-            // transferred to the orderVault
-            initialCollateralDeltaAmount = orderVault.recordTransferIn(params.addresses.initialCollateralToken);
-            if (params.addresses.initialCollateralToken == wnt) {
-                if (initialCollateralDeltaAmount < params.numbers.executionFee) {
-                    revert Errors.InsufficientWntAmountForExecutionFee(initialCollateralDeltaAmount, params.numbers.executionFee);
-                }
-                initialCollateralDeltaAmount -= params.numbers.executionFee;
-                shouldRecordSeparateExecutionFeeTransfer = false;
-            }
-        } else if (
-            params.orderType == Order.OrderType.MarketDecrease ||
-            params.orderType == Order.OrderType.LimitDecrease ||
-            params.orderType == Order.OrderType.StopLossDecrease
-        ) {
+        // NOTE: munged to specialize for orderType == MarketDecrease    
+        // if (
+        //     params.orderType == Order.OrderType.MarketSwap ||
+        //     params.orderType == Order.OrderType.LimitSwap ||
+        //     params.orderType == Order.OrderType.MarketIncrease ||
+        //     params.orderType == Order.OrderType.LimitIncrease
+        // ) {
+        //     // for swaps and increase orders, the initialCollateralDeltaAmount is set based on the amount of tokens
+        //     // transferred to the orderVault
+        //     initialCollateralDeltaAmount = orderVault.recordTransferIn(params.addresses.initialCollateralToken);
+        //     if (params.addresses.initialCollateralToken == wnt) {
+        //         if (initialCollateralDeltaAmount < params.numbers.executionFee) {
+        //             revert Errors.InsufficientWntAmountForExecutionFee(initialCollateralDeltaAmount, params.numbers.executionFee);
+        //         }
+        //         initialCollateralDeltaAmount -= params.numbers.executionFee;
+        //         shouldRecordSeparateExecutionFeeTransfer = false;
+        //     }
+        // } else if (
+        //     params.orderType == Order.OrderType.MarketDecrease ||
+        //     params.orderType == Order.OrderType.LimitDecrease ||
+        //     params.orderType == Order.OrderType.StopLossDecrease
+        // ) {
             // for decrease orders, the initialCollateralDeltaAmount is based on the passed in value
             initialCollateralDeltaAmount = params.numbers.initialCollateralDeltaAmount;
-        } else {
-            revert Errors.OrderTypeCannotBeCreated(uint256(params.orderType));
-        }
+        // } else {
+        //     revert Errors.OrderTypeCannotBeCreated(uint256(params.orderType));
+        // }
 
         if (shouldRecordSeparateExecutionFeeTransfer) {
             uint256 wntAmount = orderVault.recordTransferIn(wnt);
@@ -102,7 +103,7 @@ library OrderUtils {
         }
 
         // validate swap path markets
-        MarketUtils.validateSwapPath(dataStore, params.addresses.swapPath);
+        // MarketUtils.validateSwapPath(dataStore, params.addresses.swapPath);
 
         Order.Props memory order;
 
@@ -112,7 +113,7 @@ library OrderUtils {
         order.setMarket(params.addresses.market);
         order.setInitialCollateralToken(params.addresses.initialCollateralToken);
         order.setUiFeeReceiver(params.addresses.uiFeeReceiver);
-        order.setSwapPath(params.addresses.swapPath);
+        // order.setSwapPath(params.addresses.swapPath);
         order.setOrderType(params.orderType);
         order.setDecreasePositionSwapType(params.decreasePositionSwapType);
         order.setSizeDeltaUsd(params.numbers.sizeDeltaUsd);
@@ -172,7 +173,7 @@ library OrderUtils {
         if (params.market.marketToken != address(0)) {
             MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.market);
         }
-        MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.swapPathMarkets);
+        // MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.swapPathMarkets);
 
         OrderEventUtils.emitOrderExecuted(
             params.contracts.eventEmitter,

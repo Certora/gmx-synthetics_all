@@ -43,16 +43,13 @@ methods {
     function BaseOrderUtils._ external => NONDET;
     function SwapOrderUtils._ external => NONDET;
     function IncreaseOrderUtils._ external => NONDET;
-    function ReferralEventUtils._ external => NONDET;
     function ReferralTier._ external => NONDET;
     function ReferralUtils._ external => NONDET;
 
     function GasUtils._ external => NONDET;
     function Deposit._ external => NONDET;
     function NonceUtils._ external => NONDET;
-    function FeeUtils._ external => NONDET;
     function Position._ external => NONDET;
-    function DecreasePositionSwapUtils._ external => NONDET;
     function PositionUtils._ external => NONDET;
     function DecreasePositionUtils._ external => NONDET;
     function PositionStoreUtils._ external => NONDET;
@@ -85,6 +82,10 @@ methods {
     function PricingUtils._ external => NONDET;
     function SwapPricingUtils._ external => NONDET;
     function EventUtils._ external => NONDET;
+
+    // missed libs
+    function SignedMath._ external => NONDET;
+    function SafeCast._ external => NONDET;
 
 }
 
@@ -126,6 +127,7 @@ function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_para
     // is non-empty, then it must be possible to create and execute an order
     // that undoes it.
     bool non_empty_position = !isPositionEmpty(position);
+    require non_empty_position;
     BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);
 
     bytes32 closing_order_key = orderHandler.createOrder@withrevert(e, some_account, closing_order_params); 
@@ -146,7 +148,8 @@ function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_para
 
     // If the position is non-empty, it is possible to create and execute an
     // an order 
-    return non_empty_position => !createOrderReverted && !executeOrderReverted;
+    // return non_empty_position => !createOrderReverted && !executeOrderReverted;
+    return !createOrderReverted && !executeOrderReverted;
 }
 
 /*

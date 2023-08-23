@@ -195,11 +195,12 @@ contract Oracle is RoleModule {
             revert Errors.NonEmptyTokensWithPrices(tokensWithPrices.length());
         }
 
-        _setPricesFromPriceFeeds(dataStore, eventEmitter, params.priceFeedTokens);
+
+        _setPricesFromPriceFeeds(dataStore, eventEmitter);
 
         // it is possible for transactions to be executed using just params.priceFeedTokens
         // in this case if params.tokens is empty, the function can return
-        if (params.tokens.length == 0) { return; }
+        // if (params.tokens.length == 0) { return; }
 
         // first 16 bits of signer info contains the number of signers
         address[] memory signers = new address[](params.signerInfo & Bits.BITMASK_16);
@@ -336,6 +337,7 @@ contract Oracle is RoleModule {
         address[] memory signers,
         OracleUtils.SetPricesParams memory params
     ) internal {
+        /*
         SetPricesCache memory cache;
         cache.minBlockConfirmations = dataStore.getUint(Keys.MIN_ORACLE_BLOCK_CONFIRMATIONS);
         cache.maxPriceAge = dataStore.getUint(Keys.MAX_ORACLE_PRICE_AGE);
@@ -476,6 +478,7 @@ contract Oracle is RoleModule {
                 medianMaxPrice
             ));
         }
+        */
     }
 
     // it might be possible for the block.chainid to change due to a fork or similar
@@ -552,7 +555,8 @@ contract Oracle is RoleModule {
     // @param dataStore DataStore
     // @param eventEmitter EventEmitter
     // @param priceFeedTokens the tokens to set the prices using the price feeds for
-    function _setPricesFromPriceFeeds(DataStore dataStore, EventEmitter eventEmitter, address[] memory priceFeedTokens) internal {
+    function _setPricesFromPriceFeeds(DataStore dataStore, EventEmitter eventEmitter) internal {
+        address[] memory priceFeedTokens;
         for (uint256 i; i < priceFeedTokens.length; i++) {
             address token = priceFeedTokens[i];
 

@@ -18,6 +18,7 @@ library IncreaseOrderUtils {
     // @dev process an increase order
     // @param params BaseOrderUtils.ExecuteOrderParams
     function processOrder(BaseOrderUtils.ExecuteOrderParams memory params) external returns (EventUtils.EventLogData memory) {
+        /*
         MarketUtils.validatePositionMarket(params.contracts.dataStore, params.market);
 
         (address collateralToken, uint256 collateralIncrementAmount) = SwapUtils.swap(SwapUtils.SwapParams(
@@ -28,7 +29,7 @@ library IncreaseOrderUtils {
             params.key,
             params.order.initialCollateralToken(),
             params.order.initialCollateralDeltaAmount(),
-            params.swapPathMarkets,
+            // params.swapPathMarkets,
             params.order.minOutputAmount(),
             params.order.market(),
             params.order.uiFeeReceiver(),
@@ -82,6 +83,7 @@ library IncreaseOrderUtils {
 
         EventUtils.EventLogData memory eventData;
         return eventData;
+        */
     }
 
     // @dev validate the oracle block numbers used for the prices in the oracle

@@ -71,10 +71,10 @@ contract BaseOrderHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
 
         params.key = key;
         params.order = OrderStoreUtils.get(dataStore, key);
-        params.swapPathMarkets = MarketUtils.getSwapPathMarkets(
-            dataStore,
-            params.order.swapPath()
-        );
+        // params.swapPathMarkets = MarketUtils.getSwapPathMarkets(
+        //     dataStore,
+        //     params.order.swapPath()
+        // );
 
         params.contracts.dataStore = dataStore;
         params.contracts.eventEmitter = eventEmitter;
@@ -83,15 +83,15 @@ contract BaseOrderHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
         params.contracts.swapHandler = swapHandler;
         params.contracts.referralStorage = referralStorage;
 
-        params.minOracleBlockNumbers = OracleUtils.getUncompactedOracleBlockNumbers(
-            oracleParams.compactedMinOracleBlockNumbers,
-            oracleParams.tokens.length
-        );
+        // params.minOracleBlockNumbers = OracleUtils.getUncompactedOracleBlockNumbers(
+        //     oracleParams.compactedMinOracleBlockNumbers,
+        //     oracleParams.tokens.length
+        // );
 
-        params.maxOracleBlockNumbers = OracleUtils.getUncompactedOracleBlockNumbers(
-            oracleParams.compactedMaxOracleBlockNumbers,
-            oracleParams.tokens.length
-        );
+        // params.maxOracleBlockNumbers = OracleUtils.getUncompactedOracleBlockNumbers(
+        //     oracleParams.compactedMaxOracleBlockNumbers,
+        //     oracleParams.tokens.length
+        // );
 
         if (params.order.market() != address(0)) {
             params.market = MarketUtils.getEnabledMarket(params.contracts.dataStore, params.order.market());

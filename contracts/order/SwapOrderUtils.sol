@@ -23,38 +23,40 @@ library SwapOrderUtils {
     // @dev process a swap order
     // @param params BaseOrderUtils.ExecuteOrderParams
     function processOrder(BaseOrderUtils.ExecuteOrderParams memory params) external returns (EventUtils.EventLogData memory) {
-        if (params.order.market() != address(0)) {
-            revert Errors.UnexpectedMarket();
-        }
+        EventUtils.EventLogData memory ret;
+        return ret;
+    //     if (params.order.market() != address(0)) {
+    //         revert Errors.UnexpectedMarket();
+    //     }
 
-        validateOracleBlockNumbers(
-            params.minOracleBlockNumbers,
-            params.maxOracleBlockNumbers,
-            params.order.orderType(),
-            params.order.updatedAtBlock()
-        );
+    //     validateOracleBlockNumbers(
+    //         params.minOracleBlockNumbers,
+    //         params.maxOracleBlockNumbers,
+    //         params.order.orderType(),
+    //         params.order.updatedAtBlock()
+    //     );
 
-        (address outputToken, uint256 outputAmount) = SwapUtils.swap(SwapUtils.SwapParams(
-            params.contracts.dataStore,
-            params.contracts.eventEmitter,
-            params.contracts.oracle,
-            params.contracts.orderVault,
-            params.key,
-            params.order.initialCollateralToken(),
-            params.order.initialCollateralDeltaAmount(),
-            params.swapPathMarkets,
-            params.order.minOutputAmount(),
-            params.order.receiver(),
-            params.order.uiFeeReceiver(),
-            params.order.shouldUnwrapNativeToken()
-        ));
+    //     (address outputToken, uint256 outputAmount) = SwapUtils.swap(SwapUtils.SwapParams(
+    //         params.contracts.dataStore,
+    //         params.contracts.eventEmitter,
+    //         params.contracts.oracle,
+    //         params.contracts.orderVault,
+    //         params.key,
+    //         params.order.initialCollateralToken(),
+    //         params.order.initialCollateralDeltaAmount(),
+    //         params.swapPathMarkets,
+    //         params.order.minOutputAmount(),
+    //         params.order.receiver(),
+    //         params.order.uiFeeReceiver(),
+    //         params.order.shouldUnwrapNativeToken()
+    //     ));
 
-        EventUtils.EventLogData memory eventData;
-        eventData.addressItems.initItems(1);
-        eventData.addressItems.setItem(0, "outputToken", outputToken);
-        eventData.uintItems.initItems(1);
-        eventData.uintItems.setItem(0, "outputAmount", outputAmount);
-        return eventData;
+    //     EventUtils.EventLogData memory eventData;
+    //     eventData.addressItems.initItems(1);
+    //     eventData.addressItems.setItem(0, "outputToken", outputToken);
+    //     eventData.uintItems.initItems(1);
+    //     eventData.uintItems.setItem(0, "outputAmount", outputAmount);
+    //     return eventData;
     }
 
     // @dev validate the oracle block numbers used for the prices in the oracle

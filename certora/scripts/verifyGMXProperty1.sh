@@ -10,7 +10,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --verify OrderHandler:certora/specs/GMXProperty1.spec \
 --link OrderHandler:dataStore=DataStore \
 --solc solc8.19 \
---loop_iter 2 \
+--loop_iter 1 \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
@@ -22,4 +22,4 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-copyLoopUnroll 1" \
 --send_only \
 --rule positions_can_be_closed \
---msg "positions_can_be_closed. copyLoopUnroll 1. replace keys with constants. comment createOrder. Summarize orderhandler. munge boolArray, try-catch. SMT_TIMEOUT 2400. Summarize libs and datastore."
+--msg "positions_can_be_closed. simplified prover logic. specialize OrderUtils.createOrder. copyLoopUnroll, loop_iter 1. Summarize libs and datastore. Summarize missed libs. deleting arrays in various structs"
