@@ -40,6 +40,8 @@ methods {
     //function _.getRevertMessage(bytes memory) internal => NONDET;
     function MarketUtils.getReservedUsdEx(address, Market.Props memory, MarketUtils.MarketPrices memory, bool) external returns (uint256) optional envfree;
     function MarketUtils.getReserveFactorEx(address, address, bool) external returns (uint256) optional envfree;
+    function MarketUtils.getMaxPnlFactorEx(address, bytes32, address, bool) external returns (uint256) optional envfree;
+    function MarketUtils.getPoolAmountEx(address, Market.Props memory, address) external returns (uint256) optional envfree;
 
 
     // ERC20
@@ -493,10 +495,47 @@ rule requireReserveFactorLessThanOneSolvency(method f) {
     bool long = true;
     bool short = false;
 
+    require DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= MarketUtils.getPoolAmount(dataStore, marketProps, DummyERC20Long);
+    require DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= MarketUtils.getPoolAmount(dataStore, marketProps, DummyERC20Short);
+
     require marketProps.longToken == DummyERC20Long;
     require marketProps.longToken == marketProps.indexToken;
     require marketProps.shortToken == DummyERC20Short;
     require marketProps.marketToken == MarketToken;
+
+    require MarketUtils.getReservedUsdEx(dataStore, marketProps, prices, short) < 1;
+    require MarketUtils.getReserveFactorEx(dataStore, MarketToken, long) < 1;
+
+    mathint longReservses = DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault);
+    mathint shortReserves = DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault);
+
+    require longReservses >= sumOfLongs;
+    require shortReserves >= sumOfShorts;
+
+    f(e, args);
+
+    assert DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= assert_uint256(sumOfLongs);
+    assert DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= assert_uint256(sumOfShorts);
+}
+
+
+
+rule requireMaxPnlFactorLessThanOneSolvency(method f) {
+    env e;
+    calldataarg args;
+
+    address dataStore;
+    Market.Props marketProps;
+    MarketUtils.MarketPrices prices;
+    bool long = true;
+    bool short = false;
+
+    require marketProps.longToken == DummyERC20Long;
+    require marketProps.longToken != marketProps.indexToken;
+    require marketProps.shortToken == DummyERC20Short;
+    require marketProps.marketToken == MarketToken;
+
+    // require MarketUtils.getMaxPnlFactorEx(addrdataStoreess, bytes32, address, bool) < 1;
 
     require MarketUtils.getReservedUsdEx(dataStore, marketProps, prices, short) < 1;
     require MarketUtils.getReserveFactorEx(dataStore, MarketToken, long) < 1;

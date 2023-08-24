@@ -132,6 +132,31 @@ library MarketUtils {
         return (marketTokenPrice, poolValueInfo);
     }
 
+
+    // Certora Munging - START ///
+    function getPoolAmountEx(DataStore dataStore, Market.Props memory market, address token) external view returns (uint256) {
+        return getPoolAmount(dataStore, market, token);
+    }
+
+    function getReservedUsdEx(
+        DataStore dataStore,
+        Market.Props memory market,
+        MarketPrices memory prices,
+        bool isLong
+    ) external view returns (uint256) {
+        return getReservedUsd(dataStore, market, prices, isLong);
+    }
+
+    function getReserveFactorEx(DataStore dataStore, address market, bool isLong) external view returns (uint256){
+        return getReserveFactor(dataStore, market, isLong);
+    }
+
+    function getMaxPnlFactorEx(DataStore dataStore, bytes32 pnlFactorType, address market, bool isLong) external view returns (uint256) {
+        return getMaxPnlFactor(dataStore, pnlFactorType, market, isLong);
+    }
+
+    // Certora Munging - END ///
+
     // @dev get the total supply of the marketToken
     // @param marketToken the marketToken
     // @return the total supply of the marketToken
@@ -1518,14 +1543,6 @@ library MarketUtils {
         return reservedUsd;
     }
 
-    function getReservedUsdEx(
-        DataStore dataStore,
-        Market.Props memory market,
-        MarketPrices memory prices,
-        bool isLong
-    ) external view returns (uint256) {
-        return getReservedUsd(dataStore, market, prices, isLong);
-    }
 
     // @dev get the virtual inventory for swaps
     // @param dataStore DataStore
@@ -1810,10 +1827,6 @@ library MarketUtils {
     // @return the reserve factor for a market
     function getReserveFactor(DataStore dataStore, address market, bool isLong) internal view returns (uint256) {
         return dataStore.getUint(Keys.reserveFactorKey(market, isLong));
-    }
-
-    function getReserveFactorEx(DataStore dataStore, address market, bool isLong) external view returns (uint256){
-        return getReserveFactor(dataStore, market, isLong);
     }
 
     // @dev get the max pnl factor for a market
