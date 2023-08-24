@@ -1518,6 +1518,15 @@ library MarketUtils {
         return reservedUsd;
     }
 
+    function getReservedUsdEx(
+        DataStore dataStore,
+        Market.Props memory market,
+        MarketPrices memory prices,
+        bool isLong
+    ) external view returns (uint256) {
+        return getReservedUsd(dataStore, market, prices, isLong);
+    }
+
     // @dev get the virtual inventory for swaps
     // @param dataStore DataStore
     // @param market the market to check
@@ -1801,6 +1810,10 @@ library MarketUtils {
     // @return the reserve factor for a market
     function getReserveFactor(DataStore dataStore, address market, bool isLong) internal view returns (uint256) {
         return dataStore.getUint(Keys.reserveFactorKey(market, isLong));
+    }
+
+    function getReserveFactorEx(DataStore dataStore, address market, bool isLong) external view returns (uint256){
+        return getReserveFactor(dataStore, market, isLong);
     }
 
     // @dev get the max pnl factor for a market

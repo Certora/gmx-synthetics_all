@@ -2,8 +2,11 @@ using WNT as wnt;
 using DummyERC20A as DummyERC20Long;
 using DummyERC20B as DummyERC20Short;
 using OrderStoreUtils as OrderStoreUtils;
-// using Position as Position;
+using MarketToken as MarketToken;
+using Position as Position;
 using Order as Order;
+using OrderVault as OrderVault;
+using MarketUtils as MarketUtils;
 
 methods {  
     //OrderHandler - createOrder
@@ -28,13 +31,15 @@ methods {
 
     //OrderHandler - executeOrder
     function _.getExecutionGas(address,uint256) internal => NONDET;
-    function _handleOrderError(bytes32,uint256,bytes memory) internal => NONDET;
-    //function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal => NONDET;
+    // function _handleOrderError(bytes32,uint256,bytes memory) internal => NONDET;
+    // function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal returns (uint256[] memory) => NONDET;
     function _.executeOrderFeatureDisabledKey(address,uint256) internal => NONDET;
     function _.getErrorSelectorFromData(bytes memory) internal => NONDET;
     function _.isOracleError(bytes4) internal => NONDET;
     function _.revertWithCustomError(bytes memory) internal => NONDET;
     //function _.getRevertMessage(bytes memory) internal => NONDET;
+    function MarketUtils.getReservedUsdEx(address, Market.Props memory, MarketUtils.MarketPrices memory, bool) external returns (uint256) optional envfree;
+    function MarketUtils.getReserveFactorEx(address, address, bool) external returns (uint256) optional envfree;
 
 
     // ERC20
@@ -48,6 +53,10 @@ methods {
     function _.transfer(address,uint256)             external  => DISPATCHER(true);
     function _.transferFrom(address,address,uint256) external  => DISPATCHER(true);
 
+    // blanceOf:
+    function DummyERC20A.balanceOf(address) external returns (uint256) envfree;
+    function DummyERC20B.balanceOf(address) external returns (uint256) envfree;
+
     // WNT
     function _.deposit()                             external  => DISPATCHER(true);
     function _.withdraw(uint256)                     external  => DISPATCHER(true);
@@ -57,130 +66,65 @@ methods {
     function _.transferOut(address,address,uint256) external => DISPATCHER(true);
 
     //Datastore
-
-    function _.getUint(bytes32 key) external => DISPATCHER(true);
-    function _.setUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    function _.removeUint(bytes32 key) external => DISPATCHER(true);
-    function _.applyDeltaToUint(bytes32 key, int256 value, string) external => DISPATCHER(true);
-    function _.applyDeltaToUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => DISPATCHER(true);
-    function _.incrementUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    function _.decrementUint(bytes32 key, uint256 value) external => DISPATCHER(true);
-    function _.getInt(bytes32 key) external => DISPATCHER(true);
-    function _.setInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    function _.removeInt(bytes32 key) external => DISPATCHER(true);
-    function _.applyDeltaToInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    function _.incrementInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    function _.decrementInt(bytes32 key, int256 value) external => DISPATCHER(true);
-    function _.getAddress(bytes32 key) external => DISPATCHER(true);
-    function _.setAddress(bytes32 key, address value) external => DISPATCHER(true);
-    function _.removeAddress(bytes32 key) external => DISPATCHER(true);
-    function _.getBool(bytes32 key) external => DISPATCHER(true);
-    function _.setBool(bytes32 key, bool value) external => DISPATCHER(true);
-    function _.removeBool(bytes32 key) external => DISPATCHER(true);
-    function _.getString(bytes32 key) external => DISPATCHER(true);
-    function _.setString(bytes32 key, string) external => DISPATCHER(true);
-    function _.removeString(bytes32 key) external => DISPATCHER(true);
-    function _.getBytes32(bytes32 key) external => DISPATCHER(true);
-    function _.setBytes32(bytes32 key, bytes32 value) external => DISPATCHER(true);
-    function _.removeBytes32(bytes32 key) external => DISPATCHER(true);
-    function _.getUintArray(bytes32 key) external => DISPATCHER(true);
-    function _.setUintArray(bytes32 key, uint256[]) external => DISPATCHER(true);
-    function _.removeUintArray(bytes32 key) external => DISPATCHER(true);
-    function _.getIntArray(bytes32 key) external => DISPATCHER(true);
-    function _.setIntArray(bytes32 key, int256[]) external => DISPATCHER(true);
-    function _.removeIntArray(bytes32 key) external => DISPATCHER(true);
-    function _.getAddressArray(bytes32 key) external => DISPATCHER(true);
-    function _.setAddressArray(bytes32 key, address[]) external => DISPATCHER(true);
-    function _.removeAddressArray(bytes32 key) external => DISPATCHER(true);
-    function _.getBoolArray(bytes32 key) external => DISPATCHER(true);
-    function _.setBoolArray(bytes32 key, bool[]) external => DISPATCHER(true);
-    function _.removeBoolArray(bytes32 key) external => DISPATCHER(true);
-    function _.getStringArray(bytes32 key) external => DISPATCHER(true);
-    function _.setStringArray(bytes32 key, string[]) external => DISPATCHER(true);
-    function _.removeStringArray(bytes32 key) external => DISPATCHER(true);
-    function _.getBytes32Array(bytes32 key) external => DISPATCHER(true);
-    function _.setBytes32Array(bytes32 key, bytes32[]) external => DISPATCHER(true);
-    function _.removeBytes32Array(bytes32 key) external => DISPATCHER(true);
-    function _.containsBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
-    function _.getBytes32Count(bytes32 setKey) external => DISPATCHER(true);
-    function _.getBytes32ValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
-    function _.addBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
-    function _.removeBytes32(bytes32 setKey, bytes32 value) external => DISPATCHER(true);
-    function _.containsAddress(bytes32 setKey, address value) external => DISPATCHER(true);
-    function _.getAddressCount(bytes32 setKey) external => DISPATCHER(true);
-    function _.getAddressValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
-    function _.addAddress(bytes32 setKey, address value) external => DISPATCHER(true);
-    function _.removeAddress(bytes32 setKey, address value) external => DISPATCHER(true);
-    function _.containsUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
-    function _.getUintCount(bytes32 setKey) external => DISPATCHER(true);
-    function _.getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external => DISPATCHER(true);
-    function _.addUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
-    function _.removeUint(bytes32 setKey, uint256 value) external => DISPATCHER(true);
-
-
-
-    // function _.getUint(bytes32 key) external => NONDET;
-    // function _.setUint(bytes32 key, uint256 value) external => NONDET;
-    // function _.removeUint(bytes32 key) external => NONDET;
-    // function _.applyDeltaToUint(bytes32 key, int256 value, string) external => NONDET;
-    // function _.applyDeltaToUint(bytes32 key, uint256 value) external => NONDET;
-    // function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => NONDET;
-    // function _.incrementUint(bytes32 key, uint256 value) external => NONDET;
-    // function _.decrementUint(bytes32 key, uint256 value) external => NONDET;
-    // function _.getInt(bytes32 key) external => NONDET;
-    // function _.setInt(bytes32 key, int256 value) external => NONDET;
-    // function _.removeInt(bytes32 key) external => NONDET;
-    // function _.applyDeltaToInt(bytes32 key, int256 value) external => NONDET;
-    // function _.incrementInt(bytes32 key, int256 value) external => NONDET;
-    // function _.decrementInt(bytes32 key, int256 value) external => NONDET;
-    // function _.getAddress(bytes32 key) external => NONDET;
-    // function _.setAddress(bytes32 key, address value) external => NONDET;
-    // function _.removeAddress(bytes32 key) external => NONDET;
-    // function _.getBool(bytes32 key) external => NONDET;
-    // function _.setBool(bytes32 key, bool value) external => NONDET;
-    // function _.removeBool(bytes32 key) external => NONDET;
-    // function _.getString(bytes32 key) external => NONDET;
-    // function _.setString(bytes32 key, string) external => NONDET;
-    // function _.removeString(bytes32 key) external => NONDET;
-    // function _.getBytes32(bytes32 key) external => NONDET;
-    // function _.setBytes32(bytes32 key, bytes32 value) external => NONDET;
-    // function _.removeBytes32(bytes32 key) external => NONDET;
-    // function _.getUintArray(bytes32 key) external => NONDET;
-    // function _.setUintArray(bytes32 key, uint256[]) external => NONDET;
-    // function _.removeUintArray(bytes32 key) external => NONDET;
-    // function _.getIntArray(bytes32 key) external => NONDET;
-    // function _.setIntArray(bytes32 key, int256[]) external => NONDET;
-    // function _.removeIntArray(bytes32 key) external => NONDET;
-    // function _.getAddressArray(bytes32 key) external => NONDET;
-    // function _.setAddressArray(bytes32 key, address[]) external => NONDET;
-    // function _.removeAddressArray(bytes32 key) external => NONDET;
-    // function _.getBoolArray(bytes32 key) external => NONDET;
-    // function _.setBoolArray(bytes32 key, bool[]) external => NONDET;
-    // function _.removeBoolArray(bytes32 key) external => NONDET;
-    // function _.getStringArray(bytes32 key) external => NONDET;
-    // function _.setStringArray(bytes32 key, string[]) external => NONDET;
-    // function _.removeStringArray(bytes32 key) external => NONDET;
-    // function _.getBytes32Array(bytes32 key) external => NONDET;
-    // function _.setBytes32Array(bytes32 key, bytes32[]) external => NONDET;
-    // function _.removeBytes32Array(bytes32 key) external => NONDET;
-    // function _.containsBytes32(bytes32 setKey, bytes32 value) external => NONDET;
-    // function _.getBytes32Count(bytes32 setKey) external => NONDET;
-    // function _.getBytes32ValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
-    // function _.addBytes32(bytes32 setKey, bytes32 value) external => NONDET;
-    // function _.removeBytes32(bytes32 setKey, bytes32 value) external => NONDET;
-    // function _.containsAddress(bytes32 setKey, address value) external => NONDET;
-    // function _.getAddressCount(bytes32 setKey) external => NONDET;
-    // function _.getAddressValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
-    // function _.addAddress(bytes32 setKey, address value) external => NONDET;
-    // function _.removeAddress(bytes32 setKey, address value) external => NONDET;
-    // function _.containsUint(bytes32 setKey, uint256 value) external => NONDET;
-    // function _.getUintCount(bytes32 setKey) external => NONDET;
-    // function _.getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
-    // function _.addUint(bytes32 setKey, uint256 value) external => NONDET;
-    // function _.removeUint(bytes32 setKey, uint256 value) external => NONDET;
-
-
+    function _.getUint(bytes32 key) external => NONDET;
+    function _.setUint(bytes32 key, uint256 value) external => NONDET;
+    function _.removeUint(bytes32 key) external => NONDET;
+    function _.applyDeltaToUint(bytes32 key, int256 value, string) external => NONDET;
+    function _.applyDeltaToUint(bytes32 key, uint256 value) external => NONDET;
+    function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => NONDET;
+    function _.incrementUint(bytes32 key, uint256 value) external => NONDET;
+    function _.decrementUint(bytes32 key, uint256 value) external => NONDET;
+    function _.getInt(bytes32 key) external => NONDET;
+    function _.setInt(bytes32 key, int256 value) external => NONDET;
+    function _.removeInt(bytes32 key) external => NONDET;
+    function _.applyDeltaToInt(bytes32 key, int256 value) external => NONDET;
+    function _.incrementInt(bytes32 key, int256 value) external => NONDET;
+    function _.decrementInt(bytes32 key, int256 value) external => NONDET;
+    function _.getAddress(bytes32 key) external => NONDET;
+    function _.setAddress(bytes32 key, address value) external => NONDET;
+    function _.removeAddress(bytes32 key) external => NONDET;
+    function _.getBool(bytes32 key) external => NONDET;
+    function _.setBool(bytes32 key, bool value) external => NONDET;
+    function _.removeBool(bytes32 key) external => NONDET;
+    function _.getString(bytes32 key) external => NONDET;
+    function _.setString(bytes32 key, string) external => NONDET;
+    function _.removeString(bytes32 key) external => NONDET;
+    function _.getBytes32(bytes32 key) external => NONDET;
+    function _.setBytes32(bytes32 key, bytes32 value) external => NONDET;
+    function _.removeBytes32(bytes32 key) external => NONDET;
+    function _.getUintArray(bytes32 key) external => NONDET;
+    function _.setUintArray(bytes32 key, uint256[]) external => NONDET;
+    function _.removeUintArray(bytes32 key) external => NONDET;
+    function _.getIntArray(bytes32 key) external => NONDET;
+    function _.setIntArray(bytes32 key, int256[]) external => NONDET;
+    function _.removeIntArray(bytes32 key) external => NONDET;
+    function _.getAddressArray(bytes32 key) external => NONDET;
+    function _.setAddressArray(bytes32 key, address[]) external => NONDET;
+    function _.removeAddressArray(bytes32 key) external => NONDET;
+    function _.getBoolArray(bytes32 key) external => NONDET;
+    function _.setBoolArray(bytes32 key, bool[]) external => NONDET;
+    function _.removeBoolArray(bytes32 key) external => NONDET;
+    function _.getStringArray(bytes32 key) external => NONDET;
+    function _.setStringArray(bytes32 key, string[]) external => NONDET;
+    function _.removeStringArray(bytes32 key) external => NONDET;
+    function _.getBytes32Array(bytes32 key) external => NONDET;
+    function _.setBytes32Array(bytes32 key, bytes32[]) external => NONDET;
+    function _.removeBytes32Array(bytes32 key) external => NONDET;
+    function _.containsBytes32(bytes32 setKey, bytes32 value) external => NONDET;
+    function _.getBytes32Count(bytes32 setKey) external => NONDET;
+    function _.getBytes32ValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
+    function _.addBytes32(bytes32 setKey, bytes32 value) external => NONDET;
+    function _.removeBytes32(bytes32 setKey, bytes32 value) external => NONDET;
+    function _.containsAddress(bytes32 setKey, address value) external => NONDET;
+    function _.getAddressCount(bytes32 setKey) external => NONDET;
+    function _.getAddressValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
+    function _.addAddress(bytes32 setKey, address value) external => NONDET;
+    function _.removeAddress(bytes32 setKey, address value) external => NONDET;
+    function _.containsUint(bytes32 setKey, uint256 value) external => NONDET;
+    function _.getUintCount(bytes32 setKey) external => NONDET;
+    function _.getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external => NONDET;
+    function _.addUint(bytes32 setKey, uint256 value) external => NONDET;
+    function _.removeUint(bytes32 setKey, uint256 value) external => NONDET;
 
     //Oracle
     function _.getPrimaryPrice(address) external => NONDET;
@@ -207,27 +151,23 @@ methods {
     //DepositEventUtils
     function _.emitDepositCreated(address,bytes32,Deposit.Props) external => NONDET;
 
-    //MarketStoreUtils
-    // function _.get(address, address) external => NONDET;
-
     //StrictBank
     function _.recordTransferIn(address) external => NONDET;
 
-    //DepositStoreUtils
-    // function _.set(address,bytes32,Deposit.Props) external => NONDET;
-
     // OrderStoreUtils.sol
-    function OrderStoreUtils.get(address dataStore, bytes32 key) external returns (Order.Props memory) optional => getOrder(key);
-    function OrderStoreUtils.set(address dataStore, bytes32 key, Order.Props memory order) external optional => setOrder(key, order);
-    function OrderStoreUtils.remove(address dataStore, bytes32 key, address account) external optional => removeOrder(key);
+    // function OrderStoreUtils.get(address dataStore, bytes32 key) external returns (Order.Props memory) optional => getOrder(key);
+    // function OrderStoreUtils.set(address dataStore, bytes32 key, Order.Props memory order) external optional => setOrder(key, order);
+    // function OrderStoreUtils.remove(address dataStore, bytes32 key, address account) external optional => removeOrder(key);
+
+    function _.getExecuteOrderParams(bytes32,OracleUtils.SetPricesParams,address,uint256,Order.SecondaryOrderType) external => NONDET;
+    function OrderUtils.executeOrder(BaseOrderUtils.ExecuteOrderParams) external => NONDET;
 
     // PositionStoreUtils.sol
-    // function PositionStoreUtils.get(address, bytes32 key) external returns (Position.Props memory) => getPosition(key);
-    // function PositionStoreUtils.set(address, bytes32 key, Position.Props position) external => setPosition(key, position);
+    function PositionStoreUtils.get(address dataStore, bytes32 key) external returns (Position.Props) optional => getPosition(key);
+    function PositionStoreUtils.set(address dataStore, bytes32 key, Position.Props position) external optional => setPosition(key, position);
 
     // PositionUtils.sol
     // PositionUtils.getPositionKey
-
 }
 
 // OrderStoreUtils Ghosts:
@@ -456,7 +396,12 @@ ghost mapping(bytes32 => uint256) PositionNumbersShortTokenClaimableFundingAmoun
 ghost mapping(bytes32 => uint256) PositionNumbersIncreasedAtBlock;
 ghost mapping(bytes32 => uint256) PositionNumbersDecreasedAtBlock;
 
+ghost mathint sumOfLongs;
+ghost mathint sumOfShorts;
+
 function setPositionNumbers(bytes32 key, Position.Numbers positionNumbers) {
+    sumOfShorts = PositionFlagsIsLong[key] ? sumOfShorts : sumOfShorts - PositionNumbersSizeInUsd[key] + positionNumbers.sizeInUsd;
+    sumOfLongs = PositionFlagsIsLong[key] ? sumOfLongs - PositionNumbersSizeInTokens[key] + positionNumbers.sizeInTokens : sumOfLongs;
     PositionNumbersSizeInUsd[key] = positionNumbers.sizeInUsd;
     PositionNumbersSizeInTokens[key] = positionNumbers.sizeInTokens;
     PositionNumbersCollateralAmount[key] = positionNumbers.collateralAmount;
@@ -481,6 +426,8 @@ function getPositionNumbers(bytes32 key, Position.Props positionProps) {
 }
 
 function removePositionNumbers(bytes32 key) {
+    sumOfShorts = PositionFlagsIsLong[key] ? sumOfShorts : sumOfShorts - PositionNumbersSizeInUsd[key];
+    sumOfLongs = PositionFlagsIsLong[key] ? sumOfLongs - PositionNumbersSizeInTokens[key] : sumOfLongs;
     PositionNumbersSizeInUsd[key] = 0;
     PositionNumbersSizeInTokens[key] = 0;
     PositionNumbersCollateralAmount[key] = 0;
@@ -506,9 +453,9 @@ function getPositionFlags(bytes32 key, Position.Props positionProps) {
 }
 
 function setPosition(bytes32 key, Position.Props position) {
+    setPositionFlags(key, position.flags);
     setPositionAddresses(key, position.addresses);
     setPositionNumbers(key, position.numbers);
-    setPositionFlags(key, position.flags);
 } 
 
 function getPosition(bytes32 key) returns Position.Props {
@@ -528,6 +475,39 @@ function removePosition(bytes32 key) {
 
 ghost myWNT() returns address {
 	init_state axiom myWNT() == wnt;
+}
+
+// struct Market.Props {
+//         address marketToken;
+//         address indexToken;
+//         address longToken;
+//         address shortToken;
+//     }
+rule requireReserveFactorLessThanOneSolvency(method f) {
+    env e;
+    calldataarg args;
+
+    address dataStore;
+    Market.Props marketProps;
+    MarketUtils.MarketPrices prices;
+    bool long = true;
+    bool short = false;
+
+    require marketProps.longToken == DummyERC20Long;
+    require marketProps.longToken == marketProps.indexToken;
+    require marketProps.shortToken == DummyERC20Short;
+    require marketProps.marketToken == MarketToken;
+
+    require MarketUtils.getReservedUsdEx(dataStore, marketProps, prices, short) < 1;
+    require MarketUtils.getReserveFactorEx(dataStore, MarketToken, long) < 1;
+
+    require DummyERC20Long.balanceOf(OrderVault) >= assert_uint256(sumOfLongs);
+    require DummyERC20Short.balanceOf(OrderVault) >= assert_uint256(sumOfShorts);
+
+    f(e, args);
+
+    assert DummyERC20Long.balanceOf(OrderVault) >= assert_uint256(sumOfLongs);
+    assert DummyERC20Short.balanceOf(OrderVault) >= assert_uint256(sumOfShorts);
 }
 
 /*rule sanity(method f) {

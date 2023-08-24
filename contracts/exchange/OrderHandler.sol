@@ -207,7 +207,7 @@ contract OrderHandler is BaseOrderHandler {
     ) external onlySelf {
         uint256 startingGas = gasleft();
 
-        BaseOrderUtils.ExecuteOrderParams memory params = _getExecuteOrderParams(
+        BaseOrderUtils.ExecuteOrderParams memory params = this.getExecuteOrderParams(
             key,
             oracleParams,
             keeper,
@@ -218,11 +218,11 @@ contract OrderHandler is BaseOrderHandler {
         // which would automatically cause the order to be frozen
         // limit increase and limit / trigger decrease orders may fail due to output amount as well and become frozen
         // but only if their acceptablePrice is reached
-        if (params.order.isFrozen() || params.order.orderType() == Order.OrderType.LimitSwap) {
-            _validateFrozenOrderKeeper(keeper);
-        }
+        // if (params.order.isFrozen() || params.order.orderType() == Order.OrderType.LimitSwap) {
+        //     _validateFrozenOrderKeeper(keeper);
+        // }
 
-        FeatureUtils.validateFeature(params.contracts.dataStore, Keys.executeOrderFeatureDisabledKey(address(this), uint256(params.order.orderType())));
+        // FeatureUtils.validateFeature(params.contracts.dataStore, Keys.executeOrderFeatureDisabledKey(address(this), uint256(params.order.orderType())));
 
         OrderUtils.executeOrder(params);
     }
