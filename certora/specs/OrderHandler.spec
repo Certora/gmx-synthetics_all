@@ -7,6 +7,7 @@ using Position as Position;
 using Order as Order;
 using OrderVault as OrderVault;
 using MarketUtils as MarketUtils;
+using DepositVault as DepositVault;
 
 methods {  
     //OrderHandler - createOrder
@@ -495,9 +496,6 @@ rule requireReserveFactorLessThanOneSolvency(method f) {
     bool long = true;
     bool short = false;
 
-    require DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= MarketUtils.getPoolAmount(dataStore, marketProps, DummyERC20Long);
-    require DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= MarketUtils.getPoolAmount(dataStore, marketProps, DummyERC20Short);
-
     require marketProps.longToken == DummyERC20Long;
     require marketProps.longToken == marketProps.indexToken;
     require marketProps.shortToken == DummyERC20Short;
@@ -509,13 +507,16 @@ rule requireReserveFactorLessThanOneSolvency(method f) {
     mathint longReservses = DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault);
     mathint shortReserves = DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault);
 
+    require assert_uint256(longReservses) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Long);
+    require assert_uint256(shortReserves) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Short);
+
     require longReservses >= sumOfLongs;
     require shortReserves >= sumOfShorts;
 
     f(e, args);
 
-    assert DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= assert_uint256(sumOfLongs);
-    assert DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= assert_uint256(sumOfShorts);
+    assert DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= sumOfLongs;
+    assert DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= sumOfShorts;
 }
 
 
