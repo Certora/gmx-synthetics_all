@@ -18,6 +18,9 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/market/MarketToken.sol \
             contracts/order/OrderVault.sol \
             contracts/deposit/DepositVault.sol \
+            contracts/market/MarketPoolValueInfo.sol \
+            contracts/price/Price.sol \
+            contracts/data/Keys.sol \
 --verify OrderHandler:certora/specs/OrderHandler.spec \
 \
 --link  OrderHandler:roleStore=RoleStore \

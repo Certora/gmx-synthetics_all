@@ -8,6 +8,10 @@ using Order as Order;
 using OrderVault as OrderVault;
 using MarketUtils as MarketUtils;
 using DepositVault as DepositVault;
+using Price as Price;
+using MarketPoolValueInfo as MarketPoolValueInfo;
+using Keys as Keys;
+using Oracle as Oracle;
 
 methods {  
     //OrderHandler - createOrder
@@ -26,23 +30,23 @@ methods {
     function _.validateRequestCancellation(address,uint256,string memory) internal => NONDET;
     function _.cancelOrder(address,address,address,bytes32,address,uint256,string,bytes) external => NONDET;
 
-    //OrderHandler - simulateExecuteOrder
-    // function _._executeOrder(bytes32,OracleUtils.SetPricesParams,address) external => NONDET;
-    // Oracle.setPrimaryPrice => NONDET (see below)
-
     //OrderHandler - executeOrder
     function _.getExecutionGas(address,uint256) internal => NONDET;
-    // function _handleOrderError(bytes32,uint256,bytes memory) internal => NONDET;
-    // function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal returns (uint256[] memory) => NONDET;
     function _.executeOrderFeatureDisabledKey(address,uint256) internal => NONDET;
     function _.getErrorSelectorFromData(bytes memory) internal => NONDET;
     function _.isOracleError(bytes4) internal => NONDET;
     function _.revertWithCustomError(bytes memory) internal => NONDET;
-    //function _.getRevertMessage(bytes memory) internal => NONDET;
+    // function _.getRevertMessage(bytes memory) internal => NONDET;
+    // function _handleOrderError(bytes32,uint256,bytes memory) internal => NONDET;
+    // function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal returns (uint256[] memory) => NONDET;
+
+    // MarketUtils
     function MarketUtils.getReservedUsdEx(address, Market.Props memory, MarketUtils.MarketPrices memory, bool) external returns (uint256) optional envfree;
     function MarketUtils.getReserveFactorEx(address, address, bool) external returns (uint256) optional envfree;
     function MarketUtils.getMaxPnlFactorEx(address, bytes32, address, bool) external returns (uint256) optional envfree;
     function MarketUtils.getPoolAmountEx(address, Market.Props memory, address) external returns (uint256) optional envfree;
+    function MarketUtils.getPoolValueInfo(address,Market.Props memory,Price.Props memory,Price.Props memory,Price.Props memory, bytes32, bool) external returns (MarketPoolValueInfo.Props memory) optional envfree;
+
 
 
     // ERC20
@@ -130,7 +134,7 @@ methods {
     function _.removeUint(bytes32 setKey, uint256 value) external => NONDET;
 
     //Oracle
-    function _.getPrimaryPrice(address) external => NONDET;
+    function Oracle.getPrimaryPrice(address) external returns (Price.Props memory) envfree;
     function _.setPrices(address,address,OracleUtils.SetPricesParams) external => NONDET;
     function _.clearAllPrices() external => NONDET;
     function _.setPrimaryPrice(address,Price.Props) external => NONDET;
@@ -169,8 +173,8 @@ methods {
     function PositionStoreUtils.get(address dataStore, bytes32 key) external returns (Position.Props) optional => getPosition(key);
     function PositionStoreUtils.set(address dataStore, bytes32 key, Position.Props position) external optional => setPosition(key, position);
 
-    // PositionUtils.sol
-    // PositionUtils.getPositionKey
+    // Keys.sol
+    function Keys.MAX_PNL_FACTOR_FOR_TRADERS() external returns (bytes32) envfree;
 }
 
 // OrderStoreUtils Ghosts:
@@ -480,12 +484,14 @@ ghost myWNT() returns address {
 	init_state axiom myWNT() == wnt;
 }
 
-// struct Market.Props {
-//         address marketToken;
-//         address indexToken;
-//         address longToken;
-//         address shortToken;
-//     }
+/***
+GMX Property #2:
+    If the market has a long token that is the same as the index token and the reserveFactor is less than 1, 
+    then the market should always be solvent regardless of the price of the index token
+
+    note: reserveFactor is less than 1 - implies that all positions are backed by the order and deposit vault (the same way we defined solvency)
+    we defined solvency as all open positions are backed by the contract's balances (both orderVault and depositVault).
+***/
 rule requireReserveFactorLessThanOneSolvency(method f) {
     env e;
     calldataarg args;
@@ -519,8 +525,16 @@ rule requireReserveFactorLessThanOneSolvency(method f) {
     assert DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= sumOfShorts;
 }
 
+/***
+GMX Property #3:
+    if the market has a long token that is not the same as the index token and the max pnl factor for traders is less than 1, 
+    Then the market should always be solvent regardless of the price of the index token
 
+    note:  max pnl factor for traders is less than 1 - implies that all positions can gain up to 100% profit of their initial position value. 
+    no special requiremnt needed because we assume the protocol takes that into account when closing a position.
 
+    we defined solvency as all open positions are backed by the contract's balances (both orderVault and depositVault).
+***/
 rule requireMaxPnlFactorLessThanOneSolvency(method f) {
     env e;
     calldataarg args;
@@ -536,39 +550,61 @@ rule requireMaxPnlFactorLessThanOneSolvency(method f) {
     require marketProps.shortToken == DummyERC20Short;
     require marketProps.marketToken == MarketToken;
 
-    // require MarketUtils.getMaxPnlFactorEx(addrdataStoreess, bytes32, address, bool) < 1;
+    require MarketUtils.getMaxPnlFactorEx(dataStore, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), MarketToken, long) < 1;
+    require MarketUtils.getMaxPnlFactorEx(dataStore, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), MarketToken, short) < 1;
 
-    require MarketUtils.getReservedUsdEx(dataStore, marketProps, prices, short) < 1;
-    require MarketUtils.getReserveFactorEx(dataStore, MarketToken, long) < 1;
+    mathint longReservses = DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault);
+    mathint shortReserves = DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault);
 
-    require DummyERC20Long.balanceOf(OrderVault) >= assert_uint256(sumOfLongs);
-    require DummyERC20Short.balanceOf(OrderVault) >= assert_uint256(sumOfShorts);
+    // require solvency
+    require longReservses >= sumOfLongs;
+    require shortReserves >= sumOfShorts; // assumes short token is usdc (if not, need to mul by actual price).
 
     f(e, args);
 
-    assert DummyERC20Long.balanceOf(OrderVault) >= assert_uint256(sumOfLongs);
-    assert DummyERC20Short.balanceOf(OrderVault) >= assert_uint256(sumOfShorts);
+    // assert solvency
+    assert DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= sumOfLongs;
+    assert DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= sumOfShorts;
 }
 
-/*rule sanity(method f) {
+/***
+GMX Property #5:
+    If price does not change, no sequence of actions should lead to a decrease in the market pool value, 
+    all funding fees and protocol fees can be claimed and all market tokens can be redeemed.
+    
+    TODO: add assertion that all fees can be claimed.
+***/
+rule priceDontChangeNoDecreeseInPoolValue(method f) {
     env e;
     calldataarg args;
+
+    address dataStore;
+    address indexToken;
+    Market.Props marketProps;
+    MarketUtils.MarketPrices prices;
+    bool maximize;
+
+    require marketProps.longToken == DummyERC20Long;
+    require marketProps.shortToken == DummyERC20Short;
+    require marketProps.marketToken == MarketToken;
+    require marketProps.indexToken == indexToken;
+
+    // Fixed prices.
+    Price.Props indexTokenPrice = Oracle.getPrimaryPrice(indexToken);
+    Price.Props longTokenPrice = Oracle.getPrimaryPrice(DummyERC20Long);
+    Price.Props shortTokenPrice = Oracle.getPrimaryPrice(DummyERC20Short);
+
+    MarketPoolValueInfo.Props poolValuePropsBefore = MarketUtils.getPoolValueInfo(dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    int256 poolValueBefore = poolValuePropsBefore.poolValue;
+
     f(e, args);
-    assert false;
-}*/
 
-/*rule claimFeesTest() {
-    env e;
-    calldataarg args;
+    MarketPoolValueInfo.Props poolValuePropsAfter = MarketUtils.getPoolValueInfo(dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    int256 poolValueAfter = poolValuePropsAfter.poolValue;
 
-    address[] markets;
-    address[] tokens;
+    assert poolValueBefore >= poolValueAfter;
+}
 
-    require markets.length == 1;
-
-    claimFees(e, markets, tokens);
-    assert false;
-}*/
 
 rule GMXMarketAlwaysSolventReserveFactor() { // the second property requested by GMX
     env e;
