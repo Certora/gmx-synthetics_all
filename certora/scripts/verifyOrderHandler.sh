@@ -16,7 +16,6 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/market/Market.sol \
             contracts/market/MarketUtils.sol \
             contracts/market/MarketToken.sol \
-            contracts/order/OrderVault.sol \
             contracts/deposit/DepositVault.sol \
             contracts/market/MarketPoolValueInfo.sol \
             contracts/price/Price.sol \
@@ -40,8 +39,10 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --prover_args '-copyLoopUnroll 1' \
---server production \
+--server staging \
+--prover_version master \
+--rule GMXProperty1 \
 \
 --send_only \
---msg "GMX OrderHandler GMXMarketAlwaysSolvent - datastore is nondet - ghosts are commented out - copyLoopUnroll 1" 
+--msg "Version of GMXProperty1 based on P2 solvency def. Try fixing cast error" 
 
