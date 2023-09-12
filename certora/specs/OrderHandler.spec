@@ -12,6 +12,7 @@ using Price as Price;
 using MarketPoolValueInfo as MarketPoolValueInfo;
 using Keys as Keys;
 using Oracle as Oracle;
+using GetPositionKeyHarness as positionKeyHarness;
 
 methods {  
     //OrderHandler - createOrder
@@ -527,6 +528,113 @@ rule GMXProperty1 {
     assert DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= sumOfLongs;
     assert DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= sumOfShorts;
 
+}
+
+// this mirrors PositionUtils.validateNonEmptyPosition, but returns
+// a bool rather than reverting if the position is empty
+function isPositionEmpty(Position.Props position) returns bool {
+    return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0 && position.numbers.collateralAmount == 0;
+}
+
+function closing_create_order_params_from_position(Position.Props position) returns BaseOrderUtils.CreateOrderParams {
+    BaseOrderUtils.CreateOrderParams close_order_params;
+
+    require close_order_params.orderType == Order.OrderType.MarketDecrease;
+
+    // addresses
+    require close_order_params.addresses.receiver == position.addresses.account;
+    require close_order_params.addresses.market == position.addresses.market;
+    require close_order_params.addresses.initialCollateralToken == position.addresses.collateralToken;
+
+    // numbers
+    // NOTE: price is underspecified here. This is currently
+    // just used to show that it is possible to issue a close order.
+    require close_order_params.numbers.sizeDeltaUsd == position.numbers.sizeInUsd;
+
+    require close_order_params.isLong == position.flags.isLong;
+
+    return close_order_params;
+}
+
+function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_params, uint256 close_value) returns bool {
+    address some_account;
+    address some_market;
+    address some_collateral_token;
+    bool some_is_long;
+    address dataStore;
+    bytes32 some_position_key = positionKeyHarness.getPositionKey(e, some_account, some_market, some_collateral_token, some_is_long);
+    Position.Props position = getPosition(some_position_key);
+
+    // save whether or not the position is empty, but do NOT require it.
+    // At the end of the rule, we require that if the position (any position),
+    // is non-empty, then it must be possible to create and execute an order
+    // that undoes it.
+    bool non_empty_position = !isPositionEmpty(position);
+    require non_empty_position;
+    BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);
+
+    bytes32 closing_order_key = createOrder@withrevert(e, some_account, closing_order_params); 
+    bool createOrderReverted = lastReverted;
+    executeOrder@withrevert(e, closing_order_key, oracle_price_params);
+    bool executeOrderReverted = lastReverted;
+
+    // Assuming the created order goes through, the close_value is the
+    // value returned.
+    // NOTE: There are two prices in CreateOrderParams -- triggerPrice and 
+    // acceptablePrice. I am not exactly sure which one is right for this.
+    // It could also be that the price used depends on whether it is long 
+    // or short?
+    // The argument close_value is used to track the value returned from
+    // closing the position before and after an order is made.
+    require close_value == assert_uint256(closing_order_params.numbers.sizeDeltaUsd * 
+        closing_order_params.numbers.triggerPrice);
+
+    // If the position is non-empty, it is possible to create and execute an
+    // an order 
+    // return non_empty_position => !createOrderReverted && !executeOrderReverted;
+    return !createOrderReverted && !executeOrderReverted;
+}
+
+// This is the original specification of GMX Requested Property 1
+rule positions_can_be_closed {
+    // A liveness property that all open positions can be closed, even
+    // after arbitrary (potentially adversarial) user actions. More precisely,
+    // for any public/external call, we prove an invariant that assuming
+    // it was possible to close all open positions before the call, it is still
+    // possible to close all open positions after the call.
+
+    // A position is closed by issuing a decrease order (so that it is 
+    // decreased to zero).
+
+    env e;
+    // This value is used to enforce that the value from closing a position
+    // is the same before and after issuing the user command.
+    uint256 position_close_value;
+
+    // Used for both precond and postcond since we assume the
+    // prices do not change
+    OracleUtils.SetPricesParams oracle_price_params;
+
+    // We need to save the state before positions_closable because
+    // simulateExecuteOrder in positions_closable is state-changing.
+    storage stateBeforePrecond = lastStorage;
+
+    //========================================================================
+    // Require: positions can be closed before executing the call
+    //========================================================================
+    require positions_closable(e, oracle_price_params, position_close_value);
+
+    //========================================================================
+    // Execute the call
+    //========================================================================
+    bytes32 key;
+    OracleUtils.SetPricesParams oracleParams;
+    executeOrder(e, key, oracleParams) at stateBeforePrecond;
+
+    //========================================================================
+    // Assert: positions can be closed after executing the call
+    //========================================================================
+    assert positions_closable(e, oracle_price_params, position_close_value);
 }
 
 /***

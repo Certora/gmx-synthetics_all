@@ -20,6 +20,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/market/MarketPoolValueInfo.sol \
             contracts/price/Price.sol \
             contracts/data/Keys.sol \
+            certora/harness/GetPositionKeyHarness.sol \
 --verify OrderHandler:certora/specs/OrderHandler.spec \
 \
 --link  OrderHandler:roleStore=RoleStore \
@@ -39,10 +40,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --prover_args '-copyLoopUnroll 1' \
---server staging \
---prover_version master \
---rule GMXProperty1 \
+--rule positions_can_be_closed \
 \
---send_only \
---msg "Version of GMXProperty1 based on P2 solvency def. Try fixing cast error" 
+--msg "running old spec of property1 using this branch munging. just running locally" 
 
