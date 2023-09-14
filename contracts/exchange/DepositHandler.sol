@@ -185,14 +185,14 @@ contract DepositHandler is GlobalReentrancyGuard, RoleModule, OracleModule {
         uint256 startingGas,
         bytes memory reasonBytes
     ) internal {
-        bytes4 errorSelector = ErrorUtils.getErrorSelectorFromData(reasonBytes);
+        // bytes4 errorSelector = ErrorUtils.getErrorSelectorFromData(reasonBytes);
 
-        if (
-            OracleUtils.isOracleError(errorSelector) ||
-            errorSelector == Errors.DisabledFeature.selector
-        ) {
-            ErrorUtils.revertWithCustomError(reasonBytes);
-        }
+        // if (
+        //     OracleUtils.isOracleError(errorSelector) ||
+        //     errorSelector == Errors.DisabledFeature.selector
+        // ) {
+        //     ErrorUtils.revertWithCustomError(reasonBytes);
+        // }
 
         (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
 
