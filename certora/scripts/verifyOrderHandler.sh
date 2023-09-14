@@ -40,7 +40,9 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --prover_args '-copyLoopUnroll 1' \
---rule positions_can_be_closed \
+--server staging \
+--prover_version master \
 \
---msg "running old spec of property1 using this branch munging. just running locally" 
+--send_only \
+--msg "Rerun every rule to check status" 
 

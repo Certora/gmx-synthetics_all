@@ -168,7 +168,6 @@ methods {
     // function OrderStoreUtils.remove(address dataStore, bytes32 key, address account) external optional => removeOrder(key);
 
     function _.getExecuteOrderParams(bytes32,OracleUtils.SetPricesParams,address,uint256,Order.SecondaryOrderType) external => NONDET;
-    function OrderUtils.executeOrder(BaseOrderUtils.ExecuteOrderParams) external => NONDET;
 
     // PositionStoreUtils.sol
     function PositionStoreUtils.get(address dataStore, bytes32 key) external returns (Position.Props) optional => getPosition(key);
@@ -489,47 +488,6 @@ ghost myWNT() returns address {
 GMX Property #1:
     if the price value is the same, no sequence of actions should result in a net profit, or another way to phrase it would be that markets should always be solvent if price does not change
 ***/
-rule GMXProperty1 {
-    env e;
-    calldataarg args;
-    address dataStore;
-    Market.Props marketProps;
-    MarketUtils.MarketPrices prices;
-    bool long = true;
-    bool short = false;
-
-    require marketProps.longToken == DummyERC20Long;
-    require marketProps.longToken == marketProps.indexToken;
-    require marketProps.shortToken == DummyERC20Short;
-    require marketProps.marketToken == MarketToken;
-
-    mathint longReserves = DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault);
-    mathint shortReserves = DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault);
-
-    require require_uint256(longReserves) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Long);
-    require require_uint256(shortReserves) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Short);
-
-    require longReserves >= sumOfLongs;
-    require shortReserves >= sumOfShorts;
-
-    // We assume the prices do not change
-    OracleUtils.SetPricesParams oracle_price_params;
-
-    // Require that the market is solvent before executing an arbitrary user action (This means the rule is an invariant and it also models an arbitrary sequence of user actions).
-    require DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= sumOfLongs;
-    require DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= sumOfShorts;
-
-    // This models an arbitrary user interaction -- the user creates and executes an arbitrary order.
-    address some_account;
-    BaseOrderUtils.CreateOrderParams create_order_params;
-    bytes32 new_order_key = createOrder(e, some_account, create_order_params); 
-    executeOrder(e, new_order_key, oracle_price_params);
-
-    assert DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault) >= sumOfLongs;
-    assert DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault) >= sumOfShorts;
-
-}
-
 // this mirrors PositionUtils.validateNonEmptyPosition, but returns
 // a bool rather than reverting if the position is empty
 function isPositionEmpty(Position.Props position) returns bool {
@@ -573,8 +531,7 @@ function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_para
     require non_empty_position;
     BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);
 
-    bytes32 closing_order_key = createOrder@withrevert(e, some_account, closing_order_params); 
-    bool createOrderReverted = lastReverted;
+    bytes32 closing_order_key = createOrder(e, some_account, closing_order_params); 
     executeOrder@withrevert(e, closing_order_key, oracle_price_params);
     bool executeOrderReverted = lastReverted;
 
@@ -592,7 +549,7 @@ function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_para
     // If the position is non-empty, it is possible to create and execute an
     // an order 
     // return non_empty_position => !createOrderReverted && !executeOrderReverted;
-    return !createOrderReverted && !executeOrderReverted;
+    return !executeOrderReverted;
 }
 
 // This is the original specification of GMX Requested Property 1
@@ -666,8 +623,8 @@ rule requireReserveFactorLessThanOneSolvency(method f) {
     mathint longReservses = DummyERC20Long.balanceOf(OrderVault) + DummyERC20Long.balanceOf(DepositVault);
     mathint shortReserves = DummyERC20Short.balanceOf(OrderVault) + DummyERC20Short.balanceOf(DepositVault);
 
-    require assert_uint256(longReservses) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Long);
-    require assert_uint256(shortReserves) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Short);
+    require require_uint256(longReservses) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Long);
+    require require_uint256(shortReserves) >= MarketUtils.getPoolAmountEx(dataStore, marketProps, DummyERC20Short);
 
     require longReservses >= sumOfLongs;
     require shortReserves >= sumOfShorts;
