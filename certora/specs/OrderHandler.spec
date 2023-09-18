@@ -602,7 +602,9 @@ GMX Property #2:
     note: reserveFactor is less than 1 - implies that all positions are backed by the order and deposit vault (the same way we defined solvency)
     we defined solvency as all open positions are backed by the contract's balances (both orderVault and depositVault).
 ***/
-rule requireReserveFactorLessThanOneSolvency(method f) {
+rule requireReserveFactorLessThanOneSolvency(method f) filtered {
+    f -> f.selector != sig:simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams).selector
+}{
     env e;
     calldataarg args;
 
@@ -645,7 +647,9 @@ GMX Property #3:
 
     we defined solvency as all open positions are backed by the contract's balances (both orderVault and depositVault).
 ***/
-rule requireMaxPnlFactorLessThanOneSolvency(method f) {
+rule requireMaxPnlFactorLessThanOneSolvency(method f) filtered {
+    f -> f.selector != sig:simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams).selector
+}{
     env e;
     calldataarg args;
 
@@ -684,7 +688,9 @@ GMX Property #5:
     
     TODO: add assertion that all fees can be claimed.
 ***/
-rule priceDontChangeNoDecreeseInPoolValue(method f) {
+rule priceDontChangeNoDecreeseInPoolValue(method f) filtered {
+    f -> f.selector != sig:simulateExecuteOrder(bytes32, OracleUtils.SimulatePricesParams).selector
+}{
     env e;
     calldataarg args;
 

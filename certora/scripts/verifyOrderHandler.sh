@@ -44,5 +44,5 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_version master \
 \
 --send_only \
---msg "Rerun every rule to check status" 
+--msg "rerun all rules after filters" 
 
