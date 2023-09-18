@@ -42,7 +42,8 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args '-copyLoopUnroll 1' \
 --server staging \
 --prover_version master \
+--rule marketIncreaseOrderCorrect \
 \
 --send_only \
---msg "rerun all rules after filters" 
+--msg "MarketIncrease Integrity" 
 

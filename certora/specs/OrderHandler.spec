@@ -837,6 +837,42 @@ rule updateOrderOnly() {
 }
 
 //-----------------------------------------------------------------------------
+// Trading Integrity Rules
+//-----------------------------------------------------------------------------
+rule marketIncreaseOrderCorrect() {
+    // save position value before calling executeOrder with IncreaseOrder
+    // executeOrder
+    // check that new position value is higher than old one
+
+    env e;
+    bytes32 orderKey;
+    OracleUtils.SetPricesParams oracleParams;
+    address keeper = e.msg.sender;
+    uint256 startingGas = gasleft();
+    // This instantation of paramters follows the implementation of _executeOrder
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams = getExecutOrderParams(
+        orderKey,
+        oracleParams,
+        keeper, 
+        startingGas,
+        Order.SecondaryOrderType.None
+    );
+
+    require executeOrderParams.order.orderType == Order.OrderType.MarketIncrease;
+
+    bytes32 positionKey = PositionUtils.getPositionKey(executeOrderParams.order.account(), executeOrderParams.order.market(), collateralToken, executeOrderParams.order.isLong());
+    Position.Props memory positionBefore = PositionStoreUtils.get(executeOrderParams.contracts.dataStore, positionKey);
+
+    executeOrder(e, key, oracleParams, e.msg.sender);
+    
+    Position.Props memory positionAfter = PositionStoreUtils.get(executeOrderParams.contracts.dataStore, positionKey);
+
+    // The position has really increased
+    assert positionAfter.sizeInUsd >= positionBefore.sizeInUsd;
+    assert positionAfter.sizeInTokens >= positionBefore.sizeInTokens;
+}
+
+//-----------------------------------------------------------------------------
 // Sanity Rules
 //-----------------------------------------------------------------------------
 rule cancelOrderOnly() {
