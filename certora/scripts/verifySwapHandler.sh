@@ -19,5 +19,7 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --server production \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
+--server staging \
+--prover_version master \
 --send_only \
 --msg "GMX SwapHandler linking, improved dispatcher WNT,Bank,Datastore,Oracle,RoleStore" 

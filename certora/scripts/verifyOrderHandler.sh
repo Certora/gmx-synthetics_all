@@ -2,6 +2,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
             contracts/event/EventEmitter.sol \
+            contracts/order/BaseOrderUtils.sol \
             contracts/order/OrderVault.sol \
             contracts/order/OrderStoreUtils.sol \
             contracts/order/Order.sol \

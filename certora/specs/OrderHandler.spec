@@ -13,6 +13,7 @@ using MarketPoolValueInfo as MarketPoolValueInfo;
 using Keys as Keys;
 using Oracle as Oracle;
 using GetPositionKeyHarness as positionKeyHarness;
+using PositionStoreUtils as PositionStoreUtils;
 
 methods {  
     //OrderHandler - createOrder
@@ -848,9 +849,17 @@ rule marketIncreaseOrderCorrect() {
     bytes32 orderKey;
     OracleUtils.SetPricesParams oracleParams;
     address keeper = e.msg.sender;
-    uint256 startingGas = gasleft();
-    // This instantation of paramters follows the implementation of _executeOrder
-    BaseOrderUtils.ExecuteOrderParams executeOrderParams = getExecutOrderParams(
+    uint256 startingGas;
+
+    // This rule compares the position before and after an IncreaseOrder
+    // call. Most of this code is used to get the position key to check this,
+    // and the details of determining the key come from the implementation 
+    // of IncreaseOrderUtils.processOrder (eventually called by executeOrder
+    // when the type is MarketIncrease.
+
+
+    // This instantiation of parameters follows the implementation of _executeOrder
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams = getExecuteOrderParams(   e,
         orderKey,
         oracleParams,
         keeper, 
@@ -858,18 +867,34 @@ rule marketIncreaseOrderCorrect() {
         Order.SecondaryOrderType.None
     );
 
-    require executeOrderParams.order.orderType == Order.OrderType.MarketIncrease;
+    require executeOrderParams.order.numbers.orderType == Order.OrderType.MarketIncrease;
 
-    bytes32 positionKey = PositionUtils.getPositionKey(executeOrderParams.order.account(), executeOrderParams.order.market(), collateralToken, executeOrderParams.order.isLong());
-    Position.Props memory positionBefore = PositionStoreUtils.get(executeOrderParams.contracts.dataStore, positionKey);
+    // In IncreaseOrderUtils.processOrder collateralToken is defined by 
+    // SwapUtils.swap as the returned token value which is the same as the 
+    // tokenIn from the input params which is defined as the following in
+    // IncreaseOrderUtils.processOrder
+    address collateralToken = executeOrderParams.order.addresses.initialCollateralToken;
 
-    executeOrder(e, key, oracleParams, e.msg.sender);
+    // this should be executeOrderParams.order.account(), similar for market, isLong
+    address orderAccount = executeOrderParams.order.addresses.account;
+    address orderMarket = executeOrderParams.order.addresses.market;
+    bool orderIsLong = executeOrderParams.order.flags.isLong;
+
+    bytes32 positionKey = positionKeyHarness.getPositionKey(e, orderAccount,
+        orderMarket, collateralToken, orderIsLong);
+
+
+    // PositionStoreUtils.get
+    // first arg should be executeOrderParams.contracts.dataStore
+    Position.Props positionBefore = getPosition(positionKey);
+
+    executeOrder(e, orderKey, oracleParams);
     
-    Position.Props memory positionAfter = PositionStoreUtils.get(executeOrderParams.contracts.dataStore, positionKey);
+    Position.Props positionAfter = getPosition(positionKey);
 
     // The position has really increased
-    assert positionAfter.sizeInUsd >= positionBefore.sizeInUsd;
-    assert positionAfter.sizeInTokens >= positionBefore.sizeInTokens;
+    assert positionAfter.numbers.sizeInUsd >= positionBefore.numbers.sizeInUsd;
+    assert positionAfter.numbers.sizeInTokens >= positionBefore.numbers.sizeInTokens;
 }
 
 //-----------------------------------------------------------------------------
