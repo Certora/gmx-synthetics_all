@@ -1,3 +1,4 @@
+using Oracle as oracle;
 methods {
     // ERC20
     function _.name()                                external  => DISPATCHER(true);
@@ -23,7 +24,7 @@ methods {
     function _.getAddress(bytes32) external => DISPATCHER(true);
 
     //Oracle
-    // function _.getPrimaryPrice(address) external => DISPATCHER(true);
+    function _.getPrimaryPrice(address) external => DISPATCHER(true);
 
     //RoleStore
     function _.hasRole(address,bytes32) external => DISPATCHER(true);
@@ -54,15 +55,16 @@ rule marketSwapIntegrity() {
     // use  Order.OrderType.MarketSwap to check for right order type
     
     address outputToken;
-    uint256 outputAmount;
+    mathint outputAmount;
     SwapUtils.SwapParams swapParams;
 
     outputToken, outputAmount = swap(e, swapParams);
 
-    Price.Props tokenInPrice = swapParams.oracle.getPrimaryPrice(e, swapParams.tokenIn);
-    Price.Props tokenOutPrice = swapParams.oracle.getPrimaryPrice(e, outputToken);
+    Price.Props tokenInPrice = oracle.getPrimaryPrice(e, swapParams.tokenIn);
+    Price.Props tokenOutPrice = oracle.getPrimaryPrice(e, outputToken);
 
-    assert outputAmount == swapParams.amountIn * tokenInPrice / tokenOutPrice;
+    // In the implementation of SwapUtils._swap, the output amount uses tokenInPrice.min and tokenOutPrice.max
+    assert outputAmount == swapParams.amountIn * tokenInPrice.min / tokenOutPrice.max;
 
 }
 
