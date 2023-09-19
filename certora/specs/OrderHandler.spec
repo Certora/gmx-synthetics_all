@@ -13,7 +13,7 @@ using MarketPoolValueInfo as MarketPoolValueInfo;
 using Keys as Keys;
 using Oracle as Oracle;
 using GetPositionKeyHarness as positionKeyHarness;
-using PositionStoreUtils as PositionStoreUtils;
+using BaseOrderHandler as BaseOrderHandler;
 
 methods {  
     //OrderHandler - createOrder
@@ -168,7 +168,7 @@ methods {
     // function OrderStoreUtils.set(address dataStore, bytes32 key, Order.Props memory order) external optional => setOrder(key, order);
     // function OrderStoreUtils.remove(address dataStore, bytes32 key, address account) external optional => removeOrder(key);
 
-    function _.getExecuteOrderParams(bytes32,OracleUtils.SetPricesParams,address,uint256,Order.SecondaryOrderType) external => NONDET;
+    // function _.getExecuteOrderParams(bytes32,OracleUtils.SetPricesParams,address,uint256,Order.SecondaryOrderType) external => NONDET;
 
     // PositionStoreUtils.sol
     function PositionStoreUtils.get(address dataStore, bytes32 key) external returns (Position.Props) optional => getPosition(key);
@@ -859,7 +859,8 @@ rule marketIncreaseOrderCorrect() {
 
 
     // This instantiation of parameters follows the implementation of _executeOrder
-    BaseOrderUtils.ExecuteOrderParams executeOrderParams = getExecuteOrderParams(   e,
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams = BaseOrderHandler.getExecuteOrderParams(
+        e,
         orderKey,
         oracleParams,
         keeper, 

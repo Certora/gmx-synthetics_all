@@ -16,10 +16,9 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---server production \
 --rule_sanity \
 --prover_args "-optimisticFallback true" \
 --server staging \
 --prover_version master \
 --send_only \
---msg "GMX SwapHandler linking, improved dispatcher WNT,Bank,Datastore,Oracle,RoleStore" 
+--msg "marketSwapItegrity to check swap functionaity for MarketSwap type orders" 

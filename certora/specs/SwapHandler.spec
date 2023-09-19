@@ -63,6 +63,8 @@ rule marketSwapIntegrity() {
     Price.Props tokenInPrice = oracle.getPrimaryPrice(e, swapParams.tokenIn);
     Price.Props tokenOutPrice = oracle.getPrimaryPrice(e, outputToken);
 
+    require tokenOutPrice.max > 0;
+
     // In the implementation of SwapUtils._swap, the output amount uses tokenInPrice.min and tokenOutPrice.max
     assert outputAmount == swapParams.amountIn * tokenInPrice.min / tokenOutPrice.max;
 

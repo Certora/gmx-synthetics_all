@@ -1,4 +1,5 @@
 certoraRun  contracts/exchange/OrderHandler.sol \
+            contracts/exchange/BaseOrderHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
             contracts/event/EventEmitter.sol \
