@@ -42,10 +42,10 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --prover_args '-copyLoopUnroll 1' \
---server staging \
+--server production \
 --prover_version master \
---rule marketIncreaseOrderCorrect \
+--rule positions_can_be_closed \
 \
 --send_only \
---msg "MarketIncrease Integrity" 
+--msg "positions_can_be_closed as satisfy rule" 
 
