@@ -47,5 +47,5 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --rule positions_can_be_closed \
 \
 --send_only \
---msg "comment out contents of createOrder, executeOrder" 
+--msg "Delete SwapOrderUtils.processOrder. leave OrderHandler.createOrder OrderHandler.executeOrder uncommented. Munge away everything in OrderUtils.executeOrder aside from processOrder." 
 

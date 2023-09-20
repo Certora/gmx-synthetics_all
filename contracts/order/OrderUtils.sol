@@ -148,47 +148,48 @@ library OrderUtils {
     // @param params BaseOrderUtils.ExecuteOrderParams
     function executeOrder(BaseOrderUtils.ExecuteOrderParams memory params) external {
         // 63/64 gas is forwarded to external calls, reduce the startingGas to account for this
-        params.startingGas -= gasleft() / 63;
+        // params.startingGas -= gasleft() / 63;
 
-        OrderStoreUtils.remove(params.contracts.dataStore, params.key, params.order.account());
+        // OrderStoreUtils.remove(params.contracts.dataStore, params.key, params.order.account());
 
-        BaseOrderUtils.validateNonEmptyOrder(params.order);
+        // BaseOrderUtils.validateNonEmptyOrder(params.order);
 
-        BaseOrderUtils.validateOrderTriggerPrice(
-            params.contracts.oracle,
-            params.market.indexToken,
-            params.order.orderType(),
-            params.order.triggerPrice(),
-            params.order.isLong()
-        );
+        // BaseOrderUtils.validateOrderTriggerPrice(
+        //     params.contracts.oracle,
+        //     params.market.indexToken,
+        //     params.order.orderType(),
+        //     params.order.triggerPrice(),
+        //     params.order.isLong()
+        // );
 
-        EventUtils.EventLogData memory eventData = processOrder(params);
+        processOrder(params);
+        // EventUtils.EventLogData memory eventData = processOrder(params);
 
         // validate that internal state changes are correct before calling
         // external callbacks
         // if the native token was transferred to the receiver in a swap
         // it may be possible to invoke external contracts before the validations
         // are called
-        if (params.market.marketToken != address(0)) {
-            MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.market);
-        }
-        MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.swapPathMarkets);
+        // if (params.market.marketToken != address(0)) {
+        //     MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.market);
+        // }
+        // MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.swapPathMarkets);
 
-        OrderEventUtils.emitOrderExecuted(params.contracts.eventEmitter, params.key);
+        // OrderEventUtils.emitOrderExecuted(params.contracts.eventEmitter, params.key);
 
-        CallbackUtils.afterOrderExecution(params.key, params.order, eventData);
+        // CallbackUtils.afterOrderExecution(params.key, params.order, eventData);
 
-        // the order.executionFee for liquidation / adl orders is zero
-        // gas costs for liquidations / adl is subsidised by the treasury
-        GasUtils.payExecutionFee(
-            params.contracts.dataStore,
-            params.contracts.eventEmitter,
-            params.contracts.orderVault,
-            params.order.executionFee(),
-            params.startingGas,
-            params.keeper,
-            params.order.account()
-        );
+        // // the order.executionFee for liquidation / adl orders is zero
+        // // gas costs for liquidations / adl is subsidised by the treasury
+        // GasUtils.payExecutionFee(
+        //     params.contracts.dataStore,
+        //     params.contracts.eventEmitter,
+        //     params.contracts.orderVault,
+        //     params.order.executionFee(),
+        //     params.startingGas,
+        //     params.keeper,
+        //     params.order.account()
+        // );
     }
 
     // @dev process an order execution
@@ -203,7 +204,7 @@ library OrderUtils {
         }
 
         if (BaseOrderUtils.isSwapOrder(params.order.orderType())) {
-            return SwapOrderUtils.processOrder(params);
+            // return SwapOrderUtils.processOrder(params);
         }
 
         revert Errors.UnsupportedOrderType();
