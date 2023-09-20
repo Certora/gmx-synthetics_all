@@ -37,16 +37,16 @@ contract OrderHandler is BaseOrderHandler {
         address account,
         BaseOrderUtils.CreateOrderParams calldata params
     ) external globalNonReentrant onlyController returns (bytes32) {
-        FeatureUtils.validateFeature(dataStore, Keys.createOrderFeatureDisabledKey(address(this), uint256(params.orderType)));
+        // FeatureUtils.validateFeature(dataStore, Keys.createOrderFeatureDisabledKey(address(this), uint256(params.orderType)));
 
-        return OrderUtils.createOrder(
-            dataStore,
-            eventEmitter,
-            orderVault,
-            referralStorage,
-            account,
-            params
-        );
+        // return OrderUtils.createOrder(
+        //     dataStore,
+        //     eventEmitter,
+        //     orderVault,
+        //     referralStorage,
+        //     account,
+        //     params
+        // );
     }
 
     /**
@@ -180,11 +180,13 @@ contract OrderHandler is BaseOrderHandler {
         //uint256 startingGas = gasleft();
         //uint256 executionGas = GasUtils.getExecutionGas(dataStore, startingGas);
 
+/*
         this._executeOrder(  // munging: no try-catch
             key,
             oracleParams,
             msg.sender
         );
+*/
         // try this._executeOrder/*{ gas: executionGas }*/(
         //     key,
         //     oracleParams,
@@ -205,15 +207,16 @@ contract OrderHandler is BaseOrderHandler {
         OracleUtils.SetPricesParams memory oracleParams,
         address keeper
     ) external onlySelf {
-        uint256 startingGas = gasleft();
+        // uint256 startingGas = gasleft();
 
-        BaseOrderUtils.ExecuteOrderParams memory params = this.getExecuteOrderParams(
-            key,
-            oracleParams,
-            keeper,
-            startingGas,
-            Order.SecondaryOrderType.None
-        );
+        // BaseOrderUtils.ExecuteOrderParams memory params = this.getExecuteOrderParams(
+        //     key,
+        //     oracleParams,
+        //     keeper,
+        //     startingGas,
+        //     Order.SecondaryOrderType.None
+        // );
+
         // limit swaps require frozen order keeper for execution since on creation it can fail due to output amount
         // which would automatically cause the order to be frozen
         // limit increase and limit / trigger decrease orders may fail due to output amount as well and become frozen
@@ -224,7 +227,7 @@ contract OrderHandler is BaseOrderHandler {
 
         // FeatureUtils.validateFeature(params.contracts.dataStore, Keys.executeOrderFeatureDisabledKey(address(this), uint256(params.order.orderType())));
 
-        OrderUtils.executeOrder(params);
+        // OrderUtils.executeOrder(params);
     }
 
     // @dev handle a caught order error
