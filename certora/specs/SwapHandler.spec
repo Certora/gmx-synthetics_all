@@ -22,6 +22,13 @@ methods {
     function _.setBool(bytes32,bool) external => DISPATCHER(true);
     function _.getUint(bytes32) external => DISPATCHER(true);
     function _.getAddress(bytes32) external => DISPATCHER(true);
+    function _.getBool(bytes32) external => DISPATCHER(true);
+    function _.getBytes32(bytes32) external => DISPATCHER(true);
+    function _.incrementUint(bytes32 key, uint256 value) external => DISPATCHER(true);
+    function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => DISPATCHER(true);
+    function _.applyDeltaToUint(bytes32 key, uint256 value) external => DISPATCHER(true);
+    function _.applyDeltaToUint(bytes32 key, int256 value) external => DISPATCHER(true);
+
 
     //Oracle
     function _.getPrimaryPrice(address) external => DISPATCHER(true);
@@ -64,6 +71,7 @@ rule marketSwapIntegrity() {
     Price.Props tokenOutPrice = oracle.getPrimaryPrice(e, outputToken);
 
     require tokenOutPrice.max > 0;
+    require swapParams.amountIn > 0;
 
     // In the implementation of SwapUtils._swap, the output amount uses tokenInPrice.min and tokenOutPrice.max
     assert outputAmount == swapParams.amountIn * tokenInPrice.min / tokenOutPrice.max;
