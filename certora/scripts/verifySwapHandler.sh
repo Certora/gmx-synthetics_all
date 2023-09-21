@@ -21,4 +21,4 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --server production \
 --prover_version master \
 --send_only \
---msg "marketSwapItegrity to check swap functionaity for MarketSwap type orders. Fix a missed DISPATCHER function summary applyDeltaToUint with int256" 
+--msg "marketSwapItegrity change outputAmount to uint256" 

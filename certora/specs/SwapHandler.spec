@@ -28,6 +28,7 @@ methods {
     function _.applyBoundedDeltaToUint(bytes32 key, int256 value) external => DISPATCHER(true);
     function _.applyDeltaToUint(bytes32 key, uint256 value) external => DISPATCHER(true);
     function _.applyDeltaToUint(bytes32 key, int256 value) external => DISPATCHER(true);
+    function _.applyDeltaToUint(bytes32, int256, string) external => DISPATCHER(true);
 
 
     //Oracle
@@ -62,19 +63,44 @@ rule marketSwapIntegrity() {
     // use  Order.OrderType.MarketSwap to check for right order type
     
     address outputToken;
-    mathint outputAmount;
+    uint256 outputAmount;
     SwapUtils.SwapParams swapParams;
 
     outputToken, outputAmount = swap(e, swapParams);
 
+    // These are how the prices are defined in SwapUtils._swap :
     Price.Props tokenInPrice = oracle.getPrimaryPrice(e, swapParams.tokenIn);
     Price.Props tokenOutPrice = oracle.getPrimaryPrice(e, outputToken);
 
+    // NOTE: This is WIP 
+
+    // fees is defined by SwapPricingUtils.getSwapFees
+    uint256 feeFactor = DataStore.getUint(Keys.swapFeeFactorKey);
+    uint256 uiFeeReceiverFactor = MarketUtils.getUiFeeFactor(dataStore, uiFeeReceiver);
+    uint256 fees_amountAfterFees = swapParams.amountIn - mulDiv(swapParams.amountIn, feeFactor) - mulDiv(swapParams.amountIn, swapParams.uiFeeReceiver);
+    
+    int256 negativeImpactAmount; // TODO define this
+
+    uint256 finalAmountIn;
+
+    uint256 priceImpactedUsd; // TODO define this
+    // This definition of swapParams comes from the implementation of _swap
+    if (priceImpactedUsd > 0) {
+        finalAmountIn = fees_amountAfterFees;
+    } else {
+        finalAmountIn = fees_amountAfterFees - (-negativeImpactAmount).toUint256();
+    }
+
     require tokenOutPrice.max > 0;
-    require swapParams.amountIn > 0;
+
+    // added this as a separate var in case this gives more info
+    // The following line is not actually the output. Instead of swapParams.
+    // amountIn they use some function of that parameter and fees.
+    // mathint expectedOutput = swapParams.amountIn * tokenInPrice.min / tokenOutPrice.max;
+    mathint expectedOutput = finalAmountIn * tokenInPrice.min / tokenOutPrice.max;
 
     // In the implementation of SwapUtils._swap, the output amount uses tokenInPrice.min and tokenOutPrice.max
-    assert outputAmount == swapParams.amountIn * tokenInPrice.min / tokenOutPrice.max;
+    assert outputAmount == require_uint256(expectedOutput);
 
 }
 
