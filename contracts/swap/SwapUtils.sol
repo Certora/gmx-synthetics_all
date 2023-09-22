@@ -218,18 +218,21 @@ library SwapUtils {
             Keys.UI_SWAP_FEE_TYPE
         );
 
-        int256 priceImpactUsd = SwapPricingUtils.getPriceImpactUsd(
-            SwapPricingUtils.GetPriceImpactUsdParams(
-                params.dataStore,
-                _params.market,
-                _params.tokenIn,
-                cache.tokenOut,
-                cache.tokenInPrice.midPrice(),
-                cache.tokenOutPrice.midPrice(),
-                (fees.amountAfterFees * cache.tokenInPrice.midPrice()).toInt256(),
-                -(fees.amountAfterFees * cache.tokenInPrice.midPrice()).toInt256()
-            )
-        );
+
+        // TODO Un-munge this and figure out what this is actually doing....
+        int256 priceImpactUsd = 1;
+        // int256 priceImpactUsd = SwapPricingUtils.getPriceImpactUsd(
+        //     SwapPricingUtils.GetPriceImpactUsdParams(
+        //         params.dataStore,
+        //         _params.market,
+        //         _params.tokenIn,
+        //         cache.tokenOut,
+        //         cache.tokenInPrice.midPrice(),
+        //         cache.tokenOutPrice.midPrice(),
+        //         (fees.amountAfterFees * cache.tokenInPrice.midPrice()).toInt256(),
+        //         -(fees.amountAfterFees * cache.tokenInPrice.midPrice()).toInt256()
+        //     )
+        // );
 
         if (priceImpactUsd > 0) {
             // when there is a positive price impact factor, additional tokens from the swap impact pool

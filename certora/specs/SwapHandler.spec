@@ -1,4 +1,5 @@
 using Oracle as oracle;
+using MarketUtils as MarketUtils;
 methods {
     // ERC20
     function _.name()                                external  => DISPATCHER(true);
@@ -39,7 +40,15 @@ methods {
     function _.revokeRole(address,bytes32) external => DISPATCHER(true);
     function _.grantRole(address,bytes32) external => DISPATCHER(true);
 
+    function _.applyFactor(uint256, uint256) external => DISPATCHER(true);
+
 }
+
+// Treat Precision.applyFactor symbolically
+function applyFactorSummary(uint256 value, uint256 factor) returns uint256 {
+    return 3;
+}
+
 //-----------------------------------------------------------------------------
 // Integrity: Trading
 //-----------------------------------------------------------------------------
@@ -75,21 +84,38 @@ rule marketSwapIntegrity() {
     // NOTE: This is WIP 
 
     // fees is defined by SwapPricingUtils.getSwapFees
-    uint256 feeFactor = DataStore.getUint(Keys.swapFeeFactorKey);
-    uint256 uiFeeReceiverFactor = MarketUtils.getUiFeeFactor(dataStore, uiFeeReceiver);
-    uint256 fees_amountAfterFees = swapParams.amountIn - mulDiv(swapParams.amountIn, feeFactor) - mulDiv(swapParams.amountIn, swapParams.uiFeeReceiver);
+    // feeFactor can't acually be munged into a constant because it is really computed on-the-fly ... can't seem to call keccak256 here safely either...
+    // bytes32 SWAP_FEE_FACTOR = 
+    //     0x0820000000000000000000000000000000000000000000000000000000000000;
+
+    // NOTE TO SELF: just summarize the "bigger" functions rather than zooming
+    // into the details so much.
     
-    int256 negativeImpactAmount; // TODO define this
+    // bytes32 feeFactorKey = keccak256(abi.encode(0x0820000000000000000000000000000000000000000000000000000000000000, swapParams.market.marketToken));
+    // uint256 feeFactor = getUint(feeFactorKey);
+    uint256 feeFactor;
+    require feeFactor == 1; // NOTE: clearly not right
+    //uint256 uiFeeReceiverFactor = MarketUtils.getUiFeeFactor(dataStore, uiFeeReceiver);
+    uint256 uiFeeReceiverFactor = 5; // NOTE clearly not right
+    // uint256 fees_amountAfterFees = swapParams.amountIn - mulDiv(swapParams.amountIn, feeFactor) - mulDiv(swapParams.amountIn, swapParams.uiFeeReceiver);
+    mathint fees_amountAfterFees = swapParams.amountIn - applyFactorSummary(swapParams.amountIn, feeFactor) - applyFactorSummary(swapParams.amountIn, uiFeeReceiverFactor);
+
 
     uint256 finalAmountIn;
 
-    uint256 priceImpactedUsd; // TODO define this
+    // NOTE: via munging priceImpactedUsd == 1
+
     // This definition of swapParams comes from the implementation of _swap
-    if (priceImpactedUsd > 0) {
-        finalAmountIn = fees_amountAfterFees;
-    } else {
-        finalAmountIn = fees_amountAfterFees - (-negativeImpactAmount).toUint256();
-    }
+    // if (priceImpactedUsd > 0) {
+    finalAmountIn = require_uint256(fees_amountAfterFees);
+    // } else {
+    //     // This is defined by a call to applySwapImpactWithCap in SwapUtils._swap 
+    //     int256 negativeImpactAmount; // TODO define this
+    //     int256 impactOne = priceImpactUsd / tokenInPrice.max
+    //     int256 maxImpactAmount = getSwapImpactPoolAmount(dataStore, market, tokenIn);
+
+    //     finalAmountIn = fees_amountAfterFees - (-negativeImpactAmount).toUint256();
+    // }
 
     require tokenOutPrice.max > 0;
 

@@ -6,6 +6,7 @@ certoraRun  contracts/swap/SwapHandler.sol \
             contracts/bank/Bank.sol \
             contracts/market/MarketToken.sol \
             contracts/mock/WNT.sol \
+            contracts/market/MarketUtils.sol \
 \
 --verify SwapHandler:certora/specs/SwapHandler.spec \
 \
@@ -21,4 +22,4 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --server production \
 --prover_version master \
 --send_only \
---msg "marketSwapItegrity change outputAmount to uint256" 
+--msg "marketSwapItegrity --- tons of munging and summarizing..." 
