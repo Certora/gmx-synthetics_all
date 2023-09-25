@@ -42,11 +42,18 @@ methods {
 
     function _.applyFactor(uint256, uint256) external => DISPATCHER(true);
 
+    // SwapPricingUtils
+    function SwapPricingUtils.getSwapFees(address dataStore, address marketToken, uint256 amount, address uiFeeReceiver) internal returns (SwapPricingUtils.SwapFees memory) =>
+        getSwapFeesOpaque(marketToken, amount, uiFeeReceiver);
+
 }
 
-// Treat Precision.applyFactor symbolically
-function applyFactorSummary(uint256 value, uint256 factor) returns uint256 {
-    return 3;
+// This is used to treat getSwapFees as an opaque function
+function getSwapFeesOpaque(address marketToken, uint256 amount,
+    address uiFeeReceiver) returns SwapPricingUtils.SwapFees {
+    
+    SwapPricingUtils.SwapFees ret;
+    return ret;
 }
 
 //-----------------------------------------------------------------------------
@@ -81,6 +88,12 @@ rule marketSwapIntegrity() {
     Price.Props tokenInPrice = oracle.getPrimaryPrice(e, swapParams.tokenIn);
     Price.Props tokenOutPrice = oracle.getPrimaryPrice(e, outputToken);
 
+    // swap has an array of markets, and iterates through them calling _swap
+    require swapParams.swapPathMarkets.length == 1;
+    Market.Props market = swapParams.swapPathMarkets[0];
+
+    // swap
+
     // NOTE: This is WIP 
 
     // fees is defined by SwapPricingUtils.getSwapFees
@@ -91,14 +104,11 @@ rule marketSwapIntegrity() {
     // NOTE TO SELF: just summarize the "bigger" functions rather than zooming
     // into the details so much.
     
-    // bytes32 feeFactorKey = keccak256(abi.encode(0x0820000000000000000000000000000000000000000000000000000000000000, swapParams.market.marketToken));
-    // uint256 feeFactor = getUint(feeFactorKey);
-    uint256 feeFactor;
-    require feeFactor == 1; // NOTE: clearly not right
-    //uint256 uiFeeReceiverFactor = MarketUtils.getUiFeeFactor(dataStore, uiFeeReceiver);
-    uint256 uiFeeReceiverFactor = 5; // NOTE clearly not right
-    // uint256 fees_amountAfterFees = swapParams.amountIn - mulDiv(swapParams.amountIn, feeFactor) - mulDiv(swapParams.amountIn, swapParams.uiFeeReceiver);
-    mathint fees_amountAfterFees = swapParams.amountIn - applyFactorSummary(swapParams.amountIn, feeFactor) - applyFactorSummary(swapParams.amountIn, uiFeeReceiverFactor);
+    SwapPricingUtils.SwapFees fees = getSwapFeesOpaque(
+        market.marketToken,
+        swapParams.amountIn,
+        swapParams.uiFeeReceiver
+    );
 
 
     uint256 finalAmountIn;
@@ -107,7 +117,7 @@ rule marketSwapIntegrity() {
 
     // This definition of swapParams comes from the implementation of _swap
     // if (priceImpactedUsd > 0) {
-    finalAmountIn = require_uint256(fees_amountAfterFees);
+    finalAmountIn = fees.amountAfterFees;
     // } else {
     //     // This is defined by a call to applySwapImpactWithCap in SwapUtils._swap 
     //     int256 negativeImpactAmount; // TODO define this

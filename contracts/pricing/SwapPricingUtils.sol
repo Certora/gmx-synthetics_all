@@ -239,10 +239,7 @@ library SwapPricingUtils {
     ) internal view returns (SwapFees memory) {
         SwapFees memory fees;
 
-        // uint256 feeFactor = dataStore.getUint(Keys.swapFeeFactorKey(marketToken));
-        // NOTE: need to munge this since I can't write keccac in a spec.
-        // uint256 feeFactor = dataStore.getUint(Keys.swapFeeFactorKey(marketToken));
-        uint256 feeFactor = 1; /// XXX bad munge
+        uint256 feeFactor = dataStore.getUint(Keys.swapFeeFactorKey(marketToken));
         uint256 swapFeeReceiverFactor = dataStore.getUint(Keys.SWAP_FEE_RECEIVER_FACTOR);
 
         uint256 feeAmount = Precision.applyFactor(amount, feeFactor);
@@ -253,12 +250,8 @@ library SwapPricingUtils {
         fees.uiFeeReceiver = uiFeeReceiver;
         fees.uiFeeReceiverFactor = MarketUtils.getUiFeeFactor(dataStore, uiFeeReceiver);
         fees.uiFeeAmount = Precision.applyFactor(amount, fees.uiFeeReceiverFactor);
-        // XXX clearly not right
-        fees.uiFeeAmount = 5;
 
         fees.amountAfterFees = amount - feeAmount - fees.uiFeeAmount;
-        // XXX clearly not right...
-        fees.amountAfterFees = 42;
 
         return fees;
     }
