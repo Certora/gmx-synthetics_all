@@ -11,6 +11,10 @@ import "../position/PositionUtils.sol";
 import "../position/PositionStoreUtils.sol";
 import "../nonce/NonceUtils.sol";
 import "../callback/CallbackUtils.sol";
+import "../utils/Array.sol";
+import "../market/Market.sol";
+import "../market/MarketUtils.sol";
+import "../oracle/Oracle.sol";
 
 // @title AdlUtils
 // @dev Library to help with auto-deleveraging

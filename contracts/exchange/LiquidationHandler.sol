@@ -57,7 +57,7 @@ contract LiquidationHandler is BaseOrderHandler {
             isLong
         );
 
-        BaseOrderUtils.ExecuteOrderParams memory params = _getExecuteOrderParams(
+        BaseOrderUtils.ExecuteOrderParams memory params = getExecuteOrderParams(
             key,
             oracleParams,
             msg.sender,
