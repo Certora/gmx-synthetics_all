@@ -46,13 +46,32 @@ methods {
     function SwapPricingUtils.getSwapFees(address dataStore, address marketToken, uint256 amount, address uiFeeReceiver) internal returns (SwapPricingUtils.SwapFees memory) =>
         getSwapFeesOpaque(marketToken, amount, uiFeeReceiver);
 
+    function SwapPricingUtils.getPriceImpactUsd(SwapPricingUtils.GetPriceImpactUsdParams memory priceImpactParams) internal returns (int256) =>
+        getPriceImpactUsdSummary(priceImpactParams);
+
+    // MarketUtils
+    function MarketUtils.applySwapImpactWithCap(address dataStore, 
+        address eventEmitter, address market, address token,
+        Price.Props memory tokenPrice, int256 priceImpactUsd) internal returns (int256)=> 
+            applySwapImpactWithCapSummary(market, token, 
+                tokenPrice, priceImpactUsd);
 }
 
 // This is used to treat getSwapFees as an opaque function
 function getSwapFeesOpaque(address marketToken, uint256 amount,
     address uiFeeReceiver) returns SwapPricingUtils.SwapFees {
-    
     SwapPricingUtils.SwapFees ret;
+    return ret;
+}
+
+function getPriceImpactUsdSummary(SwapPricingUtils.GetPriceImpactUsdParams params) returns int256 {
+    int256 ret;
+    return ret;
+}
+
+function applySwapImpactWithCapSummary(address market, address token, 
+    Price.Props tokenPrice, int256 priceImpactUsd) returns int256 {
+    int256 ret;
     return ret;
 }
 
@@ -92,40 +111,28 @@ rule marketSwapIntegrity() {
     require swapParams.swapPathMarkets.length == 1;
     Market.Props market = swapParams.swapPathMarkets[0];
 
-    // swap
+    // Here this is just an opaque function.
+    SwapPricingUtils.GetPriceImpactUsdParams priceImpactParams;
+    int256 priceImpactedUsd = getPriceImpactUsdSummary(priceImpactParams);
 
-    // NOTE: This is WIP 
-
-    // fees is defined by SwapPricingUtils.getSwapFees
-    // feeFactor can't acually be munged into a constant because it is really computed on-the-fly ... can't seem to call keccak256 here safely either...
-    // bytes32 SWAP_FEE_FACTOR = 
-    //     0x0820000000000000000000000000000000000000000000000000000000000000;
-
-    // NOTE TO SELF: just summarize the "bigger" functions rather than zooming
-    // into the details so much.
-    
     SwapPricingUtils.SwapFees fees = getSwapFeesOpaque(
         market.marketToken,
         swapParams.amountIn,
         swapParams.uiFeeReceiver
     );
 
-
-    uint256 finalAmountIn;
-
-    // NOTE: via munging priceImpactedUsd == 1
+    mathint finalAmountIn;
 
     // This definition of swapParams comes from the implementation of _swap
-    // if (priceImpactedUsd > 0) {
-    finalAmountIn = fees.amountAfterFees;
-    // } else {
-    //     // This is defined by a call to applySwapImpactWithCap in SwapUtils._swap 
-    //     int256 negativeImpactAmount; // TODO define this
-    //     int256 impactOne = priceImpactUsd / tokenInPrice.max
-    //     int256 maxImpactAmount = getSwapImpactPoolAmount(dataStore, market, tokenIn);
+    if (priceImpactedUsd > 0) {
+        finalAmountIn = fees.amountAfterFees;
+    } else {
+        int256 negativeImpactAmount = applySwapImpactWithCapSummary(
+            market.marketToken, swapParams.tokenIn, tokenInPrice, 
+            priceImpactedUsd);
 
-    //     finalAmountIn = fees_amountAfterFees - (-negativeImpactAmount).toUint256();
-    // }
+        finalAmountIn = fees.amountAfterFees - require_uint256(-negativeImpactAmount);
+    }
 
     require tokenOutPrice.max > 0;
 

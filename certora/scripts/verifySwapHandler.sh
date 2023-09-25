@@ -22,4 +22,4 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --server production \
 --prover_version master \
 --send_only \
---msg "marketSwapItegrity --- summarizing getSwapFees" 
+--msg "marketSwapItegrity --- summarizing getSwapFees, priceImpactUsd, and applySwapImpactWithCap" 
