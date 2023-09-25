@@ -42,10 +42,11 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --prover_args '-copyLoopUnroll 1' \
+--prover_args "-newSplitParallel true" \
 --server production \
---prover_version master \
+--prover_version gereon/cert-3124-basic-parallel-splitter \
 --rule positions_can_be_closed \
 \
 --send_only \
---msg "positions_can_be_closed as satisfy rule" 
+--msg "reproduce gereons bug fix in positions_can_be_closed" 
 
