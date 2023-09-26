@@ -14,6 +14,9 @@ using Keys as Keys;
 using Oracle as Oracle;
 using GetPositionKeyHarness as positionKeyHarness;
 using BaseOrderHandler as BaseOrderHandler;
+using IncreaseOrderUtils as IncreaseOrderUtils;
+using DecreaseOrderUtils as DecreaseOrderUtils;
+using SwapOrderUtils as SwapOrderUtils;
 
 methods {  
     //OrderHandler - createOrder
@@ -580,7 +583,7 @@ rule positions_can_be_closed {
     //========================================================================
     // Require: positions can be closed before executing the call
     //========================================================================
-    require positions_closable(e, oracle_price_params, position_close_value);
+    // require positions_closable(e, oracle_price_params, position_close_value);
 
     //========================================================================
     // Execute the call
@@ -594,6 +597,141 @@ rule positions_can_be_closed {
     //========================================================================
     assert positions_closable(e, oracle_price_params, position_close_value);
 }
+
+// This is the original specification of GMX Requested Property 1
+// specialized for IncreaseOrder to try to avoid the timeout
+rule gmx_property1_IncreaseOrder{
+    // A liveness property that all open positions can be closed, even
+    // after arbitrary (potentially adversarial) user actions. More precisely,
+    // for any public/external call, we prove an invariant that assuming
+    // it was possible to close all open positions before the call, it is still
+    // possible to close all open positions after the call.
+
+    // A position is closed by issuing a decrease order (so that it is 
+    // decreased to zero).
+
+    env e;
+    // This value is used to enforce that the value from closing a position
+    // is the same before and after issuing the user command.
+    uint256 position_close_value;
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams;
+    require executeOrderParams.order.numbers.orderType == Order.OrderType.MarketIncrease ||
+        executeOrderParams.order.numbers.orderType == Order.OrderType.LimitIncrease;
+
+    // Used for both precond and postcond since we assume the
+    // prices do not change
+    OracleUtils.SetPricesParams oracle_price_params;
+
+    // We need to save the state before positions_closable because
+    // simulateExecuteOrder in positions_closable is state-changing.
+    storage stateBeforePrecond = lastStorage;
+
+    //========================================================================
+    // Require: positions can be closed before executing the call
+    //========================================================================
+    // NOTE: drop require since it should help get away from the timeout
+    // require positions_closable(e, oracle_price_params, position_close_value);
+
+    //========================================================================
+    // Execute the call
+    //========================================================================
+    IncreaseOrderUtils.processOrder(e, executeOrderParams);
+
+    //========================================================================
+    // Assert: positions can be closed after executing the call
+    //========================================================================
+    assert positions_closable(e, oracle_price_params, position_close_value);
+}
+
+rule gmx_property1_DecreaseOrder{
+    // A liveness property that all open positions can be closed, even
+    // after arbitrary (potentially adversarial) user actions. More precisely,
+    // for any public/external call, we prove an invariant that assuming
+    // it was possible to close all open positions before the call, it is still
+    // possible to close all open positions after the call.
+
+    // A position is closed by issuing a decrease order (so that it is 
+    // decreased to zero).
+
+    env e;
+    // This value is used to enforce that the value from closing a position
+    // is the same before and after issuing the user command.
+    uint256 position_close_value;
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams;
+    require executeOrderParams.order.numbers.orderType == Order.OrderType.MarketDecrease ||
+        executeOrderParams.order.numbers.orderType == Order.OrderType.LimitDecrease ||
+        executeOrderParams.order.numbers.orderType == Order.OrderType.StopLossDecrease ||
+        executeOrderParams.order.numbers.orderType == Order.OrderType.Liquidation;
+
+    // Used for both precond and postcond since we assume the
+    // prices do not change
+    OracleUtils.SetPricesParams oracle_price_params;
+
+    // We need to save the state before positions_closable because
+    // simulateExecuteOrder in positions_closable is state-changing.
+    storage stateBeforePrecond = lastStorage;
+
+    //========================================================================
+    // Require: positions can be closed before executing the call
+    //========================================================================
+    // NOTE: drop require since it should help get away from the timeout
+    // require positions_closable(e, oracle_price_params, position_close_value);
+
+    //========================================================================
+    // Execute the call
+    //========================================================================
+    DecreaseOrderUtils.processOrder(e, executeOrderParams);
+
+    //========================================================================
+    // Assert: positions can be closed after executing the call
+    //========================================================================
+    assert positions_closable(e, oracle_price_params, position_close_value);
+}
+
+rule gmx_property1_SwapOrder{
+    // A liveness property that all open positions can be closed, even
+    // after arbitrary (potentially adversarial) user actions. More precisely,
+    // for any public/external call, we prove an invariant that assuming
+    // it was possible to close all open positions before the call, it is still
+    // possible to close all open positions after the call.
+
+    // A position is closed by issuing a decrease order (so that it is 
+    // decreased to zero).
+
+    env e;
+    // This value is used to enforce that the value from closing a position
+    // is the same before and after issuing the user command.
+    uint256 position_close_value;
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams;
+    require executeOrderParams.order.numbers.orderType == Order.OrderType.MarketSwap ||
+        executeOrderParams.order.numbers.orderType == Order.OrderType.LimitSwap;
+
+
+    // Used for both precond and postcond since we assume the
+    // prices do not change
+    OracleUtils.SetPricesParams oracle_price_params;
+
+    // We need to save the state before positions_closable because
+    // simulateExecuteOrder in positions_closable is state-changing.
+    storage stateBeforePrecond = lastStorage;
+
+    //========================================================================
+    // Require: positions can be closed before executing the call
+    //========================================================================
+    // NOTE: drop require since it should help get away from the timeout
+    // require positions_closable(e, oracle_price_params, position_close_value);
+
+    //========================================================================
+    // Execute the call
+    //========================================================================
+    SwapOrderUtils.processOrder(e, executeOrderParams);
+
+    //========================================================================
+    // Assert: positions can be closed after executing the call
+    //========================================================================
+    assert positions_closable(e, oracle_price_params, position_close_value);
+}
+
 
 /***
 GMX Property #2:

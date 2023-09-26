@@ -45,7 +45,6 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --server production \
 --prover_version master \
 --rule positions_can_be_closed \
-\
 --send_only \
---msg "positions_can_be_closed as satisfy rule" 
+--msg "positions_can_be_closed, remove precond"
 
