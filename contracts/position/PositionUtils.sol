@@ -13,6 +13,7 @@ import "../data/Keys.sol";
 
 import "../pricing/PositionPricingUtils.sol";
 import "../order/BaseOrderUtils.sol";
+import "../swap/SwapHandler.sol";
 
 // @title PositionUtils
 // @dev Library for position functions

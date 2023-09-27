@@ -3,6 +3,8 @@
 pragma solidity ^0.8.0;
 
 import "./PositionUtils.sol";
+// How did this compile before adding this import ????
+import "../swap/SwapUtils.sol";
 
 library DecreasePositionSwapUtils {
     using Order for Order.Props;

@@ -23,6 +23,9 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/price/Price.sol \
             contracts/data/Keys.sol \
             certora/harness/GetPositionKeyHarness.sol \
+            certora/harness/DecreaseOrderUtilsHarness.sol \
+            certora/harness/IncreaseOrderUtilsHarness.sol \
+            certora/harness/SwapOrderUtilsHarness.sol \
 --verify OrderHandler:certora/specs/OrderHandler.spec \
 \
 --link  OrderHandler:roleStore=RoleStore \
@@ -44,7 +47,6 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args '-copyLoopUnroll 1' \
 --server production \
 --prover_version master \
---rule positions_can_be_closed \
 --send_only \
---msg "positions_can_be_closed, remove precond"
+--msg "Rerun for each of the specialized instances of property 1 post harness munging"
 

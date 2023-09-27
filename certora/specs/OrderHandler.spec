@@ -14,9 +14,9 @@ using Keys as Keys;
 using Oracle as Oracle;
 using GetPositionKeyHarness as positionKeyHarness;
 using BaseOrderHandler as BaseOrderHandler;
-using IncreaseOrderUtils as IncreaseOrderUtils;
-using DecreaseOrderUtils as DecreaseOrderUtils;
-using SwapOrderUtils as SwapOrderUtils;
+using IncreaseOrderUtilsHarness as increaseOrderUtils;
+using DecreaseOrderUtilsHarness as decreaseOrderUtils;
+using SwapOrderUtilsHarness as swapOrderUtils;
 
 methods {  
     //OrderHandler - createOrder
@@ -635,7 +635,7 @@ rule gmx_property1_IncreaseOrder{
     //========================================================================
     // Execute the call
     //========================================================================
-    IncreaseOrderUtils.processOrder(e, executeOrderParams);
+    increaseOrderUtils.processOrder(e, executeOrderParams);
 
     //========================================================================
     // Assert: positions can be closed after executing the call
@@ -680,7 +680,7 @@ rule gmx_property1_DecreaseOrder{
     //========================================================================
     // Execute the call
     //========================================================================
-    DecreaseOrderUtils.processOrder(e, executeOrderParams);
+    decreaseOrderUtils.processOrder(e, executeOrderParams);
 
     //========================================================================
     // Assert: positions can be closed after executing the call
@@ -724,7 +724,7 @@ rule gmx_property1_SwapOrder{
     //========================================================================
     // Execute the call
     //========================================================================
-    SwapOrderUtils.processOrder(e, executeOrderParams);
+    swapOrderUtils.processOrder(e, executeOrderParams);
 
     //========================================================================
     // Assert: positions can be closed after executing the call
