@@ -22,4 +22,4 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --server production \
 --prover_version master \
 --send_only \
---msg "marketSwapItegrity --- summarizing getSwapFees, priceImpactUsd, and applySwapImpactWithCap" 
+--msg "marketSwapItegrity --- summarizing getSwapFees, priceImpactUsd, and applySwapImpactWithCap. fix library summarization issue" 

@@ -221,7 +221,7 @@ library SwapUtils {
 
         int256 priceImpactUsd = SwapPricingUtils.getPriceImpactUsd(
             SwapPricingUtils.GetPriceImpactUsdParams(
-                params.dataStore,
+                address(params.dataStore),
                 _params.market,
                 _params.tokenIn,
                 cache.tokenOut,

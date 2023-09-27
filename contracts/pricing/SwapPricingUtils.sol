@@ -37,7 +37,7 @@ library SwapPricingUtils {
     // @param usdDeltaForTokenA the USD change in amount of tokenA
     // @param usdDeltaForTokenB the USD change in amount of tokenB
     struct GetPriceImpactUsdParams {
-        DataStore dataStore;
+        address dataStore;
         Market.Props market;
         address tokenA;
         address tokenB;
@@ -91,7 +91,9 @@ library SwapPricingUtils {
     function getPriceImpactUsd(GetPriceImpactUsdParams memory params) internal view returns (int256) {
         PoolParams memory poolParams = getNextPoolAmountsUsd(params);
 
-        int256 priceImpactUsd = _getPriceImpactUsd(params.dataStore, params.market, poolParams);
+        DataStore dataStoreMunged = DataStore(params.dataStore);
+
+        int256 priceImpactUsd = _getPriceImpactUsd(dataStoreMunged, params.market, poolParams);
 
         // the virtual price impact calculation is skipped if the price impact
         // is positive since the action is helping to balance the pool
@@ -113,7 +115,7 @@ library SwapPricingUtils {
         // market, removal of virtual markets may lead to incorrect virtual token accounting, the feature to correct for
         // this can be added if needed
         (bool hasVirtualInventory, uint256 virtualPoolAmountForLongToken, uint256 virtualPoolAmountForShortToken) = MarketUtils.getVirtualInventoryForSwaps(
-            params.dataStore,
+            dataStoreMunged,
             params.market.marketToken
         );
 
@@ -138,7 +140,7 @@ library SwapPricingUtils {
             virtualPoolAmountForTokenB
         );
 
-        int256 priceImpactUsdForVirtualInventory = _getPriceImpactUsd(params.dataStore, params.market, poolParamsForVirtualInventory);
+        int256 priceImpactUsdForVirtualInventory = _getPriceImpactUsd(dataStoreMunged, params.market, poolParamsForVirtualInventory);
 
         return priceImpactUsdForVirtualInventory < priceImpactUsd ? priceImpactUsdForVirtualInventory : priceImpactUsd;
     }
@@ -188,8 +190,10 @@ library SwapPricingUtils {
     function getNextPoolAmountsUsd(
         GetPriceImpactUsdParams memory params
     ) internal view returns (PoolParams memory) {
-        uint256 poolAmountForTokenA = MarketUtils.getPoolAmount(params.dataStore, params.market, params.tokenA);
-        uint256 poolAmountForTokenB = MarketUtils.getPoolAmount(params.dataStore, params.market, params.tokenB);
+        DataStore dataStoreMunged = DataStore(params.dataStore);
+
+        uint256 poolAmountForTokenA = MarketUtils.getPoolAmount(dataStoreMunged, params.market, params.tokenA);
+        uint256 poolAmountForTokenB = MarketUtils.getPoolAmount(dataStoreMunged, params.market, params.tokenB);
 
         return getNextPoolAmountsParams(
             params,
