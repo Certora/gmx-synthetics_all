@@ -90,9 +90,9 @@ library BaseOrderUtils {
         ExecuteOrderParamsContracts contracts;
         bytes32 key;
         Order.Props order;
-        Market.Props[] swapPathMarkets;
-        uint256[] minOracleBlockNumbers;
-        uint256[] maxOracleBlockNumbers;
+        // Market.Props[] swapPathMarkets;
+        // uint256[] minOracleBlockNumbers;
+        // uint256[] maxOracleBlockNumbers;
         Market.Props market;
         address keeper;
         uint256 startingGas;

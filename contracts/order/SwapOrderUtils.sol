@@ -27,27 +27,30 @@ library SwapOrderUtils {
             revert Errors.UnexpectedMarket();
         }
 
-        validateOracleBlockNumbers(
-            params.minOracleBlockNumbers,
-            params.maxOracleBlockNumbers,
-            params.order.orderType(),
-            params.order.updatedAtBlock()
-        );
+        // validateOracleBlockNumbers(
+        //     params.minOracleBlockNumbers,
+        //     params.maxOracleBlockNumbers,
+        //     params.order.orderType(),
+        //     params.order.updatedAtBlock()
+        // );
 
-        (address outputToken, uint256 outputAmount) = SwapUtils.swap(SwapUtils.SwapParams(
-            params.contracts.dataStore,
-            params.contracts.eventEmitter,
-            params.contracts.oracle,
-            params.contracts.orderVault,
-            params.key,
-            params.order.initialCollateralToken(),
-            params.order.initialCollateralDeltaAmount(),
-            params.swapPathMarkets,
-            params.order.minOutputAmount(),
-            params.order.receiver(),
-            params.order.uiFeeReceiver(),
-            params.order.shouldUnwrapNativeToken()
-        ));
+        // NOTE: this munging is not reasonable and is just for debugging.
+        address outputToken;
+        uint256 outputAmount;
+        // (address outputToken, uint256 outputAmount) = SwapUtils.swap(SwapUtils.SwapParams(
+        //     params.contracts.dataStore,
+        //     params.contracts.eventEmitter,
+        //     params.contracts.oracle,
+        //     params.contracts.orderVault,
+        //     params.key,
+        //     params.order.initialCollateralToken(),
+        //     params.order.initialCollateralDeltaAmount(),
+        //     params.swapPathMarkets,
+        //     params.order.minOutputAmount(),
+        //     params.order.receiver(),
+        //     params.order.uiFeeReceiver(),
+        //     params.order.shouldUnwrapNativeToken()
+        // ));
 
         EventUtils.EventLogData memory eventData;
         //eventData.addressItems.initItems(1);

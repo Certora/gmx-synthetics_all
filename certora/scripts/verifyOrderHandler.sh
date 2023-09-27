@@ -46,5 +46,5 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_version master \
 --rule positions_can_be_closed \
 --send_only \
---msg "positions_can_be_closed, remove precond"
+--msg "positions_can_be_closed, remove precond, munge ExecuteOrderParams structs"
 

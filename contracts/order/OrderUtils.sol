@@ -172,7 +172,7 @@ library OrderUtils {
         if (params.market.marketToken != address(0)) {
             MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.market);
         }
-        MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.swapPathMarkets);
+        // MarketUtils.validateMarketTokenBalance(params.contracts.dataStore, params.swapPathMarkets);
 
         OrderEventUtils.emitOrderExecuted(params.contracts.eventEmitter, params.key);
 

@@ -34,14 +34,14 @@ library DecreaseOrderUtils {
         Position.Props memory position = PositionStoreUtils.get(params.contracts.dataStore, positionKey);
         PositionUtils.validateNonEmptyPosition(position);
 
-        validateOracleBlockNumbers(
-            params.minOracleBlockNumbers,
-            params.maxOracleBlockNumbers,
-            order.orderType(),
-            order.updatedAtBlock(),
-            position.increasedAtBlock(),
-            position.decreasedAtBlock()
-        );
+        // validateOracleBlockNumbers(
+        //     params.minOracleBlockNumbers,
+        //     params.maxOracleBlockNumbers,
+        //     order.orderType(),
+        //     order.updatedAtBlock(),
+        //     position.increasedAtBlock(),
+        //     position.decreasedAtBlock()
+        // );
 
         DecreasePositionUtils.DecreasePositionResult memory result = DecreasePositionUtils.decreasePosition(
             PositionUtils.UpdatePositionParams(
@@ -93,6 +93,7 @@ library DecreaseOrderUtils {
             );
         }
 
+        Market.Props[] memory mungeForDebuggingArray;
         try params.contracts.swapHandler.swap(
             SwapUtils.SwapParams(
                 params.contracts.dataStore,
@@ -102,7 +103,8 @@ library DecreaseOrderUtils {
                 params.key,
                 result.outputToken,
                 result.outputAmount,
-                params.swapPathMarkets,
+                mungeForDebuggingArray,
+                // params.swapPathMarkets,
                 0,
                 order.receiver(),
                 order.uiFeeReceiver(),

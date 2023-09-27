@@ -19,21 +19,26 @@ library IncreaseOrderUtils {
     // @param params BaseOrderUtils.ExecuteOrderParams
     function processOrder(BaseOrderUtils.ExecuteOrderParams memory params) external returns (EventUtils.EventLogData memory) {
         MarketUtils.validatePositionMarket(params.contracts.dataStore, params.market);
+        
 
-        (address collateralToken, uint256 collateralIncrementAmount) = SwapUtils.swap(SwapUtils.SwapParams(
-            params.contracts.dataStore,
-            params.contracts.eventEmitter,
-            params.contracts.oracle,
-            params.contracts.orderVault,
-            params.key,
-            params.order.initialCollateralToken(),
-            params.order.initialCollateralDeltaAmount(),
-            params.swapPathMarkets,
-            params.order.minOutputAmount(),
-            params.order.market(),
-            params.order.uiFeeReceiver(),
-            false
-        ));
+        // XXX Unreasonable munge for debugging to see if structs in the params are the problem
+        address collateralToken;
+        uint256 collateralIncrementAmount;
+
+        // (address collateralToken, uint256 collateralIncrementAmount) = SwapUtils.swap(SwapUtils.SwapParams(
+        //     params.contracts.dataStore,
+        //     params.contracts.eventEmitter,
+        //     params.contracts.oracle,
+        //     params.contracts.orderVault,
+        //     params.key,
+        //     params.order.initialCollateralToken(),
+        //     params.order.initialCollateralDeltaAmount(),
+        //     params.swapPathMarkets,
+        //     params.order.minOutputAmount(),
+        //     params.order.market(),
+        //     params.order.uiFeeReceiver(),
+        //     false
+        // ));
 
         MarketUtils.validateMarketCollateralToken(params.market, collateralToken);
 
@@ -52,12 +57,12 @@ library IncreaseOrderUtils {
             position.setIsLong(params.order.isLong());
         }
 
-        validateOracleBlockNumbers(
-            params.minOracleBlockNumbers,
-            params.maxOracleBlockNumbers,
-            params.order.orderType(),
-            params.order.updatedAtBlock()
-        );
+        // validateOracleBlockNumbers(
+        //     params.minOracleBlockNumbers,
+        //     params.maxOracleBlockNumbers,
+        //     params.order.orderType(),
+        //     params.order.updatedAtBlock()
+        // );
 
         IncreasePositionUtils.increasePosition(
             PositionUtils.UpdatePositionParams(
