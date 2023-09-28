@@ -21,5 +21,6 @@ certoraRun  contracts/swap/SwapHandler.sol \
 --prover_args "-optimisticFallback true" \
 --server production \
 --prover_version master \
+--rule marketSwapIntegritySatisfy \
 --send_only \
---msg "marketSwapItegrity --- summarizing getSwapFees, priceImpactUsd, and applySwapImpactWithCap. fix library summarization issue" 
+--msg "marketSwapItegritySatisfy -- convert to satisfy rule and make the fee calculation opaque" 

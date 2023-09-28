@@ -147,6 +147,32 @@ rule marketSwapIntegrity() {
 
 }
 
+rule marketSwapIntegritySatisfy() {
+    env e;
+    
+    // TODO set this up in the same way that OrderHandler does, potentially:
+    // bytes32 key;
+    // OracleUtils.SetPricesParams oracleParams;
+    // use  Order.OrderType.MarketSwap to check for right order type
+    
+    address outputToken;
+    uint256 outputAmount;
+    SwapUtils.SwapParams swapParams;
+
+    outputToken, outputAmount = swap(e, swapParams);
+
+    // These are how the prices are defined in SwapUtils._swap :
+    Price.Props tokenInPrice = oracle.getPrimaryPrice(e, swapParams.tokenIn);
+    Price.Props tokenOutPrice = oracle.getPrimaryPrice(e, outputToken);
+
+    mathint fee; // the fee calculation is something complicated.
+    mathint expectedOutput = fee * tokenInPrice.min / tokenOutPrice.max;
+
+    // In the implementation of SwapUtils._swap, the output amount uses tokenInPrice.min and tokenOutPrce.max
+    satisfy outputAmount == require_uint256(expectedOutput);
+
+}
+
 rule sanity(method f) {
     env e;
     calldataarg args;

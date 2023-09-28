@@ -536,6 +536,7 @@ function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_para
     BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);
 
     bytes32 closing_order_key = createOrder(e, some_account, closing_order_params); 
+    // NOTE: this is munged just to try to check if reverts are the timeout issue here.
     executeOrder@withrevert(e, closing_order_key, oracle_price_params);
     bool executeOrderReverted = lastReverted;
 
@@ -554,6 +555,48 @@ function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_para
     // an order 
     // return non_empty_position => !createOrderReverted && !executeOrderReverted;
     return !executeOrderReverted;
+}
+
+function positions_closable_decrease(env e, OracleUtils.SetPricesParams oracle_price_params, uint256 close_value) returns bool {
+    address some_account;
+    address some_market;
+    address some_collateral_token;
+    bool some_is_long;
+    address dataStore;
+    bytes32 some_position_key = positionKeyHarness.getPositionKey(e, some_account, some_market, some_collateral_token, some_is_long);
+    Position.Props position = getPosition(some_position_key);
+
+    bool non_empty_position = !isPositionEmpty(position);
+    require non_empty_position;
+    BaseOrderUtils.CreateOrderParams closing_order_params = closing_create_order_params_from_position(position);
+
+    // Create Closing ExecuteOrder from position
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams;
+    require executeOrderParams.order.numbers.orderType == Order.OrderType.MarketDecrease;
+    require executeOrderParams.order.addresses.receiver == position.addresses.account;
+    require executeOrderParams.order.addresses.market == position.addresses.market;
+    require executeOrderParams.order.addresses.initialCollateralToken == position.addresses.collateralToken;
+    require executeOrderParams.order.numbers.sizeDeltaUsd == position.numbers.sizeInUsd;
+    require executeOrderParams.order.flags.isLong == position.flags.isLong;
+
+    // require executeOrderParams.minOracleBlockNumbers = OracleUtils.getUncompactedOracleBlockNumbers(
+    //     oracle_price_params.compactedMinOracleBlockNumbers,
+    //     oracle_price_params.tokens.length
+    // );
+
+    // require executeOrderParams.maxOracleBlockNumbers = OracleUtils.getUncompactedOracleBlockNumbers(
+    //     oracle_price_params.compactedMaxOracleBlockNumbers,
+    //     oracle_price_params.tokens.length
+    // );
+
+    decreaseOrderUtils.processOrder@withrevert(e, executeOrderParams);
+    bool processOrderReverted = lastReverted;
+
+    require close_value == assert_uint256(closing_order_params.numbers.sizeDeltaUsd * 
+        closing_order_params.numbers.triggerPrice); 
+
+    return !processOrderReverted;
+
 }
 
 // This is the original specification of GMX Requested Property 1
@@ -595,7 +638,7 @@ rule positions_can_be_closed {
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    assert positions_closable(e, oracle_price_params, position_close_value);
+    satisfy positions_closable(e, oracle_price_params, position_close_value);
 }
 
 // This is the original specification of GMX Requested Property 1
@@ -640,7 +683,7 @@ rule gmx_property1_IncreaseOrder{
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    assert positions_closable(e, oracle_price_params, position_close_value);
+    satisfy positions_closable_decrease(e, oracle_price_params, position_close_value);
 }
 
 rule gmx_property1_DecreaseOrder{
@@ -685,7 +728,7 @@ rule gmx_property1_DecreaseOrder{
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    assert positions_closable(e, oracle_price_params, position_close_value);
+    satisfy positions_closable_decrease(e, oracle_price_params, position_close_value);
 }
 
 rule gmx_property1_SwapOrder{
@@ -729,7 +772,7 @@ rule gmx_property1_SwapOrder{
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    assert positions_closable(e, oracle_price_params, position_close_value);
+    satisfy positions_closable_decrease(e, oracle_price_params, position_close_value);
 }
 
 

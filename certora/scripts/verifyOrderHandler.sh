@@ -47,6 +47,9 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args '-copyLoopUnroll 1' \
 --server production \
 --prover_version master \
+--rule gmx_property1_DecreaseOrder \
+--rule gmx_property1_IncreaseOrder \
+--rule gmx_property1_SwapOrder \
 --send_only \
---msg "Rerun for each of the specialized instances of property 1 post harness munging"
+--msg "rewrite gmx_property1_DecreaseOrder to fully avoid executeOrder and use satisfy"
 
