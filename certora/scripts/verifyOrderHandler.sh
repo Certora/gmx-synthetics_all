@@ -26,6 +26,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
             certora/harness/DecreaseOrderUtilsHarness.sol \
             certora/harness/IncreaseOrderUtilsHarness.sol \
             certora/harness/SwapOrderUtilsHarness.sol \
+            certora/harness/MarketUtilsHarness.sol \
 --verify OrderHandler:certora/specs/OrderHandler.spec \
 \
 --link  OrderHandler:roleStore=RoleStore \
@@ -47,9 +48,7 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args '-copyLoopUnroll 1' \
 --server production \
 --prover_version master \
---rule gmx_property1_DecreaseOrder \
---rule gmx_property1_IncreaseOrder \
---rule gmx_property1_SwapOrder \
+--rule priceDontChangeNoDecreeseInPoolValue \
 --send_only \
---msg "rewrite gmx_property1_DecreaseOrder to fully avoid executeOrder and use satisfy"
+--msg "fix priceDontChangeNoDecreeseInPoolValue to use workaround"
 

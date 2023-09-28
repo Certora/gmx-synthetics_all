@@ -17,6 +17,7 @@ using BaseOrderHandler as BaseOrderHandler;
 using IncreaseOrderUtilsHarness as increaseOrderUtils;
 using DecreaseOrderUtilsHarness as decreaseOrderUtils;
 using SwapOrderUtilsHarness as swapOrderUtils;
+using MarketUtilsHarness as marketUtils;
 
 methods {  
     //OrderHandler - createOrder
@@ -51,6 +52,7 @@ methods {
     function MarketUtils.getMaxPnlFactorEx(address, bytes32, address, bool) external returns (uint256) optional envfree;
     function MarketUtils.getPoolAmountEx(address, Market.Props memory, address) external returns (uint256) optional envfree;
     function MarketUtils.getPoolValueInfo(address,Market.Props memory,Price.Props memory,Price.Props memory,Price.Props memory, bytes32, bool) external returns (MarketPoolValueInfo.Props memory) optional envfree;
+    function MarketUtilsHarness.getPoolValueInfo(address,Market.Props, Price.Props, Price.Props, Price.Props, bytes32, bool) external returns (MarketPoolValueInfo.Props memory) optional envfree;
 
 
 
@@ -892,12 +894,12 @@ rule priceDontChangeNoDecreeseInPoolValue(method f) filtered {
     Price.Props longTokenPrice = Oracle.getPrimaryPrice(DummyERC20Long);
     Price.Props shortTokenPrice = Oracle.getPrimaryPrice(DummyERC20Short);
 
-    MarketPoolValueInfo.Props poolValuePropsBefore = MarketUtils.getPoolValueInfo(dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    MarketPoolValueInfo.Props poolValuePropsBefore = marketUtils.getPoolValueInfo(dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
     int256 poolValueBefore = poolValuePropsBefore.poolValue;
 
     f(e, args);
 
-    MarketPoolValueInfo.Props poolValuePropsAfter = MarketUtils.getPoolValueInfo(dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    MarketPoolValueInfo.Props poolValuePropsAfter = marketUtils.getPoolValueInfo(dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
     int256 poolValueAfter = poolValuePropsAfter.poolValue;
 
     assert poolValueBefore >= poolValueAfter;
