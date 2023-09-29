@@ -10,25 +10,60 @@
  * Basic structure for b: require that liquidation works, assert the criteria
  */
 
-//using DataStore as _DataStore;
-//using Keys as _Keys;
 using Position as _Position;
 using LiquidationHandlerHarness as _LiquidationHandlerHarness;
-//using PositionStoreUtils as _PositionStoreUtils;
-//using PositionUtils as _PositionUtils;
+
+function array_identity(uint256[] a) returns uint256[] {
+    return a;
+}
 
 methods {
-    function executeLiquidation(
-        address account,
-        address market,
-        address collateralToken,
-        bool isLong,
-        OracleUtils.SetPricesParams oracleParams
-    ) external;
+    function executeLiquidation(address, address, address, bool, OracleUtils.SetPricesParams) external;
 
-    // Summarize FeatureUtils.validateFeature()
+    // ##### Top-Down #####
+
     function _.validateFeature(address, bytes32) external => NONDET;
-    function _.get(address, bytes32 key) external => NONDET;
+    function _.executeOrder(address) external => NONDET;
+    function OracleUtils.getUncompactedOracleBlockNumbers(uint256[] memory a, uint256 length) internal returns (uint256[] memory)=> array_identity(a);
+
+    // ##### Bottom-Up #####
+
+    // emit functions from MarketEventUtils
+    function _.emitMarketPoolValueInfo(address, address, MarketPoolValueInfo.Props, uint256) external => NONDET;
+    function _.emitPoolAmountUpdated(address, address, address, int256, uint256) external => NONDET;
+    function _.emitSwapImpactPoolAmountUpdated(address, address, address, int256, uint256) external => NONDET;
+    function _.emitPositionImpactPoolAmountUpdated(address, address, int256, uint256) external => NONDET;
+    function _.emitOpenInterestUpdated(address, address, address, bool, int256, uint256) external => NONDET;
+    function _.emitOpenInterestInTokensUpdated(address, address, address, bool, int256, uint256) external => NONDET;
+    function _.emitVirtualSwapInventoryUpdated(address, address, bool, bytes32, int256, uint256) external => NONDET;
+    function _.emitVirtualPositionInventoryUpdated(address, address, bytes32, int256, int256) external => NONDET;
+    function _.emitCollateralSumUpdated(address, address, address, bool, int256, uint256) external => NONDET;
+    function _.emitBorrowingFactorUpdated(address, address, bool, uint256, uint256) external => NONDET;
+    function _.emitFundingFeeAmountPerSizeUpdated(address, address, address, bool, uint256, uint256) external => NONDET;
+    function _.emitClaimableFundingAmountPerSizeUpdated(address, address, address, bool, uint256, uint256) external => NONDET;
+    function _.emitClaimableFundingUpdated(address, address, address, address, uint256, uint256, uint256) external => NONDET;
+    function _.emitFundingFeesClaimed(address, address, address, address, address, uint256, uint256) external => NONDET;
+    function _.emitClaimableFundingUpdated(address, address, address, uint256, address, uint256, uint256) external => NONDET;
+    function _.emitClaimableCollateralUpdated(address, address, address, uint256, address, uint256, uint256, uint256) external => NONDET;
+    function _.emitCollateralClaimed(address, address, address, uint256, address, address, uint256, uint256) external => NONDET;
+    function _.emitUiFeeFactorUpdated(address, address, uint256) external => NONDET;
+
+    // emit functions from OrderEventUtils
+    function _.emitOrderCreated(address, bytes32, Order.Props) external => NONDET;
+    function _.emitOrderExecuted(address, bytes32) external => NONDET;
+    function _.emitOrderUpdated(address, bytes32, uint256, uint256, uint256, uint256) external => NONDET;
+    function _.emitOrderSizeDeltaAutoUpdated(address, bytes32, uint256, uint256) external => NONDET;
+    function _.emitOrderCollateralDeltaAmountAutoUpdated(address, bytes32, uint256, uint256) external => NONDET;
+    function _.emitOrderCancelled(address, bytes32, string, bytes) external => NONDET;
+    function _.emitOrderFrozen(address, bytes32, string, bytes) external => NONDET;
+
+    // emit functions from PositionEventUtils
+    function _.emitPositionIncrease(address) external => NONDET;
+    function _.emitPositionDecrease(address, bytes32, bytes32, Position.Props, uint256, uint256, Order.OrderType, address, Price.Props, Price.Props) external => NONDET;
+    function _.emitInsolventCloseInfo(address, bytes32, uint256, int256, uint256) external => NONDET;
+    function _.emitInsufficientFundingFeePayment(address, address, address, uint256, uint256) external => NONDET;
+    function _.emitPositionFeesCollected(address, bytes32, address, address, uint256, bool, PositionPricingUtils.PositionFees) external => NONDET;
+    function _.emitPositionFeesInfo(address, bytes32, address, address, uint256, bool, PositionPricingUtils.PositionFees) external => NONDET;
 }
 
 rule liquidationWorksIfConditionsAreMet() {
