@@ -41,14 +41,12 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
-\
---rule_sanity \
---prover_args "-optimisticFallback true" \
---prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
---prover_args '-copyLoopUnroll 1' \
 --server production \
 --prover_version master \
+--prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
+\
+--prover_args "-optimisticFallback true" \
+--prover_args '-copyLoopUnroll 1' \
 --rule priceDontChangeNoDecreeseInPoolValue \
---send_only \
---msg "fix priceDontChangeNoDecreeseInPoolValue to use workaround"
+--msg "gmxp5 add back summarizeExtLibraryCallsAsNonDetPreLinking, munge summaries to take addresses instead of contracts, try summarizing MarketUtils.getPoolValueInfo as NONDET(true)"
 

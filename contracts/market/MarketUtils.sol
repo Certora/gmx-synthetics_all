@@ -112,7 +112,7 @@ library MarketUtils {
         uint256 supply = getMarketTokenSupply(MarketToken(payable(market.marketToken)));
 
         MarketPoolValueInfo.Props memory poolValueInfo = getPoolValueInfo(
-            dataStore,
+            address(dataStore),
             market,
             indexTokenPrice,
             longTokenPrice,
@@ -134,25 +134,25 @@ library MarketUtils {
 
 
     // Certora Munging - START ///
-    function getPoolAmountEx(DataStore dataStore, Market.Props memory market, address token) external view returns (uint256) {
+    function getPoolAmountEx(address dataStore, Market.Props memory market, address token) external view returns (uint256) {
         return getPoolAmount(dataStore, market, token);
     }
 
     function getReservedUsdEx(
-        DataStore dataStore,
+        address dataStore_address,
         Market.Props memory market,
         MarketPrices memory prices,
         bool isLong
     ) external view returns (uint256) {
-        return getReservedUsd(dataStore, market, prices, isLong);
+        return getReservedUsd(DataStore(dataStore_address), market, prices, isLong);
     }
 
-    function getReserveFactorEx(DataStore dataStore, address market, bool isLong) external view returns (uint256){
-        return getReserveFactor(dataStore, market, isLong);
+    function getReserveFactorEx(address dataStore, address market, bool isLong) external view returns (uint256){
+        return getReserveFactor(DataStore(dataStore), market, isLong);
     }
 
-    function getMaxPnlFactorEx(DataStore dataStore, bytes32 pnlFactorType, address market, bool isLong) external view returns (uint256) {
-        return getMaxPnlFactor(dataStore, pnlFactorType, market, isLong);
+    function getMaxPnlFactorEx(address dataStore, bytes32 pnlFactorType, address market, bool isLong) external view returns (uint256) {
+        return getMaxPnlFactor(DataStore(dataStore), pnlFactorType, market, isLong);
     }
 
     // Certora Munging - END ///
@@ -234,7 +234,7 @@ library MarketUtils {
         address token = isLong ? market.longToken : market.shortToken;
         // note that if it is a single token market, the poolAmount returned will be
         // the amount of tokens in the pool divided by 2
-        uint256 poolAmount = getPoolAmount(dataStore, market, token);
+        uint256 poolAmount = getPoolAmount(address(dataStore), market, token);
         uint256 tokenPrice;
 
         if (maximize) {
@@ -258,7 +258,7 @@ library MarketUtils {
     // @param maximize whether to maximize or minimize the pool value
     // @return the value information of a pool
     function getPoolValueInfo(
-        DataStore dataStore,
+        address dataStore_address, //munged from DataStore
         Market.Props memory market,
         Price.Props memory indexTokenPrice,
         Price.Props memory longTokenPrice,
@@ -268,8 +268,10 @@ library MarketUtils {
     ) public view returns (MarketPoolValueInfo.Props memory) {
         MarketPoolValueInfo.Props memory result;
 
-        result.longTokenAmount = getPoolAmount(dataStore, market, market.longToken);
-        result.shortTokenAmount = getPoolAmount(dataStore, market, market.shortToken);
+        DataStore dataStore = DataStore(dataStore_address);
+
+        result.longTokenAmount = getPoolAmount(dataStore_address, market, market.longToken);
+        result.shortTokenAmount = getPoolAmount(dataStore_address, market, market.shortToken);
 
         result.longTokenUsd = result.longTokenAmount * longTokenPrice.pickPrice(maximize);
         result.shortTokenUsd = result.shortTokenAmount * shortTokenPrice.pickPrice(maximize);
@@ -460,7 +462,8 @@ library MarketUtils {
     // @param market the market to check
     // @param token the token to check
     // @return the amount of tokens in the pool
-    function getPoolAmount(DataStore dataStore, Market.Props memory market, address token) internal view returns (uint256) {
+    function getPoolAmount(address dataStore_address, Market.Props memory market, address token) internal view returns (uint256) {
+        DataStore dataStore = DataStore(dataStore_address);
         /* Market.Props memory market = MarketStoreUtils.get(dataStore, marketAddress); */
         // if the longToken and shortToken are the same, return half of the token amount, so that
         // calculations of pool value, etc would be correct
@@ -1339,7 +1342,7 @@ library MarketUtils {
         Market.Props memory market,
         address token
     ) internal view {
-        uint256 poolAmount = getPoolAmount(dataStore, market, token);
+        uint256 poolAmount = getPoolAmount(address(dataStore), market, token);
         uint256 maxPoolAmount = getMaxPoolAmount(dataStore, market.marketToken, token);
 
         if (poolAmount > maxPoolAmount) {

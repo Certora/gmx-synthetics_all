@@ -179,7 +179,7 @@ library PositionUtils {
 
         if (cache.totalPositionPnl > 0) {
             cache.pnlToken = position.isLong() ? market.longToken : market.shortToken;
-            cache.poolTokenAmount = MarketUtils.getPoolAmount(dataStore, market, cache.pnlToken);
+            cache.poolTokenAmount = MarketUtils.getPoolAmount(address(dataStore), market, cache.pnlToken);
             cache.poolTokenPrice = position.isLong() ? prices.longTokenPrice.min : prices.shortTokenPrice.min;
             cache.poolTokenUsd = cache.poolTokenAmount * cache.poolTokenPrice;
             // use the indexTokenPrice instead of the executionPrice to calculate the pnl

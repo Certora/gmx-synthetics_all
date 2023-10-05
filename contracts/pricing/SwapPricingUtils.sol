@@ -190,10 +190,8 @@ library SwapPricingUtils {
     function getNextPoolAmountsUsd(
         GetPriceImpactUsdParams memory params
     ) internal view returns (PoolParams memory) {
-        DataStore dataStoreMunged = DataStore(params.dataStore);
-
-        uint256 poolAmountForTokenA = MarketUtils.getPoolAmount(dataStoreMunged, params.market, params.tokenA);
-        uint256 poolAmountForTokenB = MarketUtils.getPoolAmount(dataStoreMunged, params.market, params.tokenB);
+        uint256 poolAmountForTokenA = MarketUtils.getPoolAmount(params.dataStore, params.market, params.tokenA);
+        uint256 poolAmountForTokenB = MarketUtils.getPoolAmount(params.dataStore, params.market, params.tokenB);
 
         return getNextPoolAmountsParams(
             params,
