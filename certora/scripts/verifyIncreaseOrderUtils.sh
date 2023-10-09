@@ -18,5 +18,6 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
---msg "Run executed_with_right_block_prices, both cases, fix array issue for topological order exception"
+--prover_args "-solvers [z3]" \
+--msg "Run executed_with_right_block_prices, both cases, fix array issue for topological order exception. use only z3 "
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
