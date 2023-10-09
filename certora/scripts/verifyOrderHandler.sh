@@ -43,10 +43,10 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --solc_allow_path . \
 --server production \
 --prover_version master \
---prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --rule priceDontChangeNoDecreeseInPoolValue \
---msg "gmxp5 add back summarizeExtLibraryCallsAsNonDetPreLinking, munge summaries to take addresses instead of contracts, try summarizing MarketUtils.getPoolValueInfo as NONDET(true)"
+--msg "gmxp5, remove summarization flag and do it manually. Munge away only instances of delegatecall in the contract"
+# --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 

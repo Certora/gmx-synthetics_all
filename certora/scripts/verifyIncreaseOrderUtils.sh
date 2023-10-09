@@ -19,5 +19,6 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---msg "Run executed_with_right_block_prices, both cases, fix array issue for topological order exception. use only z3 "
+--rule  increase_blocks_case1variant2 \
+--msg "increaseOrder block pricing invariant. specify using instance of arrays instead of function call. Also write as satisfy"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \

@@ -68,7 +68,7 @@ library Array {
      * @param value the value to compare the elements of the array to
      * @return true if all of the elements in the array are greater than or equal to the specified value, false otherwise
      */
-    function areGreaterThanOrEqualTo(uint256[] memory arr, uint256 value) internal pure returns (bool) {
+    function areGreaterThanOrEqualTo(uint256[] memory arr, uint256 value) external pure returns (bool) {
         for (uint256 i; i < arr.length; i++) {
             if (arr[i] < value) {
                 return false;
@@ -102,7 +102,7 @@ library Array {
      * @param value the value to compare the elements of the array to
      * @return true if all of the elements in the array are less than or equal to the specified value, false otherwise
      */
-    function areLessThanOrEqualTo(uint256[] memory arr, uint256 value) internal pure returns (bool) {
+    function areLessThanOrEqualTo(uint256[] memory arr, uint256 value) external pure returns (bool) {
         for (uint256 i; i < arr.length; i++) {
             if (arr[i] > value) {
                 return false;

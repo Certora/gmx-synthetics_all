@@ -13,6 +13,8 @@ methods {
 
 
 // TODO if this does not perform well, try specifying using individual array indices.
+
+// Case 1: orderType == Order.OrderType.MarketIncrease
 rule increase_executed_with_right_block_prices1 {
     env e;
     BaseOrderUtils.ExecuteOrderParams params;
@@ -21,12 +23,13 @@ rule increase_executed_with_right_block_prices1 {
 
     require (params.order.numbers.orderType == Order.OrderType.MarketIncrease);
         
-    assert array.areLessThanOrEqualTo(e,
+    satisfy array.areLessThanOrEqualTo(e,
             params.minOracleBlockNumbers, params.order.numbers.updatedAtBlock);
-    assert array.areGreaterThanOrEqualTo(e,
+    satisfy array.areGreaterThanOrEqualTo(e,
             params.maxOracleBlockNumbers, params.order.numbers.updatedAtBlock);
 }
 
+// Case 2: orderType == Order.OrderType.LimitIncrease
 rule increase_executed_with_right_block_prices2 {
     env e;
     BaseOrderUtils.ExecuteOrderParams params;
@@ -34,6 +37,27 @@ rule increase_executed_with_right_block_prices2 {
     increaseOrderUtils.processOrder(e, params);
 
     require (params.order.numbers.orderType == Order.OrderType.LimitIncrease);
-    assert array.areGreaterThanOrEqualTo(e,
+    satisfy array.areGreaterThanOrEqualTo(e,
             params.minOracleBlockNumbers, params.order.numbers.updatedAtBlock);
+}
+
+rule increase_blocks_case1variant2 {
+    env e;
+    BaseOrderUtils.ExecuteOrderParams params;
+
+    increaseOrderUtils.processOrder(e, params);
+
+    require (params.order.numbers.orderType == Order.OrderType.MarketIncrease);
+
+    // all the minOracleBlockNumbers are less than the block number at which
+    // the order was updated
+    uint256 i;
+    require i < params.minOracleBlockNumbers.length;
+    satisfy params.minOracleBlockNumbers[i] <= params.order.numbers.updatedAtBlock;
+    
+    // all the maxOracleBlockNumbers are gte the block number at which
+    // the order was updated
+    uint256 j;
+    require j < params.maxOracleBlockNumbers.length;
+    satisfy params.maxOracleBlockNumbers[j] >= params.order.numbers.updatedAtBlock;
 }
