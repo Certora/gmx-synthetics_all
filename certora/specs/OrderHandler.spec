@@ -47,13 +47,7 @@ methods {
     // function _.getUncompactedOracleBlockNumbers(uint256[] memory,uint256) internal returns (uint256[] memory) => NONDET;
 
     // MarketUtils
-    // function MarketUtils.getReservedUsdEx(address, Market.Props memory, MarketUtils.MarketPrices memory, bool) external returns (uint256) optional envfree;
-    // function MarketUtils.getReserveFactorEx(address, address, bool) external returns (uint256) optional envfree;
-    // function MarketUtils.getMaxPnlFactorEx(address, bytes32, address, bool) external returns (uint256) optional envfree;
-    // function MarketUtils.getPoolAmountEx(address, Market.Props memory, address) external returns (uint256) optional envfree;
-    // function MarketUtils.getPoolValueInfo(address,Market.Props memory,Price.Props memory,Price.Props memory,Price.Props memory, bytes32, bool) external returns (MarketPoolValueInfo.Props memory) optional envfree;
     function _.getPoolValueInfo(address, Market.Props, Price.Props, Price.Props, Price.Props, bytes32, bool) external optional => DISPATCHER(true);
-    // function MarketUtilsHarness.getPoolValueInfo(address,Market.Props, Price.Props, Price.Props, Price.Props, bytes32, bool) external returns (MarketPoolValueInfo.Props memory) optional envfree;
     function MarketUtils.getPoolAmount(address datastore, Market.Props memory market, address token) internal returns (uint256) => getPoolAmountSummary(datastore, market.longToken, market.shortToken, market.marketToken, token);
 
 
@@ -183,6 +177,64 @@ methods {
 
     // Keys.sol
     function Keys.MAX_PNL_FACTOR_FOR_TRADERS() external returns (bytes32) envfree;
+
+    // Libraries
+    function TokenUtils._ external => NONDET;
+    function OrderUtils._ external => NONDET;
+    function Order._ external => NONDET;
+    function OrderStoreUtils._ external => NONDET;
+    function DecreaseOrderUtils._ external => NONDET;
+    function OrderEventUtils._ external => NONDET;
+
+    function BaseOrderUtils._ external => NONDET;
+    function SwapOrderUtils._ external => NONDET;
+    function IncreaseOrderUtils._ external => NONDET;
+    function ReferralEventUtils._ external => NONDET;
+    function ReferralTier._ external => NONDET;
+    function ReferralUtils._ external => NONDET;
+
+    function GasUtils._ external => NONDET;
+    // function DepositUtils._ external => NONDET;
+    function Deposit._ external => NONDET;
+    function NonceUtils._ external => NONDET;
+    function FeeUtils._ external => NONDET;
+    function Position._ external => NONDET;
+    function DecreasePositionSwapUtils._ external => NONDET;
+    function PositionUtils._ external => NONDET;
+    function DecreasePositionUtils._ external => NONDET;
+    // function PositionStoreUtils._ external => NONDET;
+    function DecreasePositionCollateralUtils._ external => NONDET;
+    function PositionEventUtils._ external => NONDET;
+    
+    function IncreasePositionUtils._ external => NONDET;
+    function Withdrawal._ external => NONDET;
+    // function WithdrawalUtils._ external => NONDET;
+    function OracleUtils._ external => NONDET;
+    function SwapUtils._ external => NONDET;
+    function Uint256Mask._ external => NONDET;
+    function AccountUtils._ external => NONDET;
+    function Array._ external => NONDET;
+    function Calc._ external => NONDET;
+    function Precision._ external => NONDET;
+    function EnumerableValues._ external => NONDET;
+    function Chain._ external => NONDET;
+    
+    function AdlUtils._ external => NONDET;
+    function Price._ external => NONDET;
+    // function MarketPoolValueInfo._ external => NONDET;
+    // function MarketUtils._ external => NONDET;
+    function MarketEventUtils._ external => NONDET;
+    function MarketStoreUtils._ external => NONDET;
+    function Market._ external => NONDET;
+    function FeatureUtils._ external => NONDET;
+    function CallbackUtils._ external => NONDET;
+    function Keys._ external => NONDET;
+    function ErrorUtils._ external => NONDET;
+    function PositionPricingUtils._ external => NONDET;
+    function PricingUtils._ external => NONDET;
+    function SwapPricingUtils._ external => NONDET;
+    function EventUtils._ external => NONDET;
+
 }
 
 // OrderStoreUtils Ghosts:
