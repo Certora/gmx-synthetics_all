@@ -132,6 +132,38 @@ library MarketUtils {
         return (marketTokenPrice, poolValueInfo);
     }
 
+    function getMarketTokenPriceMunged(
+        DataStore dataStore,
+        Market.Props memory market,
+        Price.Props memory indexTokenPrice,
+        Price.Props memory longTokenPrice,
+        Price.Props memory shortTokenPrice,
+        bytes32 pnlFactorType,
+        bool maximize
+    ) external view returns (int256) {
+        uint256 supply = getMarketTokenSupply(MarketToken(payable(market.marketToken)));
+
+        int256 poolValueInfo = getPoolValueInfoMunged(
+            address(dataStore),
+            market,
+            indexTokenPrice,
+            longTokenPrice,
+            shortTokenPrice,
+            pnlFactorType,
+            maximize
+        );
+
+        // if the supply is zero then treat the market token price as 1 USD
+        if (supply == 0) {
+            return Precision.FLOAT_PRECISION.toInt256();
+        }
+
+        if (poolValueInfo == 0) { return 0; }
+
+        int256 marketTokenPrice = Precision.mulDiv(Precision.WEI_PRECISION, poolValueInfo, supply);
+        return marketTokenPrice;
+    }
+
 
     // Certora Munging - START ///
     function getPoolAmountEx(address dataStore, Market.Props memory market, address token) external view returns (uint256) {
@@ -354,7 +386,109 @@ library MarketUtils {
 
         result.poolValue -= impactPoolUsd.toInt256();
 
+        // NOTE: formerly just returning result.
         return result;
+    }
+    // Munged to make this compatible with ghost function
+    function getPoolValueInfoMunged(
+        address dataStore_address, //munged from DataStore
+        Market.Props memory market,
+        Price.Props memory indexTokenPrice,
+        Price.Props memory longTokenPrice,
+        Price.Props memory shortTokenPrice,
+        bytes32 pnlFactorType,
+        bool maximize
+    ) public view returns (int256) {
+        MarketPoolValueInfo.Props memory result;
+
+        DataStore dataStore = DataStore(dataStore_address);
+
+        result.longTokenAmount = getPoolAmount(dataStore_address, market, market.longToken);
+        result.shortTokenAmount = getPoolAmount(dataStore_address, market, market.shortToken);
+
+        result.longTokenUsd = result.longTokenAmount * longTokenPrice.pickPrice(maximize);
+        result.shortTokenUsd = result.shortTokenAmount * shortTokenPrice.pickPrice(maximize);
+
+        result.poolValue = (result.longTokenUsd + result.shortTokenUsd).toInt256();
+
+        MarketPrices memory prices = MarketPrices(
+            indexTokenPrice,
+            longTokenPrice,
+            shortTokenPrice
+        );
+
+        result.totalBorrowingFees = getTotalPendingBorrowingFees(
+            dataStore,
+            market,
+            prices,
+            true
+        );
+
+        result.totalBorrowingFees += getTotalPendingBorrowingFees(
+            dataStore,
+            market,
+            prices,
+            false
+        );
+
+        result.borrowingFeePoolFactor = Precision.FLOAT_PRECISION - dataStore.getUint(Keys.BORROWING_FEE_RECEIVER_FACTOR);
+        result.poolValue += Precision.applyFactor(result.totalBorrowingFees, result.borrowingFeePoolFactor).toInt256();
+
+        // !maximize should be used for net pnl as a larger pnl leads to a smaller pool value
+        // and a smaller pnl leads to a larger pool value
+        //
+        // while positions will always be closed at the less favourable price
+        // using the inverse of maximize for the getPnl calls would help prevent
+        // gaming of market token values by increasing the spread
+        //
+        // liquidations could be triggerred by manipulating a large spread but
+        // that should be more difficult to execute
+
+        result.longPnl = getPnl(
+            dataStore,
+            market,
+            indexTokenPrice,
+            true, // isLong
+            !maximize // maximize
+        );
+
+        result.longPnl = getCappedPnl(
+            dataStore,
+            market.marketToken,
+            true,
+            result.longPnl,
+            result.longTokenUsd,
+            pnlFactorType
+        );
+
+        result.shortPnl = getPnl(
+            dataStore,
+            market,
+            indexTokenPrice,
+            false, // isLong
+            !maximize // maximize
+        );
+
+        result.shortPnl = getCappedPnl(
+            dataStore,
+            market.marketToken,
+            false,
+            result.shortPnl,
+            result.shortTokenUsd,
+            pnlFactorType
+        );
+
+        result.netPnl = result.longPnl + result.shortPnl;
+        result.poolValue = result.poolValue - result.netPnl;
+
+        result.impactPoolAmount = getPositionImpactPoolAmount(dataStore, market.marketToken);
+        // use !maximize for pickPrice since the impactPoolUsd is deducted from the poolValue
+        uint256 impactPoolUsd = result.impactPoolAmount * indexTokenPrice.pickPrice(!maximize);
+
+        result.poolValue -= impactPoolUsd.toInt256();
+
+        // NOTE: formerly just returning result.
+        return result.poolValue;
     }
 
     // @dev get the net pending pnl for a market

@@ -46,7 +46,9 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
+--prover_args "-s [z3]" \
+--prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
 --rule priceDontChangeNoDecreeseInPoolValue \
---msg "gmxp5, remove summarization flag and do it manually. Munge away only instances of delegatecall in the contract"
+--msg "gmxp5, using alex suggestions aside from initialSplitDepth locally"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 

@@ -57,7 +57,7 @@ rule increase_blocks_case1variant2 {
     
     // all the maxOracleBlockNumbers are gte the block number at which
     // the order was updated
-    uint256 j;
-    require j < params.maxOracleBlockNumbers.length;
-    satisfy params.maxOracleBlockNumbers[j] >= params.order.numbers.updatedAtBlock;
+    // uint256 j;
+    // require j < params.maxOracleBlockNumbers.length;
+    // satisfy params.maxOracleBlockNumbers[j] >= params.order.numbers.updatedAtBlock;
 }

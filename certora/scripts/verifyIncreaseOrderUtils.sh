@@ -20,5 +20,5 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
 --rule  increase_blocks_case1variant2 \
---msg "increaseOrder block pricing invariant. specify using instance of arrays instead of function call. Also write as satisfy"
+--msg "increaseOrder block pricing invariant. specify using instance of arrays instead of function call. Also write as satisfy. fix index to 0 as sanity check and drop one of the bounds"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
