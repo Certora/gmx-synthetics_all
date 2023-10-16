@@ -14,13 +14,11 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---server production \
---prover_version master \
+--server staging \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---rule increase_executed_with_right_block_prices1 \
---msg "testing newer bugfix, against master"
+--msg "increaseOrder block numbers; higher memory instance"
 # --msg "increase_executed, summarizing with uninterpreted CVL function"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
