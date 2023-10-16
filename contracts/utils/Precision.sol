@@ -25,7 +25,8 @@ library Precision {
     uint256 public constant FLOAT_PRECISION = 10 ** 30;
     uint256 public constant FLOAT_PRECISION_SQRT = 10 ** 15;
 
-    uint256 public constant WEI_PRECISION = 10 ** 18;
+    //uint256 public constant WEI_PRECISION = 10 ** 18;
+    uint256 public constant WEI_PRECISION = 1000000000000000000;
     uint256 public constant BASIS_POINTS_DIVISOR = 10000;
 
     uint256 public constant FLOAT_TO_WEI_DIVISOR = 10 ** 12;

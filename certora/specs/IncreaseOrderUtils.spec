@@ -2,15 +2,31 @@ using IncreaseOrderUtilsHarness as increaseOrderUtils;
 using ArrayHarness as array;
 
 methods {
+    // Arrays are not allowed arguments of ghost functions in CVL
+    
     //  external library function signatures may only have 'storage' locations
+    // in summaries
     // function Array.areGreaterThanOrEqualTo(uint256[] memory arr, uint256 value) external returns (bool) envfree;
     // function Array.areLessThanOrEqualTo(uint256[] memory arr, uint256 value) external returns (bool) envfree;
-    // Arrays are not allowed arguments of ghost functions in CVL
+
+    // Need to make library internal and then have external harness so it can
+    // both be summarized but also called from the spec.
+
+    function Array.areGreaterThanOrEqualTo(uint256[] memory arr, uint256 value) internal returns (bool) => areGreaterThanOrEqualToSummary(arr, value);
+    function Array.areLessThanOrEqualTo(uint256[] memory arr, uint256 value) internal returns (bool) => areLessThanOrEqualToSummary(arr, value);
+    // Try just munging these functions from array into the main contract ???
+
 }
 
-// Arrays are not allowed arguments of ghost functions in CVL
-// ghost areGreaterThanOrEqualToGhost(uint256[], uint256) returns bool;
-
+function areGreaterThanOrEqualToSummary(uint256[] arr, uint256 value) returns bool {
+    // uninterpreted function
+    bool ret;
+    return ret;
+}
+function areLessThanOrEqualToSummary(uint256[] arr, uint256 value) returns bool {
+    bool ret;
+    return ret;
+}
 
 // TODO if this does not perform well, try specifying using individual array indices.
 
@@ -23,9 +39,9 @@ rule increase_executed_with_right_block_prices1 {
 
     require (params.order.numbers.orderType == Order.OrderType.MarketIncrease);
         
-    satisfy array.areLessThanOrEqualTo(e,
+    assert array.areLessThanOrEqualTo(e,
             params.minOracleBlockNumbers, params.order.numbers.updatedAtBlock);
-    satisfy array.areGreaterThanOrEqualTo(e,
+    assert array.areGreaterThanOrEqualTo(e,
             params.maxOracleBlockNumbers, params.order.numbers.updatedAtBlock);
 }
 
@@ -37,7 +53,7 @@ rule increase_executed_with_right_block_prices2 {
     increaseOrderUtils.processOrder(e, params);
 
     require (params.order.numbers.orderType == Order.OrderType.LimitIncrease);
-    satisfy array.areGreaterThanOrEqualTo(e,
+    assert array.areGreaterThanOrEqualTo(e,
             params.minOracleBlockNumbers, params.order.numbers.updatedAtBlock);
 }
 
@@ -53,7 +69,7 @@ rule increase_blocks_case1variant2 {
     // the order was updated
     uint256 i;
     require i < params.minOracleBlockNumbers.length;
-    satisfy params.minOracleBlockNumbers[i] <= params.order.numbers.updatedAtBlock;
+    assert params.minOracleBlockNumbers[i] <= params.order.numbers.updatedAtBlock;
     
     // all the maxOracleBlockNumbers are gte the block number at which
     // the order was updated

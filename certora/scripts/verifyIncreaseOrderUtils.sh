@@ -6,6 +6,7 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
             contracts/position/IncreasePositionUtils.sol \
             contracts/order/OrderStoreUtils.sol \
             contracts/callback/CallbackUtils.sol \
+            contracts/utils/Array.sol \
 --verify IncreaseOrderUtilsHarness:certora/specs/IncreaseOrderUtils.spec \
 \
 --solc solc8.19 \
@@ -19,6 +20,7 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---rule  increase_blocks_case1variant2 \
---msg "increaseOrder block pricing invariant. specify using instance of arrays instead of function call. Also write as satisfy. fix index to 0 as sanity check and drop one of the bounds"
+--rule increase_executed_with_right_block_prices1 \
+--msg "testing newer bugfix, against master"
+# --msg "increase_executed, summarizing with uninterpreted CVL function"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \

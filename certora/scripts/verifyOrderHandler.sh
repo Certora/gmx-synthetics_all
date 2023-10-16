@@ -1,4 +1,4 @@
-certoraRun  contracts/exchange/OrderHandler.sol \
+certoraRun.py  contracts/exchange/OrderHandler.sol \
             contracts/exchange/BaseOrderHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
@@ -41,9 +41,8 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---server production \
---prover_version master \
 \
+--global_timeout 21600 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-s [z3]" \
