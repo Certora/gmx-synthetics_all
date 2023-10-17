@@ -1,4 +1,4 @@
-certoraRun.py  contracts/exchange/OrderHandler.sol \
+certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/exchange/BaseOrderHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
@@ -43,11 +43,12 @@ certoraRun.py  contracts/exchange/OrderHandler.sol \
 --solc_allow_path . \
 \
 --global_timeout 21600 \
+--server staging \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-s [z3]" \
 --prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
---rule priceDontChangeNoDecreeseInPoolValue \
+--rule requireReserveFactorLessThanOneSolvency \
 --msg "gmxp5, using alex suggestions aside from initialSplitDepth locally"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 
