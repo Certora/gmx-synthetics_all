@@ -19,5 +19,6 @@ certoraRun  certora/harness/DecreaseOrderUtilsHarness.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---msg "DecreaseOrder block numbers; ec2 provisioning with higher memory"
+--send_only \
+--msg "DecreaseOrder block numbers ec2 provisioning with higher memory"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \

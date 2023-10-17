@@ -16,5 +16,6 @@ certoraRun  certora/harness/SwapOrderUtilsHarness.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
+--send_only \
 --msg "swapOrder block numbers, use higher memory ec2 provisioning"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
