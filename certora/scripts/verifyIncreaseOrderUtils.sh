@@ -20,6 +20,6 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
 --send_only \
---msg "increaseOrder block numbers higher memory instance"
+--msg "increaseOrder block numbers, on prod with new tool version"
 # --msg "increase_executed, summarizing with uninterpreted CVL function"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \

@@ -98,76 +98,77 @@ library SwapUtils {
      * part of the swap and the amount of the received token.
      */
     function swap(SwapParams memory params) external returns (address, uint256) {
-        if (params.amountIn == 0) {
-            return (params.tokenIn, params.amountIn);
-        }
+        // Munged since this cannot be summarized
+        // if (params.amountIn == 0) {
+        //     return (params.tokenIn, params.amountIn);
+        // }
 
-        if (params.swapPathMarkets.length == 0) {
-            if (params.amountIn < params.minOutputAmount) {
-                revert Errors.InsufficientOutputAmount(params.amountIn, params.minOutputAmount);
-            }
+        // if (params.swapPathMarkets.length == 0) {
+        //     if (params.amountIn < params.minOutputAmount) {
+        //         revert Errors.InsufficientOutputAmount(params.amountIn, params.minOutputAmount);
+        //     }
 
-            if (address(params.bank) != params.receiver) {
-                params.bank.transferOut(
-                    params.tokenIn,
-                    params.receiver,
-                    params.amountIn,
-                    params.shouldUnwrapNativeToken
-                );
-            }
+        //     if (address(params.bank) != params.receiver) {
+        //         params.bank.transferOut(
+        //             params.tokenIn,
+        //             params.receiver,
+        //             params.amountIn,
+        //             params.shouldUnwrapNativeToken
+        //         );
+        //     }
 
-            return (params.tokenIn, params.amountIn);
-        }
+        //     return (params.tokenIn, params.amountIn);
+        // }
 
-        if (address(params.bank) != params.swapPathMarkets[0].marketToken) {
-            params.bank.transferOut(
-                params.tokenIn,
-                params.swapPathMarkets[0].marketToken,
-                params.amountIn,
-                false
-            );
-        }
+        // if (address(params.bank) != params.swapPathMarkets[0].marketToken) {
+        //     params.bank.transferOut(
+        //         params.tokenIn,
+        //         params.swapPathMarkets[0].marketToken,
+        //         params.amountIn,
+        //         false
+        //     );
+        // }
 
         address tokenOut = params.tokenIn;
         uint256 outputAmount = params.amountIn;
 
-        for (uint256 i; i < params.swapPathMarkets.length; i++) {
-            Market.Props memory market = params.swapPathMarkets[i];
+        // for (uint256 i; i < params.swapPathMarkets.length; i++) {
+        //     Market.Props memory market = params.swapPathMarkets[i];
 
-            bool flagExists = params.dataStore.getBool(Keys.swapPathMarketFlagKey(market.marketToken));
-            if (flagExists) {
-                revert Errors.DuplicatedMarketInSwapPath(market.marketToken);
-            }
+        //     bool flagExists = params.dataStore.getBool(Keys.swapPathMarketFlagKey(market.marketToken));
+        //     if (flagExists) {
+        //         revert Errors.DuplicatedMarketInSwapPath(market.marketToken);
+        //     }
 
-            params.dataStore.setBool(Keys.swapPathMarketFlagKey(market.marketToken), true);
+        //     params.dataStore.setBool(Keys.swapPathMarketFlagKey(market.marketToken), true);
 
-            uint256 nextIndex = i + 1;
-            address receiver;
-            if (nextIndex < params.swapPathMarkets.length) {
-                receiver = params.swapPathMarkets[nextIndex].marketToken;
-            } else {
-                receiver = params.receiver;
-            }
+        //     uint256 nextIndex = i + 1;
+        //     address receiver;
+        //     if (nextIndex < params.swapPathMarkets.length) {
+        //         receiver = params.swapPathMarkets[nextIndex].marketToken;
+        //     } else {
+        //         receiver = params.receiver;
+        //     }
 
-            _SwapParams memory _params = _SwapParams(
-                market,
-                tokenOut,
-                outputAmount,
-                receiver,
-                i == params.swapPathMarkets.length - 1 ? params.shouldUnwrapNativeToken : false // only convert ETH on the last swap if needed
-            );
+        //     _SwapParams memory _params = _SwapParams(
+        //         market,
+        //         tokenOut,
+        //         outputAmount,
+        //         receiver,
+        //         i == params.swapPathMarkets.length - 1 ? params.shouldUnwrapNativeToken : false // only convert ETH on the last swap if needed
+        //     );
 
-            (tokenOut, outputAmount) = _swap(params, _params);
-        }
+        //     (tokenOut, outputAmount) = _swap(params, _params);
+        // }
 
-        for (uint256 i; i < params.swapPathMarkets.length; i++) {
-            Market.Props memory market = params.swapPathMarkets[i];
-            params.dataStore.setBool(Keys.swapPathMarketFlagKey(market.marketToken), false);
-        }
+        // for (uint256 i; i < params.swapPathMarkets.length; i++) {
+        //     Market.Props memory market = params.swapPathMarkets[i];
+        //     params.dataStore.setBool(Keys.swapPathMarketFlagKey(market.marketToken), false);
+        // }
 
-        if (outputAmount < params.minOutputAmount) {
-            revert Errors.InsufficientSwapOutputAmount(outputAmount, params.minOutputAmount);
-        }
+        // if (outputAmount < params.minOutputAmount) {
+        //     revert Errors.InsufficientSwapOutputAmount(outputAmount, params.minOutputAmount);
+        // }
 
         return (tokenOut, outputAmount);
     }

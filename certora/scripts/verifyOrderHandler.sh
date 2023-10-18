@@ -1,4 +1,4 @@
-certoraRun  contracts/exchange/OrderHandler.sol \
+certoraRun.py  contracts/exchange/OrderHandler.sol \
             contracts/exchange/BaseOrderHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
@@ -42,13 +42,14 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
 \
---global_timeout 21600 \
---server staging \
+--server production \
+--prover_version master \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-s [z3]" \
---prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
---rule requireReserveFactorLessThanOneSolvency \
---msg "gmxp5, using alex suggestions aside from initialSplitDepth locally"
+--prover_args "-adaptiveSolverConfig false" \
+--contract OrderHandler \
+--msg "rerun all orderHandler rules in case tool updates fixed things. Specify contract arg to avoid running on everything in the scene"
+#--prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 
