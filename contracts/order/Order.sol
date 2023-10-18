@@ -81,7 +81,7 @@ library Order {
         address uiFeeReceiver;
         address market;
         address initialCollateralToken;
-        // munging: address[] swapPath; -- maybe deletable for swapOrderUtils verification
+        address[] swapPath;
     }
 
     // @param sizeDeltaUsd the requested change in position size

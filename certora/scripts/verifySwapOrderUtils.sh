@@ -17,5 +17,5 @@ certoraRun  certora/harness/SwapOrderUtilsHarness.sol \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
 --send_only \
---msg "swapOrder block numbers, bring in some summarization from the OrderHandler contract, munge SwapUtils.swap, summarize array functions as UF"
+--msg "swapOrder block numbers, bit of munging of structs, bring in some summarization from the OrderHandler contract, munge SwapUtils.swap, summarize array functions as UF"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
