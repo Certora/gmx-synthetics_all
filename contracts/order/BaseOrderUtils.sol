@@ -93,7 +93,7 @@ library BaseOrderUtils {
         Market.Props[] swapPathMarkets;
         uint256[] minOracleBlockNumbers;
         uint256[] maxOracleBlockNumbers;
-        Market.Props market;
+        // Market.Props market; Munged. Seems not used for SwapOrder verif
         address keeper;
         uint256 startingGas;
         Order.SecondaryOrderType secondaryOrderType;
@@ -110,8 +110,9 @@ library BaseOrderUtils {
         EventEmitter eventEmitter;
         OrderVault orderVault;
         Oracle oracle;
-        SwapHandler swapHandler;
-        IReferralStorage referralStorage;
+        // Munge for SwapOrderUtils verif
+        // SwapHandler swapHandler;
+        // IReferralStorage referralStorage;
     }
 
     struct GetExecutionPriceCache {
