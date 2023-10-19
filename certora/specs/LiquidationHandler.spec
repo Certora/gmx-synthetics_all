@@ -74,6 +74,9 @@ rule liquidationWorksIfConditionsAreMet() {
     // executeLiquidation is not payable, hence e.msg.value == 0
     require(e.msg.value == 0);
 
+    // the reentrancy guard should be in the NOT_ENTERED state.
+    require(_DataStore.getUint(e, _Keys.REENTRANCY_GUARD_STATUS(e)) == 0);
+
     address account;
     address market;
     address collateralToken;
