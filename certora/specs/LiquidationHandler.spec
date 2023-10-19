@@ -10,6 +10,8 @@
  * Basic structure for b: require that liquidation works, assert the criteria
  */
 
+using DataStore as _DataStore;
+using Keys as _Keys;
 using Position as _Position;
 using LiquidationHandlerHarness as _LiquidationHandlerHarness;
 
@@ -68,12 +70,12 @@ methods {
 
 rule liquidationWorksIfConditionsAreMet() {
     env e;
+
     address account;
     address market;
     address collateralToken;
     bool isLong;
     OracleUtils.SetPricesParams oracleParams;
-
     // take any position
     Position.Props position;
 
