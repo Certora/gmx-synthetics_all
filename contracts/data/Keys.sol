@@ -562,7 +562,7 @@ library Keys {
 
    // @dev the min collateral factor key
    // @param the market for the min collateral factor
-   function minCollateralFactorKey(address market) internal pure returns (bytes32) {
+   function minCollateralFactorKey(address market) public pure returns (bytes32) {
        return keccak256(abi.encode(
            MIN_COLLATERAL_FACTOR,
            market
