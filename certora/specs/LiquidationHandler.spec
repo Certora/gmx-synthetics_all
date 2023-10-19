@@ -71,6 +71,9 @@ methods {
 rule liquidationWorksIfConditionsAreMet() {
     env e;
 
+    // executeLiquidation is not payable, hence e.msg.value == 0
+    require(e.msg.value == 0);
+
     address account;
     address market;
     address collateralToken;
