@@ -85,7 +85,7 @@ rule liquidationWorksIfConditionsAreMet() {
     // > collateral is more than the max allowed leverage.
     uint256 positionSize = _LiquidationHandlerHarness.position__sizeInUsd(e, position);
     uint256 collateralAmount = _LiquidationHandlerHarness.position__collateralAmount(e, position);
-    uint256 minLeverageFactor; // = _DataStore.getUint(e, _Keys.minCollateralFactorKey(e, market));
+    uint256 minLeverageFactor = _DataStore.getUint(e, _Keys.minCollateralFactorKey(e, market));
     require(to_mathint(positionSize) > minLeverageFactor * collateralAmount);
 
     executeLiquidation@withrevert(e, account, market, collateralToken, isLong, oracleParams);
