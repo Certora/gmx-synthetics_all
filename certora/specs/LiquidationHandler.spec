@@ -82,6 +82,9 @@ rule liquidationWorksIfConditionsAreMet() {
     address collateralToken;
     bool isLong;
     OracleUtils.SetPricesParams oracleParams;
+    // if priceFeedTokens is empty we revert because of this.
+    require(oracleParams.priceFeedTokens.length > 0);
+
     // take any position
     Position.Props position;
 
