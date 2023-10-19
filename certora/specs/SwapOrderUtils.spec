@@ -1,12 +1,8 @@
 using SwapOrderUtilsHarness as swapOrderUtils;
 using ArrayHarness as ArrayHarness;
+using OracleUtils as oracleUtils;
 
 methods {
-    //  external library function signatures may only have 'storage' locations
-    // function Array.areGreaterThanOrEqualTo(uint256[] memory arr, uint256 value) external returns (bool) envfree;
-    // function Array.areLessThanOrEqualTo(uint256[] memory arr, uint256 value) external returns (bool) envfree;
-    // Arrays are not allowed arguments of ghost functions in CVL
-
     //Datastore
     function _.getUint(bytes32 key) external => NONDET;
     function _.setUint(bytes32 key, uint256 value) external => NONDET;
@@ -68,41 +64,19 @@ methods {
     function _.addUint(bytes32 setKey, uint256 value) external => NONDET;
     function _.removeUint(bytes32 setKey, uint256 value) external => NONDET;
 
-    // Array
-    function Array.areGreaterThanOrEqualTo(uint256[] memory arr, uint256 value) internal returns (bool) => areGreaterThanOrEqualToSummary(arr, value);
-    function Array.areLessThanOrEqualTo(uint256[] memory arr, uint256 value) internal returns (bool) => areLessThanOrEqualToSummary(arr, value);
-
     // SwapUtils
-    // SwapUtils.swap is actually immaterial to the rule and has most of the work in it
-    // Cannot summarize external library calls with memory params. so this
-    // whole function is just commented out
-    // function SwapUtils.swap(SwapUtils.SwapParams memory params) external returns (address, uint256) => NONDET;
-    // function SwapUtils._swap(SwapUtils.SwapParams memory params, SwapUtils._SwapParams memory _params) internal returns (address, uint256) => NONDET;
+    // SwapUtils.swap is actually immaterial to the block numbers rule and has most of the work in it
+    function SwapUtils.swap(SwapUtils.SwapParams params) external returns (address, uint256) => NONDET;
 }
 
-function areGreaterThanOrEqualToSummary(uint256[] arr, uint256 value) returns bool {
-    // uninterpreted function
-    bool ret;
-    return ret;
-}
-function areLessThanOrEqualToSummary(uint256[] arr, uint256 value) returns bool {
-    bool ret;
-    return ret;
-}
-
-// Arrays are not allowed arguments of ghost functions in CVL
-// ghost areGreaterThanOrEqualToGhost(uint256[], uint256) returns bool;
-
-
-// TODO if this does not perform well, try specifying using individual array indices.
 rule swap_executed_with_right_block_prices1 {
     env e;
     BaseOrderUtils.ExecuteOrderParams params;
 
+    require (params.order.numbers.orderType == Order.OrderType.MarketSwap);
+
     swapOrderUtils.processOrder(e, params);
 
-    require (params.order.numbers.orderType == Order.OrderType.MarketSwap);
-        
     assert ArrayHarness.areLessThanOrEqualTo(e,
             params.minOracleBlockNumbers, params.order.numbers.updatedAtBlock);
     assert ArrayHarness.areGreaterThanOrEqualTo(e,
@@ -113,9 +87,10 @@ rule swap_executed_with_right_block_prices2 {
     env e;
     BaseOrderUtils.ExecuteOrderParams params;
 
+    require params.order.numbers.orderType == Order.OrderType.LimitSwap;
+    
     swapOrderUtils.processOrder(e, params);
 
-    require params.order.numbers.orderType == Order.OrderType.LimitSwap;
     assert ArrayHarness.areGreaterThanOrEqualTo(e,
             params.minOracleBlockNumbers, params.order.numbers.updatedAtBlock);
 }

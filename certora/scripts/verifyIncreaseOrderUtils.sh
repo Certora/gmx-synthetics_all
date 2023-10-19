@@ -1,4 +1,4 @@
-certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
+certoraRun.py  certora/harness/IncreaseOrderUtilsHarness.sol \
             certora/harness/ArrayHarness.sol \
             contracts/order/IncreaseOrderUtils.sol \
             contracts/order/BaseOrderUtils.sol \
@@ -14,12 +14,12 @@ certoraRun  certora/harness/IncreaseOrderUtilsHarness.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---server staging \
+--server production \
+--prover_version master \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---send_only \
---msg "increaseOrder block numbers, on prod with new tool version"
+--msg "increaseOrder block numbers, summarize datastore NONDET, summarize immaterial fn as NONDET"
 # --msg "increase_executed, summarizing with uninterpreted CVL function"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \

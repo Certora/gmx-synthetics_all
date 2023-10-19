@@ -1,9 +1,10 @@
-certoraRun  certora/harness/SwapOrderUtilsHarness.sol \
+certoraRun.py  certora/harness/SwapOrderUtilsHarness.sol \
             certora/harness/ArrayHarness.sol \
             contracts/order/SwapOrderUtils.sol \
             contracts/order/BaseOrderUtils.sol \
             contracts/swap/SwapUtils.sol \
             contracts/order/OrderStoreUtils.sol \
+            contracts/oracle/OracleUtils.sol \
 --verify SwapOrderUtilsHarness:certora/specs/SwapOrderUtils.spec \
 \
 --solc solc8.19 \
@@ -12,10 +13,10 @@ certoraRun  certora/harness/SwapOrderUtilsHarness.sol \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
 --server production \
+--prover_version master \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---send_only \
---msg "swapOrder block numbers, bring in some summarization from the OrderHandler contract, munge SwapUtils.swap, summarize array functions as UF"
+--msg "swapOrder block numbers, unmunge and summarize swap, drop length requirement"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \

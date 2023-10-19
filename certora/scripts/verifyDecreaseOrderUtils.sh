@@ -1,4 +1,4 @@
-certoraRun  certora/harness/DecreaseOrderUtilsHarness.sol \
+certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
             certora/harness/ArrayHarness.sol \
             certora/harness/GetPositionKeyHarness.sol \
             contracts/order/DecreaseOrderUtils.sol \
@@ -14,11 +14,11 @@ certoraRun  certora/harness/DecreaseOrderUtilsHarness.sol \
 --optimistic_loop \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
---server staging \
+--server production \
+--prover_version master \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---send_only \
---msg "DecreaseOrder block numbers, on prod with new tool version"
+--msg "DecreaseOrder block numbers, summarizing Datastore and irrelevant functions "
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \

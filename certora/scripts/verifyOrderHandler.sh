@@ -43,13 +43,13 @@ certoraRun.py  contracts/exchange/OrderHandler.sol \
 --solc_allow_path . \
 \
 --server production \
---prover_version master \
+--prover_version yoav/VRSimplifier \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-s [z3]" \
 --prover_args "-adaptiveSolverConfig false" \
 --contract OrderHandler \
---msg "rerun all orderHandler rules in case tool updates fixed things. Specify contract arg to avoid running on everything in the scene"
+--msg "rerun all orderHandler rules against Yoav branch"
 #--prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 

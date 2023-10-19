@@ -113,6 +113,22 @@ library OracleUtils {
         return true;
     }
 
+    function isBlockNumberWithinRangeMunged(
+        uint256[] memory minOracleBlockNumbers,
+        uint256[] memory maxOracleBlockNumbers,
+        uint256 blockNumber
+    ) external pure returns (bool) {
+        if (!minOracleBlockNumbers.areLessThanOrEqualTo(blockNumber)) {
+            return false;
+        }
+
+        if (!maxOracleBlockNumbers.areGreaterThanOrEqualTo(blockNumber)) {
+            return false;
+        }
+
+        return true;
+    }
+
     // @dev get the uncompacted price at the specified index
     // @param compactedPrices the compacted prices
     // @param index the index to get the uncompacted price at
