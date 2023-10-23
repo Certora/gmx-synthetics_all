@@ -15,11 +15,10 @@ certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
 --server production \
---prover_version yoav/VRSimplifier \
+--prover_version master \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 --rule gmx_property1_DecreaseOrder_NoRevert \
---msg "DecreaseOrder version of ReqP1 using an effect-based rather than revert based spec, fixing bug in spec, deleting some summaries in case those somehow cause problems, add the big nondet flag"
+--msg "DecreaseOrder version of ReqP1 using effect-based. on master."
