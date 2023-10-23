@@ -42,14 +42,14 @@ certoraRun.py  contracts/exchange/OrderHandler.sol \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
 \
---server production \
+--server staging \
 --prover_version master \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-s [z3]" \
 --prover_args "-adaptiveSolverConfig false" \
 --contract OrderHandler \
---msg "rerun all orderHandler rules with todays master and no summarization flag"
+--msg "try on staging, rerun all orderHandler rules with todays master and no summarization flag"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 #--prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
 

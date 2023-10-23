@@ -21,4 +21,4 @@ certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
 --rule gmx_property1_DecreaseOrder_NoRevert \
---msg "DecreaseOrder version of ReqP1 using effect-based. on master."
+--msg "DecreaseOrder version of ReqP1 using effect-based. on master. (After rebuilding prover locally.)"
