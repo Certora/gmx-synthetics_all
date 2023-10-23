@@ -7,6 +7,13 @@ certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
             contracts/position/DecreasePositionUtils.sol \
             contracts/order/OrderStoreUtils.sol \
             contracts/error/ErrorUtils.sol \
+            contracts/market/MarketToken.sol \
+            certora/mocks/DummyERC20A.sol \
+            certora/mocks/DummyERC20B.sol \
+            contracts/oracle/Oracle.sol \
+            contracts/market/MarketUtils.sol \
+            certora/harness/MarketUtilsHarness.sol \
+            contracts/data/Keys.sol \
 --verify DecreaseOrderUtilsHarness:certora/specs/ReqP1DecreaseOrder.spec \
 \
 --solc solc8.19 \
@@ -15,11 +22,9 @@ certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
 --server production \
---prover_version yoav/VRSimplifier \
+--prover_version master \
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
---rule gmx_property1_DecreaseOrder_NoRevert \
---msg "DecreaseOrder version of ReqP1 using an effect-based rather than revert based spec, fixing bug in spec, deleting some summaries in case those somehow cause problems, add the big nondet flag"
+--msg "(using master, not yoav version) effect-based (not revert) DecreaseOrder version of ReqP1, simplifying def of closed position. Also run GMX req property 5, and satisfy not version of property 5"

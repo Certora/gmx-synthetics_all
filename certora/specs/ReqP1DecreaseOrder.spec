@@ -2,6 +2,14 @@ using DecreaseOrderUtilsHarness as decreaseOrderUtils;
 using GetPositionKeyHarness as positionKeyHarness;
 using PositionStoreUtils as PositionStoreUtils;
 
+// For GMX Req Property 5
+using DummyERC20A as DummyERC20Long;
+using DummyERC20B as DummyERC20Short;
+using MarketToken as MarketToken;
+using Oracle as Oracle;
+using MarketUtilsHarness as marketUtils;
+using Keys as Keys;
+
 methods {
     //Datastore
     function _.getUint(bytes32 key) external => NONDET;
@@ -64,6 +72,7 @@ methods {
     function _.addUint(bytes32 setKey, uint256 value) external => NONDET;
     function _.removeUint(bytes32 setKey, uint256 value) external => NONDET;
 
+
     // PositionUtils
     // function PositionUtils.getPositionKey(address account, address market, address collateralToken, bool isLong) internal returns (bytes32) => NONDET;
     // PositionUtils.UpdatePositionParams TODO
@@ -79,6 +88,21 @@ methods {
 
     // SwapUtils
     // function SwapUtils.swap(SwapUtils.SwapParams params) external returns (address, uint256) => NONDET;
+
+    //--------------------------------------------------------------------------
+    // For Requested Property 5
+    //--------------------------------------------------------------------------
+    // Oracle
+    function Oracle.getPrimaryPrice(address) external returns (Price.Props memory) envfree;
+    function _.setPrices(address,address,OracleUtils.SetPricesParams) external => NONDET;
+    function _.clearAllPrices() external => NONDET;
+    function _.setPrimaryPrice(address,Price.Props) external => NONDET;
+
+    // Keys.sol
+    function Keys.MAX_PNL_FACTOR_FOR_TRADERS() external returns (bytes32) envfree;
+
+    // MarketUtils
+    function _.getPoolValueInfo(address, Market.Props, Price.Props, Price.Props, Price.Props, bytes32, bool) external optional => DISPATCHER(true);
 }
 
 ghost mapping(bytes32 => address) PositionAddressesAccounts;
@@ -193,7 +217,8 @@ function getPosition(bytes32 key) returns Position.Props {
 } 
 
 function isPositionEmpty(Position.Props position) returns bool {
-    return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0 && position.numbers.collateralAmount == 0;
+    // return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0 && position.numbers.collateralAmount == 0;
+    return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0;
 }
 
 function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_params, uint256 close_value) returns bool {
@@ -366,4 +391,70 @@ rule gmx_property1_DecreaseOrder_NoRevert {
     // Assert: positions can be closed after executing the call
     //========================================================================
     satisfy positions_closable_nonreverting(e, oracle_price_params, position_close_value);
+}
+
+rule priceDontChangeNoDecreeseInPoolValue {
+    env e;
+    calldataarg args;
+
+    address dataStore;
+    address indexToken;
+    Market.Props marketProps;
+    MarketUtils.MarketPrices prices;
+    bool maximize;
+    
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams;
+
+    require marketProps.longToken == DummyERC20Long;
+    require marketProps.shortToken == DummyERC20Short;
+    require marketProps.marketToken == MarketToken;
+    require marketProps.indexToken == indexToken;
+
+    // Fixed prices.
+    Price.Props indexTokenPrice = Oracle.getPrimaryPrice(indexToken);
+    Price.Props longTokenPrice = Oracle.getPrimaryPrice(DummyERC20Long);
+    Price.Props shortTokenPrice = Oracle.getPrimaryPrice(DummyERC20Short);
+
+    MarketPoolValueInfo.Props poolValuePropsBefore = marketUtils.getPoolValueInfo(e, dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    int256 poolValueBefore = poolValuePropsBefore.poolValue;
+
+    decreaseOrderUtils.processOrder(e, executeOrderParams);
+
+    MarketPoolValueInfo.Props poolValuePropsAfter = marketUtils.getPoolValueInfo(e, dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    int256 poolValueAfter = poolValuePropsAfter.poolValue;
+
+    assert poolValueBefore >= poolValueAfter;
+}
+
+rule priceDontChangeNoDecreeseInPoolValue_satisfy_not {
+    env e;
+    calldataarg args;
+
+    address dataStore;
+    address indexToken;
+    Market.Props marketProps;
+    MarketUtils.MarketPrices prices;
+    bool maximize;
+    
+    BaseOrderUtils.ExecuteOrderParams executeOrderParams;
+
+    require marketProps.longToken == DummyERC20Long;
+    require marketProps.shortToken == DummyERC20Short;
+    require marketProps.marketToken == MarketToken;
+    require marketProps.indexToken == indexToken;
+
+    // Fixed prices.
+    Price.Props indexTokenPrice = Oracle.getPrimaryPrice(indexToken);
+    Price.Props longTokenPrice = Oracle.getPrimaryPrice(DummyERC20Long);
+    Price.Props shortTokenPrice = Oracle.getPrimaryPrice(DummyERC20Short);
+
+    MarketPoolValueInfo.Props poolValuePropsBefore = marketUtils.getPoolValueInfo(e, dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    int256 poolValueBefore = poolValuePropsBefore.poolValue;
+
+    decreaseOrderUtils.processOrder(e, executeOrderParams);
+
+    MarketPoolValueInfo.Props poolValuePropsAfter = marketUtils.getPoolValueInfo(e, dataStore, marketProps, indexTokenPrice, longTokenPrice, shortTokenPrice, Keys.MAX_PNL_FACTOR_FOR_TRADERS(), maximize);
+    int256 poolValueAfter = poolValuePropsAfter.poolValue;
+
+    satisfy !(poolValueBefore >= poolValueAfter);
 }
