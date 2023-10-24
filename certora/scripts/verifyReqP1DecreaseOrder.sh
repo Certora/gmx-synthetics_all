@@ -1,4 +1,4 @@
-certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
+certoraRun  certora/harness/DecreaseOrderUtilsHarness.sol \
             certora/harness/ArrayHarness.sol \
             certora/harness/GetPositionKeyHarness.sol \
             contracts/order/DecreaseOrderUtils.sol \
@@ -15,10 +15,10 @@ certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
 --packages @openzeppelin=node_modules/@openzeppelin prb-math=node_modules/prb-math \
 --solc_allow_path . \
 --server production \
---prover_version master \
+--prover_version master
 \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
 --rule gmx_property1_DecreaseOrder_NoRevert \
---msg "DecreaseOrder version of ReqP1 using effect-based. on master. (After rebuilding prover locally.)"
+--msg "DecreaseOrder version of ReqP1 using effect-based. simplify isPositionEmpty"

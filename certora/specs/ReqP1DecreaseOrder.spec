@@ -193,7 +193,8 @@ function getPosition(bytes32 key) returns Position.Props {
 } 
 
 function isPositionEmpty(Position.Props position) returns bool {
-    return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0 && position.numbers.collateralAmount == 0;
+    return position.numbers.sizeInUsd == 0 && position.numbers.sizeInTokens == 0;
+    // && position.numbers.collateralAmount == 0;
 }
 
 function positions_closable(env e, OracleUtils.SetPricesParams oracle_price_params, uint256 close_value) returns bool {
