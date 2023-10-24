@@ -27,4 +27,5 @@ certoraRun.py  certora/harness/DecreaseOrderUtilsHarness.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---msg "(using master, not yoav version) effect-based (not revert) DecreaseOrder version of ReqP1, simplifying def of closed position. Also run GMX req property 5, and satisfy not version of property 5"
+--rule priceDontChangeNoDecreeseInPoolValue_satisfy_not \
+--msg "only P5 satisfy_not"
