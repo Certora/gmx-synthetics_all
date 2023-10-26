@@ -28,6 +28,28 @@ contract LiquidationHandler is BaseOrderHandler {
         _swapHandler,
         _referralStorage
     ) {}
+    function executeLiquidationSetup(
+        address account,
+        address market,
+        address collateralToken,
+        bool isLong,
+        OracleUtils.SetPricesParams calldata oracleParams
+    ) external
+        globalNonReentrant
+        onlyLiquidationKeeper
+        withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
+    {
+        uint256 startingGas = gasleft();
+
+        LiquidationUtils.createLiquidationOrderSetup(
+            dataStore,
+            eventEmitter,
+            account,
+            market,
+            collateralToken,
+            isLong
+        );
+    }
 
     // @dev executes a position liquidation
     // @param account the account of the position to liquidate
