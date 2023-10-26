@@ -74,16 +74,11 @@ rule liquidationWorksIfConditionsAreMet() {
     // executeLiquidation is not payable, hence e.msg.value == 0
     require(e.msg.value == 0);
 
-    // the reentrancy guard should be in the NOT_ENTERED state.
-    require(_DataStore.getUint(e, _Keys.REENTRANCY_GUARD_STATUS(e)) == 0);
-
     address account;
     address market;
     address collateralToken;
     bool isLong;
     OracleUtils.SetPricesParams oracleParams;
-    // if priceFeedTokens is empty we revert because of this.
-    require(oracleParams.priceFeedTokens.length > 0);
 
     // take any position
     Position.Props position;
@@ -97,8 +92,9 @@ rule liquidationWorksIfConditionsAreMet() {
     uint256 minLeverageFactor = _DataStore.getUint(e, _Keys.minCollateralFactorKey(e, market));
     require(to_mathint(positionSize) > minLeverageFactor * collateralAmount);
 
+    // make sure we don't revert because of broken calldata or irrelevant modifiers
+    executeLiquidationSetup(e, account, market, collateralToken, isLong, oracleParams);
     executeLiquidation@withrevert(e, account, market, collateralToken, isLong, oracleParams);
-
     bool didRevert = lastReverted;
     assert(!didRevert);
 }
