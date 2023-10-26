@@ -91,4 +91,16 @@ library LiquidationUtils {
 
         return key;
     }
+
+    function createLiquidationOrderSetup(
+        DataStore dataStore,
+        EventEmitter eventEmitter,
+        address account,
+        address market,
+        address collateralToken,
+        bool isLong
+    ) external view {
+        bytes32 positionKey = PositionUtils.getPositionKey(account, market, collateralToken, isLong);
+        Position.Props memory position = PositionStoreUtils.get(dataStore, positionKey);
+    }
 }
