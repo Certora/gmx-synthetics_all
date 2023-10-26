@@ -494,9 +494,10 @@ contract DataStore is RoleModule {
     // in the result
     // @param the end of the range, values at the end index will not be returned
     // in the result
-    function getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external view returns (uint256[] memory) {
-        return uintSets[setKey].valuesAt(start, end);
-    }
+    // [MUNGED] never called, but yields a warning in memory partitioning
+    //function getUintValuesAt(bytes32 setKey, uint256 start, uint256 end) external view returns (uint256[] memory) {
+    //    return uintSets[setKey].valuesAt(start, end);
+    //}
 
     // @dev add the given value to the set
     // @param setKey the key of the set
