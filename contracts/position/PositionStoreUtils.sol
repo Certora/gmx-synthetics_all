@@ -32,9 +32,13 @@ library PositionStoreUtils {
 
     function get(DataStore dataStore, bytes32 key) external view returns (Position.Props memory) {
         Position.Props memory position;
-        if (!dataStore.containsBytes32(Keys.POSITION_LIST, key)) {
-            return position;
-        }
+        //[MUNGED] this checks whether there is this position in the first places.
+        // Unfortunately, it seems to make the memory analysis much more difficult.
+        // For now, we just assume the order exists.
+        require(dataStore.containsBytes32(Keys.POSITION_LIST, key));
+        //if (!dataStore.containsBytes32(Keys.POSITION_LIST, key)) {
+        //    return position;
+        //}
 
         position.setAccount(dataStore.getAddress(
             keccak256(abi.encode(key, ACCOUNT))
