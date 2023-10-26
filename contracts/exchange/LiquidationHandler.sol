@@ -64,9 +64,9 @@ contract LiquidationHandler is BaseOrderHandler {
         bool isLong,
         OracleUtils.SetPricesParams calldata oracleParams
     ) external
-        globalNonReentrant
-        onlyLiquidationKeeper
-        withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
+        //globalNonReentrant
+        //onlyLiquidationKeeper
+        //withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
     {
         uint256 startingGas = gasleft();
 
@@ -89,6 +89,6 @@ contract LiquidationHandler is BaseOrderHandler {
 
         FeatureUtils.validateFeature(params.contracts.dataStore, Keys.executeOrderFeatureDisabledKey(address(this), uint256(params.order.orderType())));
 
-        OrderUtils.executeOrder(params);
+        //OrderUtils.executeOrder(params);
     }
 }
