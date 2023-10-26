@@ -27,6 +27,11 @@ methods {
     function _.validateFeature(address, bytes32) external => NONDET;
     function _.executeOrder(address) external => NONDET;
     function OracleUtils.getUncompactedOracleBlockNumbers(uint256[] memory a, uint256 length) internal returns (uint256[] memory)=> array_identity(a);
+    function PositionUtils.getPositionKey(address, address, address, bool) internal returns (bytes32) => CONSTANT;
+
+    // PositionStoreUtils
+    function _.get(address, bytes32) external => CONSTANT;
+    function DataStore.containsBytes32(bytes32, bytes32) external returns (bool) => CONSTANT;
 
     // ##### Bottom-Up #####
 
