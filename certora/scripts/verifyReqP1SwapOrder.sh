@@ -1,13 +1,13 @@
-certoraRun  certora/harness/DecreaseOrderUtilsHarness.sol \
+certoraRun certora/harness/SwapOrderUtilsHarness.sol \
+            certora/harness/DecreaseOrderUtilsHarness.sol \
             certora/harness/ArrayHarness.sol \
             certora/harness/GetPositionKeyHarness.sol \
             contracts/order/DecreaseOrderUtils.sol \
+            contracts/order/SwapOrderUtils.sol \
             contracts/order/BaseOrderUtils.sol \
             contracts/swap/SwapUtils.sol \
-            contracts/position/DecreasePositionUtils.sol \
             contracts/order/OrderStoreUtils.sol \
-            contracts/error/ErrorUtils.sol \
---verify DecreaseOrderUtilsHarness:certora/specs/ReqP1DecreaseOrder.spec \
+--verify SwapOrderUtilsHarness:certora/specs/ReqP1SwapOrder.spec \
 \
 --solc solc8.19 \
 --loop_iter 1 \
@@ -21,8 +21,6 @@ certoraRun  certora/harness/DecreaseOrderUtilsHarness.sol \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
 --prover_args "-depth 20, -mediumTimeout 60, -s\"[z3:def,z3:arith1,z3:lia1]\" " \
---prover_args "-splitParallel true" \
---prover_args "-smt_parallelLIASolvers \"[z3:def,z3:arith1,z3:lia1]\"" \
---prover_args "-smt_parallelNIASolvers [z3:def]" \
---rule gmx_property1_DecreaseOrder \
---msg "DecreaseOrder ReqP1, fix jaroslav options attempt 2, use reverting version"
+--prover_args "-splitParallel true -smt_parallelLIASolvers \"[z3:def,z3:arith1,z3:lia1]\" -smt_parallelNIASolvers [z3:def]" \
+--rule gmx_property1_SwapOrder \
+--msg "SwapOrder reqp1, revert-based, use Jaroslav options."
