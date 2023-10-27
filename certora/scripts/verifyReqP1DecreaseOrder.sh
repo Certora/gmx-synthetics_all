@@ -20,7 +20,7 @@ certoraRun  certora/harness/DecreaseOrderUtilsHarness.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---prover_args "-depth 20, -mediumTimeout 60, -s\"[z3:def,z3:arith1,z3:lia1]\" " \
---prover_args "-splitParallel -smt_parallelLIASolvers \"[z3:def,z3:arith1,z3:lia1]\" -smt_parallelNIASolvers [z3:def]" \
 --rule gmx_property1_DecreaseOrder_NoRevert \
 --msg "DecreaseOrder version of ReqP1 using effect-based. simplify isPositionEmpty, test if merged fix works, use jaroslav suggested options"
+# --prover_args "-splitParallel -smt_parallelLIASolvers \"[z3:def,z3:arith1,z3:lia1]\" -smt_parallelNIASolvers [z3:def]" \
+# --prover_args "-depth 20, -mediumTimeout 60, -s\"[z3:def,z3:arith1,z3:lia1]\" " \
