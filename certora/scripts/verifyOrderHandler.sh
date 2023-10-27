@@ -1,4 +1,4 @@
-certoraRun.py  contracts/exchange/OrderHandler.sol \
+certoraRun  contracts/exchange/OrderHandler.sol \
             contracts/exchange/BaseOrderHandler.sol \
             contracts/role/RoleStore.sol \
             contracts/data/DataStore.sol \
@@ -43,13 +43,14 @@ certoraRun.py  contracts/exchange/OrderHandler.sol \
 --solc_allow_path . \
 \
 --server production \
+--parametric_contracts OrderHandler \
 --prover_version master \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-s [z3]" \
 --prover_args "-adaptiveSolverConfig false" \
---contract OrderHandler \
---msg "rerun all orderHandler rules with todays master and no summarization flag"
+--rule positions_can_be_closed \
+--msg "Rerun Requested Property 1 to update timeout ticket"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 #--prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
 
