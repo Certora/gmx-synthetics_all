@@ -31,7 +31,8 @@ methods {
 
     // PositionStoreUtils
     function _.get(address, bytes32) external => CONSTANT;
-    function DataStore.containsBytes32(bytes32, bytes32) external returns (bool) => CONSTANT;
+    function _.containsBytes32(bytes32, bytes32) external => CONSTANT;
+    function _.getAddress(bytes32) external => NONDET;
 
     // ##### Bottom-Up #####
 
