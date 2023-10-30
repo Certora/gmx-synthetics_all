@@ -51,6 +51,46 @@ contract LiquidationHandler is BaseOrderHandler {
         );
     }
 
+    bool public executed;
+    function resetExecuted() external {
+        executed = false;
+    }
+
+    function executeLiquidationExecute(
+        address account,
+        address market,
+        address collateralToken,
+        bool isLong,
+        OracleUtils.SetPricesParams calldata oracleParams
+    ) external
+        //globalNonReentrant
+        //onlyLiquidationKeeper
+        //withOraclePrices(oracle, dataStore, eventEmitter, oracleParams)
+    {
+        uint256 startingGas = gasleft();
+
+        bytes32 key = LiquidationUtils.createLiquidationOrder(
+            dataStore,
+            eventEmitter,
+            account,
+            market,
+            collateralToken,
+            isLong
+        );
+
+        BaseOrderUtils.ExecuteOrderParams memory params = getExecuteOrderParams(
+            key,
+            oracleParams,
+            msg.sender,
+            startingGas,
+            Order.SecondaryOrderType.None
+        );
+
+        FeatureUtils.validateFeature(params.contracts.dataStore, Keys.executeOrderFeatureDisabledKey(address(this), uint256(params.order.orderType())));
+
+        executed = true;
+    }
+
     // @dev executes a position liquidation
     // @param account the account of the position to liquidate
     // @param market the position's market

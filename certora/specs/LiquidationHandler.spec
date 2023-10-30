@@ -105,6 +105,68 @@ rule liquidationWorksIfConditionsAreMet() {
     assert(!didRevert);
 }
 
+rule liquidationWorksIfConditionsAreMet_execute() {
+    env e;
+
+    // executeLiquidation is not payable, hence e.msg.value == 0
+    require(e.msg.value == 0);
+
+    address account;
+    address market;
+    address collateralToken;
+    bool isLong;
+    OracleUtils.SetPricesParams oracleParams;
+
+    // take any position
+    Position.Props position;
+
+    // Model liquidation criteria as defined in https://gmx-io.notion.site/gmx-io/GMX-Technical-Overview-47fc5ed832e243afb9e97e8a4a036353
+    // > A position can be liquidated by keepers if the losses of the position
+    // > reduces the collateral to the point where position size / remaining
+    // > collateral is more than the max allowed leverage.
+    uint256 positionSize = _LiquidationHandlerHarness.position__sizeInUsd(e, position);
+    uint256 collateralAmount = _LiquidationHandlerHarness.position__collateralAmount(e, position);
+    uint256 minLeverageFactor = _DataStore.getUint(e, _Keys.minCollateralFactorKey(e, market));
+    require(to_mathint(positionSize) > minLeverageFactor * collateralAmount);
+
+    // make sure we don't revert because of broken calldata or irrelevant modifiers
+    executeLiquidationSetup(e, account, market, collateralToken, isLong, oracleParams);
+    resetExecuted(e);
+    executeLiquidationExecute(e, account, market, collateralToken, isLong, oracleParams);
+    assert(executed(e));
+}
+
+rule liquidationWorksIfConditionsAreMet_satisfy() {
+    env e;
+
+    // executeLiquidation is not payable, hence e.msg.value == 0
+    require(e.msg.value == 0);
+
+    address account;
+    address market;
+    address collateralToken;
+    bool isLong;
+    OracleUtils.SetPricesParams oracleParams;
+
+    // take any position
+    Position.Props position;
+
+    // Model liquidation criteria as defined in https://gmx-io.notion.site/gmx-io/GMX-Technical-Overview-47fc5ed832e243afb9e97e8a4a036353
+    // > A position can be liquidated by keepers if the losses of the position
+    // > reduces the collateral to the point where position size / remaining
+    // > collateral is more than the max allowed leverage.
+    uint256 positionSize = _LiquidationHandlerHarness.position__sizeInUsd(e, position);
+    uint256 collateralAmount = _LiquidationHandlerHarness.position__collateralAmount(e, position);
+    uint256 minLeverageFactor = _DataStore.getUint(e, _Keys.minCollateralFactorKey(e, market));
+    require(to_mathint(positionSize) > minLeverageFactor * collateralAmount);
+
+    // make sure we don't revert because of broken calldata or irrelevant modifiers
+    executeLiquidationSetup(e, account, market, collateralToken, isLong, oracleParams);
+    executeLiquidation@withrevert(e, account, market, collateralToken, isLong, oracleParams);
+    bool didRevert = lastReverted;
+    satisfy(!didRevert);
+}
+
 
 rule liquidationConditionsAreMetIfItWorks() {
     env e;
