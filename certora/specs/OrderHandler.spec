@@ -698,7 +698,7 @@ rule positions_can_be_closed {
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    satisfy positions_closable_decrease(e, oracle_price_params, position_close_value);
+    assert positions_closable_decrease(e, oracle_price_params, position_close_value);
 }
 
 // This is the original specification of GMX Requested Property 1
