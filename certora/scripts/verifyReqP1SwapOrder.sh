@@ -20,7 +20,7 @@ certoraRun certora/harness/SwapOrderUtilsHarness.sol \
 --prover_args "-optimisticFallback true" \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-solvers [z3]" \
---prover_args "-depth 20, -mediumTimeout 60, -s\"[z3:def,z3:arith1,z3:lia1]\" " \
---prover_args "-splitParallel true -smt_parallelLIASolvers \"[z3:def,z3:arith1,z3:lia1]\" -smt_parallelNIASolvers [z3:def]" \
 --rule gmx_property1_SwapOrder \
---msg "SwapOrder reqp1, revert-based, use Jaroslav options."
+--msg "SwapOrder reqp1, assert no revert"
+# --prover_args "-depth 20, -mediumTimeout 60, -s\"[z3:def,z3:arith1,z3:lia1]\" " \
+# --prover_args "-splitParallel true -smt_parallelLIASolvers \"[z3:def,z3:arith1,z3:lia1]\" -smt_parallelNIASolvers [z3:def]" \

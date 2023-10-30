@@ -321,7 +321,7 @@ rule gmx_property1_DecreaseOrder{
     //========================================================================
     // Assert: positions can be closed after executing the call
     //========================================================================
-    satisfy positions_closable(e, oracle_price_params, position_close_value);
+    assert positions_closable(e, oracle_price_params, position_close_value);
 }
 
 rule gmx_property1_DecreaseOrder_NoRevert {
