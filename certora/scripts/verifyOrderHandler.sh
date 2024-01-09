@@ -49,8 +49,11 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args '-copyLoopUnroll 1' \
 --prover_args "-s [z3]" \
 --prover_args "-adaptiveSolverConfig false" \
+--prover_args "-enableFlowSensitivePartitioning true" \
+--prover_args "-enableCopyLoopRewrites true" \
+--prover_args "-enableAggressivePartitionPruning true" \
 --rule positions_can_be_closed \
---msg "Rerun Requested Property 1 to update timeout ticket"
+--msg "Rerun GMX Req Property 1 (latest full variant), with new options 2024"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 #--prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
 
