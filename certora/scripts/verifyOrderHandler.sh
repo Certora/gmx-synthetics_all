@@ -52,8 +52,8 @@ certoraRun  contracts/exchange/OrderHandler.sol \
 --prover_args "-enableFlowSensitivePartitioning true" \
 --prover_args "-enableCopyLoopRewrites true" \
 --prover_args "-enableAggressivePartitionPruning true" \
---rule requireReserveFactorLessThanOneSolvency \
---msg "Rerun GMX Req Property 2, with new options 2024"
+--rule requireMaxPnlFactorLessThanOneSolvency \
+--msg "Rerun GMX Req Property 3, with new options 2024"
 # --prover_args '-summarizeExtLibraryCallsAsNonDetPreLinking true' \
 #--prover_args "-adaptiveSolverConfig false -smt_nonLinearArithmetic true" \
 
