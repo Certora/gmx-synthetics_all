@@ -34,7 +34,7 @@ library DepositStoreUtils {
 
     bytes32 public constant SHOULD_UNWRAP_NATIVE_TOKEN = keccak256(abi.encode("SHOULD_UNWRAP_NATIVE_TOKEN"));
 
-    function get(DataStore dataStore, bytes32 key) external view returns (Deposit.Props memory) {
+    function get(DataStore dataStore, bytes32 key) internal view returns (Deposit.Props memory) {
         Deposit.Props memory deposit;
         if (!dataStore.containsBytes32(Keys.DEPOSIT_LIST, key)) {
             return deposit;
@@ -111,7 +111,7 @@ library DepositStoreUtils {
         return deposit;
     }
 
-    function set(DataStore dataStore, bytes32 key, Deposit.Props memory deposit) external {
+    function set(DataStore dataStore, bytes32 key, Deposit.Props memory deposit) internal {
         dataStore.addBytes32(
             Keys.DEPOSIT_LIST,
             key
@@ -208,7 +208,7 @@ library DepositStoreUtils {
         );
     }
 
-    function remove(DataStore dataStore, bytes32 key, address account) external {
+    function remove(DataStore dataStore, bytes32 key, address account) internal {
         if (!dataStore.containsBytes32(Keys.DEPOSIT_LIST, key)) {
             revert Errors.DepositNotFound(key);
         }

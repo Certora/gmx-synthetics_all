@@ -85,16 +85,13 @@ contract ExchangeRouter is IExchangeRouter, BaseRouter {
      */
     function createDeposit(
         DepositUtils.CreateDepositParams calldata params
-    ) external override payable nonReentrant returns (bytes32) {
+    ) external payable override nonReentrant returns (bytes32) {
         address account = msg.sender;
 
-        return depositHandler.createDeposit(
-            account,
-            params
-        );
+        return depositHandler.createDeposit(account, params);
     }
 
-    function cancelDeposit(bytes32 key) external override payable nonReentrant {
+    function cancelDeposit(bytes32 key) external payable override nonReentrant {
         Deposit.Props memory deposit = DepositStoreUtils.get(dataStore, key);
         if (deposit.account() == address(0)) {
             revert Errors.EmptyDeposit();
@@ -116,16 +113,13 @@ contract ExchangeRouter is IExchangeRouter, BaseRouter {
      */
     function createWithdrawal(
         WithdrawalUtils.CreateWithdrawalParams calldata params
-    ) external override payable nonReentrant returns (bytes32) {
+    ) external payable override nonReentrant returns (bytes32) {
         address account = msg.sender;
 
-        return withdrawalHandler.createWithdrawal(
-            account,
-            params
-        );
+        return withdrawalHandler.createWithdrawal(account, params);
     }
 
-    function cancelWithdrawal(bytes32 key) external override payable nonReentrant {
+    function cancelWithdrawal(bytes32 key) external payable override nonReentrant {
         Withdrawal.Props memory withdrawal = WithdrawalStoreUtils.get(dataStore, key);
         if (withdrawal.account() != msg.sender) {
             revert Errors.Unauthorized(msg.sender, "account for cancelWithdrawal");
@@ -142,19 +136,13 @@ contract ExchangeRouter is IExchangeRouter, BaseRouter {
      */
     function createOrder(
         IBaseOrderUtils.CreateOrderParams calldata params
-    ) external override payable nonReentrant returns (bytes32) {
+    ) external payable override nonReentrant returns (bytes32) {
         address account = msg.sender;
 
-        return orderHandler.createOrder(
-            account,
-            params
-        );
+        return orderHandler.createOrder(account, params);
     }
 
-    function setSavedCallbackContract(
-        address market,
-        address callbackContract
-    ) external payable nonReentrant {
+    function setSavedCallbackContract(address market, address callbackContract) external payable nonReentrant {
         // save the callback contract based on the account and market so that
         // it can be called on liquidations and ADLs
         CallbackUtils.setSavedCallbackContract(
@@ -211,14 +199,7 @@ contract ExchangeRouter is IExchangeRouter, BaseRouter {
             revert Errors.Unauthorized(msg.sender, "account for updateOrder");
         }
 
-        orderHandler.updateOrder(
-            key,
-            sizeDeltaUsd,
-            acceptablePrice,
-            triggerPrice,
-            minOutputAmount,
-            order
-        );
+        orderHandler.updateOrder(key, sizeDeltaUsd, acceptablePrice, triggerPrice, minOutputAmount, order);
     }
 
     /**

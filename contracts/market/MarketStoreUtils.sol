@@ -51,7 +51,7 @@ library MarketStoreUtils {
         return get(dataStore, key);
     }
 
-    function set(DataStore dataStore, address key, bytes32 salt, Market.Props memory market) external {
+    function set(DataStore dataStore, address key, bytes32 salt, Market.Props memory market) internal {
         dataStore.addAddress(
             Keys.MARKET_LIST,
             key
@@ -86,7 +86,7 @@ library MarketStoreUtils {
         );
     }
 
-    function remove(DataStore dataStore, address key) external {
+    function remove(DataStore dataStore, address key) internal {
         if (!dataStore.containsAddress(Keys.MARKET_LIST, key)) {
             revert Errors.MarketNotFound(key);
         }

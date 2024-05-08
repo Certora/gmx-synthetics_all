@@ -23,7 +23,7 @@ library DepositEventUtils {
         EventEmitter eventEmitter,
         bytes32 key,
         Deposit.Props memory deposit
-    ) external {
+    ) internal {
         EventUtils.EventLogData memory eventData;
 
         eventData.addressItems.initItems(6);
@@ -67,7 +67,7 @@ library DepositEventUtils {
         uint256 longTokenAmount,
         uint256 shortTokenAmount,
         uint256 receivedMarketTokens
-    ) external {
+    ) internal {
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);
@@ -95,7 +95,7 @@ library DepositEventUtils {
         address account,
         string memory reason,
         bytes memory reasonBytes
-    ) external {
+    ) internal {
         EventUtils.EventLogData memory eventData;
 
         eventData.bytes32Items.initItems(1);

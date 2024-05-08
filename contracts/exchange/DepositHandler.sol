@@ -49,13 +49,7 @@ contract DepositHandler is IDepositHandler, GlobalReentrancyGuard, RoleModule, O
     ) external override globalNonReentrant onlyController returns (bytes32) {
         FeatureUtils.validateFeature(dataStore, Keys.createDepositFeatureDisabledKey(address(this)));
 
-        return DepositUtils.createDeposit(
-            dataStore,
-            eventEmitter,
-            depositVault,
-            account,
-            params
-        );
+        return DepositUtils.createDeposit(dataStore, eventEmitter, depositVault, account, params);
     }
 
     // @dev cancels a deposit
@@ -68,11 +62,7 @@ contract DepositHandler is IDepositHandler, GlobalReentrancyGuard, RoleModule, O
 
         FeatureUtils.validateFeature(_dataStore, Keys.cancelDepositFeatureDisabledKey(address(this)));
 
-        ExchangeUtils.validateRequestCancellation(
-            _dataStore,
-            deposit.updatedAtTime(),
-            "Deposit"
-        );
+        ExchangeUtils.validateRequestCancellation(_dataStore, deposit.updatedAtTime(), "Deposit");
 
         DepositUtils.cancelDeposit(
             _dataStore,
@@ -92,11 +82,7 @@ contract DepositHandler is IDepositHandler, GlobalReentrancyGuard, RoleModule, O
     function executeDeposit(
         bytes32 key,
         OracleUtils.SetPricesParams calldata oracleParams
-    ) external
-        globalNonReentrant
-        onlyOrderKeeper
-        withOraclePrices(oracleParams)
-    {
+    ) external /*globalNonReentrant onlyOrderKeeper withOraclePrices(oracleParams)*/ {
         uint256 startingGas = gasleft();
 
         Deposit.Props memory deposit = DepositStoreUtils.get(dataStore, key);
@@ -105,18 +91,11 @@ contract DepositHandler is IDepositHandler, GlobalReentrancyGuard, RoleModule, O
 
         uint256 executionGas = GasUtils.getExecutionGas(dataStore, startingGas);
 
-        try this._executeDeposit{ gas: executionGas }(
-            key,
-            deposit,
-            msg.sender
-        ) {
-        } catch (bytes memory reasonBytes) {
-            _handleDepositError(
-                key,
-                startingGas,
-                reasonBytes
-            );
-        }
+        //try
+        this._executeDeposit{gas: executionGas}(key, deposit, msg.sender);
+        /* {} catch (bytes memory reasonBytes) {
+            _handleDepositError(key, startingGas, reasonBytes);
+        }*/
     }
 
     // @dev simulate execution of a deposit to check for any errors
@@ -125,30 +104,17 @@ contract DepositHandler is IDepositHandler, GlobalReentrancyGuard, RoleModule, O
     function simulateExecuteDeposit(
         bytes32 key,
         OracleUtils.SimulatePricesParams memory params
-    ) external
-        override
-        onlyController
-        withSimulatedOraclePrices(params)
-        globalNonReentrant
-    {
+    ) external override onlyController withSimulatedOraclePrices(params) globalNonReentrant {
         Deposit.Props memory deposit = DepositStoreUtils.get(dataStore, key);
 
-        this._executeDeposit(
-            key,
-            deposit,
-            msg.sender
-        );
+        this._executeDeposit(key, deposit, msg.sender);
     }
 
     // @dev executes a deposit
     // @param oracleParams OracleUtils.SetPricesParams
     // @param keeper the keeper executing the deposit
     // @param startingGas the starting gas
-    function _executeDeposit(
-        bytes32 key,
-        Deposit.Props memory deposit,
-        address keeper
-    ) external onlySelf {
+    function _executeDeposit(bytes32 key, Deposit.Props memory deposit, address keeper) external onlySelf {
         uint256 startingGas = gasleft();
 
         FeatureUtils.validateFeature(dataStore, Keys.executeDepositFeatureDisabledKey(address(this)));
@@ -170,23 +136,16 @@ contract DepositHandler is IDepositHandler, GlobalReentrancyGuard, RoleModule, O
     // @param key the deposit key
     // @param startingGas the starting gas of the txn
     // @param reasonBytes the reason bytes of the error
-    function _handleDepositError(
-        bytes32 key,
-        uint256 startingGas,
-        bytes memory reasonBytes
-    ) internal {
+    function _handleDepositError(bytes32 key, uint256 startingGas, bytes memory reasonBytes) internal {
         GasUtils.validateExecutionErrorGas(dataStore, reasonBytes);
 
         bytes4 errorSelector = ErrorUtils.getErrorSelectorFromData(reasonBytes);
 
-        if (
-            OracleUtils.isOracleError(errorSelector) ||
-            errorSelector == Errors.DisabledFeature.selector
-        ) {
+        if (OracleUtils.isOracleError(errorSelector) || errorSelector == Errors.DisabledFeature.selector) {
             ErrorUtils.revertWithCustomError(reasonBytes);
         }
 
-        (string memory reason, /* bool hasRevertMessage */) = ErrorUtils.getRevertMessage(reasonBytes);
+        (string memory reason /* bool hasRevertMessage */, ) = ErrorUtils.getRevertMessage(reasonBytes);
 
         DepositUtils.cancelDeposit(
             dataStore,
